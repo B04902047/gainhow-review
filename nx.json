@@ -1,0 +1,35 @@
+{
+  "implicitDependencies": {
+    "workspace.json": "*",
+    "package.json": { "dependencies": "*", "devDependencies": "*" },
+    "tsconfig.base.json": "*",
+    "tslint.json": "*",
+    ".eslintrc.json": "*",
+    "nx.json": "*"
+  },
+  "affected": { "defaultBase": "master" },
+  "npmScope": "gainhow-review",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/workspace/tasks-runners/default",
+      "options": { "cacheableOperations": ["build", "lint", "test", "e2e"] }
+    }
+  },
+  "projects": {
+    "reviewer": { "tags": [] },
+    "reviewer-e2e": { "tags": [], "implicitDependencies": ["reviewer"] },
+    "api": { "tags": [] },
+    "api-interfaces": { "tags": [] },
+    "uploader": { "tags": [] },
+    "uploader-e2e": { "tags": [], "implicitDependencies": ["uploader"] },
+    "upload-file-manager": { "tags": [] },
+    "upload-file-manager-e2e": {
+      "tags": [],
+      "implicitDependencies": ["upload-file-manager"]
+    },
+    "ui": { "tags": [] },
+    "data": { "tags": [] },
+    "features": { "tags": [] },
+    "utils": { "tags": [] }
+  }
+}
