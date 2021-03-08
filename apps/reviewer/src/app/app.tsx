@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ExportingModel, ExportList, ImportedFile } from '@gainhow-review/ui';
+import { ExportingModel, ExportList, ImportedFile, ModelInfo } from '@gainhow-review/ui';
 import { UploadFileStatus } from '@gainhow-review/data'
 import { ExportingPage } from '@gainhow-review/ui';
 import { FramedPage } from '@gainhow-review/data';
-import { page1_1, reviewItem, reviewModel1 } from './testObjects1';
+import { page1_1, reviewItem, reviewModel1, singleSheet1 } from './testObjects1';
 import { uploadFileStatus2 } from "./testObjects1"
 import {ImportList} from '@gainhow-review/ui';
 
@@ -18,13 +18,20 @@ export const App = () => {
 
   return (
     <>
-      
       <div>
-        <ImportList
-          files={[uploadFileStatus2,uploadFileStatus2,uploadFileStatus2]}
-          selectPage={()=>{}}
-          isSelected={()=>{return false}}
-        />
+        <div style={{display: "inline-block"}}>
+          <ImportList
+            files={[uploadFileStatus2,uploadFileStatus2,uploadFileStatus2]}
+            selectPage={()=>{}}
+            isSelected={()=>{return false}}
+          />
+        </div>
+        <div style={{display: "inline-block", verticalAlign: "top"}}>
+          <ModelInfo
+            product={singleSheet1}
+            isHidden={false}
+          />
+        </div>
       </div>
       <ExportList
         reviewItem={reviewItem}

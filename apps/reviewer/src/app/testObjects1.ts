@@ -107,6 +107,7 @@ page3_2.sourceFileId = fileId1;
 page3_2.sourcePageNumber = 1;
 
 export {
+    singleSheet1,
     reviewItem,
     reviewModel1,
     page1_1,

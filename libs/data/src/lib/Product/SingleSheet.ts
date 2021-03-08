@@ -7,6 +7,16 @@ import Paper from "../Material/Paper";
 import SingleSheetFrameDictionary from "../FrameDictionary/SingleSheetFrameDictionary";
 
 export default class SingleSheet extends Product implements SingleSheetInterface {
+    productSubTypeChineseName = "單張";
+    public getInfo(): Array<string> {
+        return [
+            "單張",
+            `寬 ${this.width} x 長 ${this.height}`,
+            this.paper.name,
+            `正面：${(this.frontSideCoat)? this.frontSideCoat: "不上膜"}`,
+            `背面：${(this.backSideCoat)? this.backSideCoat: "不上膜"}`
+        ];
+    }
     readonly __productSubType: "SingleSheet" = "SingleSheet";
     
     @Exclude()
