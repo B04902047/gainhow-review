@@ -29,7 +29,7 @@ export function ImportedFile(props: ImportedFileProps) {
   }
   let toggleIcon = (isOpen)? openIcon : closeIcon;
 
-  let pages :React.ReactElement[] = props.fileStatus.previewPagesAddress.map((pageAddress,index) => {
+  let pages :React.ReactElement[] = props.fileStatus.pages.map((page,index) => {
     let style : CSSProperties = {
       margin:'0px 0px 10px 0px',
     }
@@ -37,7 +37,7 @@ export function ImportedFile(props: ImportedFileProps) {
       <div style={style}>
       <ImportedPage
         key={index}
-        pageAddress={pageAddress}
+        pageAddress={page.jpegAddress}
         isSelected={props.isSelected(index.toString())}
         onClick={() => { props.selectPage(index.toString()) }}
       />

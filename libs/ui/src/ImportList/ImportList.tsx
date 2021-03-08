@@ -20,6 +20,7 @@ export function ImportList(props: ImportListProps) {
   }
   const style: CSSProperties = {
     width: '240px',
+    height: 'calc(100vh - 175px)',
     background: '#F7F7F7 0% 0% no-repeat padding-box',
     margin: '0px',
     padding: '0px'
@@ -44,7 +45,9 @@ export function ImportList(props: ImportListProps) {
     width: '162px'
   }
   const fileListStyle: CSSProperties = {
-    margin:'17px 0px 0px 0px'
+    margin:'17px 0px 0px 0px',
+    height: 'calc(100vh - 175px - 33px)',
+    overflow: 'auto'
   }
 
   let files: React.ReactElement[] = props.files.map((file, fileIndex) => {
