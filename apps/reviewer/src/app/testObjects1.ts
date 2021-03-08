@@ -58,7 +58,7 @@ const uploadFileStatus1 = new UploadFileStatus(
 
 
 const uploadFileStatus2 = new UploadFileStatus(
-    'testImage1',
+    'testImage13424324324234324324324324',
     '1',
    'GENERATING_PRINTABLE_PAGES',
     2,

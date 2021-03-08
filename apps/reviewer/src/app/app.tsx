@@ -18,9 +18,21 @@ export const App = () => {
 
   return (
     <>
-      <ModelInfo
-        product={singleSheet1}
-        isHidden={false}
+      <div>
+        <ImportList
+          files={[uploadFileStatus2,uploadFileStatus2,uploadFileStatus2]}
+          selectPage={()=>{}}
+          isSelected={()=>{return false}}
+        />
+        <ModelInfo
+          product={singleSheet1}
+          isHidden={false}
+        />
+      </div>
+      <ExportList
+        reviewItem={reviewItem}
+        selectedModelIndex={1}
+        selectedPageIndex="背面"
       />
     </>
   );
