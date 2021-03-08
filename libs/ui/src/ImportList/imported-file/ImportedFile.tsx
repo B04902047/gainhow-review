@@ -13,7 +13,7 @@ import e from 'express';
 
 /* eslint-disable-next-line */
 export interface ImportedFileProps {
-  file: UploadFileStatus
+  fileStatus: UploadFileStatus
   selectPage(index: string): void;
   isSelected(index: string): boolean;
 }
@@ -29,7 +29,7 @@ export function ImportedFile(props: ImportedFileProps) {
   }
   let toggleIcon = (isOpen)? openIcon : closeIcon;
 
-  let pages :React.ReactElement[] = props.file.previewPagesAddress.map((pageAddress,index) => {
+  let pages :React.ReactElement[] = props.fileStatus.previewPagesAddress.map((pageAddress,index) => {
     return (
       <div>
       <ImportedPage
@@ -44,7 +44,7 @@ export function ImportedFile(props: ImportedFileProps) {
   return (
     <div>
       <span onClick={onclick}>
-        <img src={toggleIcon}/>{props.file.fileName}
+        <img src={toggleIcon}/>{props.fileStatus.fileName}
         </span>
         <div>
           {pages}

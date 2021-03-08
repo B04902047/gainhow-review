@@ -2,6 +2,9 @@
 
 import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame } from '@gainhow-review/data';
 
+import testimage1 from '../assets/testImages/1.jpg'
+import testimage2 from '../assets/testImages/2.jpg'
+
 const paperMaterial1 = new PaperMaterial("一級卡");
 const paperMaterial2 = new PaperMaterial("象牙卡");
 
@@ -34,6 +37,17 @@ const uploadFileStatus1 = new UploadFileStatus(
     "GENERATING_PRINTABLE_PAGES",
     6
 )
+
+
+const uploadFileStatus2 = new UploadFileStatus(
+    'testImage1',
+    '1',
+   'GENERATING_PRINTABLE_PAGES',
+    2,
+    '',
+    [testimage1,testimage2],
+    []
+  );
 
 const reviewStatus1 = new ReviewStatus(
     reviewId1,
@@ -71,4 +85,5 @@ export {
     reviewItem,
     reviewModel1,
     page1_1,
+    uploadFileStatus2
 }
