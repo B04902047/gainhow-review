@@ -13,7 +13,7 @@ export interface ImportListProps {
 export { ImportedFile };
 
 export function ImportList(props: ImportListProps) {
-  const [searchBarValue,setSearchBarValue] = useState('');
+  const [searchBarValue, setSearchBarValue] = useState('');
 
   function searchBarInputChangeHandler(event: React.ChangeEvent<HTMLInputElement>): void {
     setSearchBarValue(event.target.value);
@@ -23,7 +23,8 @@ export function ImportList(props: ImportListProps) {
     height: 'calc(100vh - 175px)',
     background: '#F7F7F7 0% 0% no-repeat padding-box',
     margin: '0px',
-    padding: '0px'
+    padding: '0px',
+    border: '2px solid #E4E4E4'
   }
   const searchBarDivStyle: CSSProperties = {
     margin: '0px 0px 0px 8px',
@@ -50,21 +51,20 @@ export function ImportList(props: ImportListProps) {
     overflow: 'auto'
   }
 
-  let files: React.ReactElement[] = props.files.map((file, fileIndex) => {
-    if (searchBarValue === '' || file.fileName.includes(searchBarValue)) {
-      return (
-        <ImportedFile
+  let files: React.ReactElement[] = props.files.filter((file) => {
+    if (searchBarValue === '' || file.fileName.includes(searchBarValue)) return true;
+    else return false;
+  }).map((file, fileIndex) => {
+    return (
+      <ImportedFile
         key={fileIndex}
         fileStatus={file}
         selectPage={(pageIndex : string) => { props.selectPage(fileIndex.toString(),pageIndex); }}
         isSelected={(pageIndex : string) => { return props.isSelected(fileIndex.toString(),pageIndex); }}
       />
-      );
-    }
-    else {
-      return (<></>);
-    }
+    );
   });
+ 
   
   
   return (
