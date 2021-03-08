@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {ImportList} from '@gainhow-review/ui';
 
 export const App = () => {
   const [m, setMessage] = useState<string>('');
@@ -10,16 +11,9 @@ export const App = () => {
   }, []);
 
   return (
-    <>
-      <div style={{ textAlign: 'center' }}>
-        <h1>Welcome to reviewer!</h1>
-        <img
-          width="450"
-          src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"
-        />
-      </div>
-      <div>{m}</div>
-    </>
+    <div>
+      <ImportList/>
+    </div>
   );
 };
 
