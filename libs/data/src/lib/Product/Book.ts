@@ -24,4 +24,7 @@ export default abstract class Book extends Product implements BookInterface {
     public get spineWidth(): number {
         return this.numberOfPages / 2 * this.innerPagesPaper.thickness;
     }
+    productSubTypeChineseName = "書籍";
+    public getInfo(): Array<string> {
+    }
 }

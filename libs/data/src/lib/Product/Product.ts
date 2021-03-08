@@ -7,6 +7,7 @@ import { Exclude } from "class-transformer";
 @Exclude()
 export default abstract class Product implements Interface.Product {
     readonly abstract __productSubType: Interface.ProductSubtypeName;
+    readonly abstract productSubTypeChineseName: string;
     protected abstract _frameDictionary?: FrameDictionary;
     public get frameDictionary(): FrameDictionary {
         return this.getOrCreateFrameDictionary();
@@ -20,4 +21,5 @@ export default abstract class Product implements Interface.Product {
         return this._frameDictionary;
     }
     protected abstract createFrameDictionary(): FrameDictionary;
+    public abstract getInfo(): Array<string>;
 }
