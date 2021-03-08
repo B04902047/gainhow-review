@@ -5,9 +5,10 @@ import { FramedPage as FramedPageInterface } from "@gainhow-review/interfaces";
 import ReviewModel from "./ReviewModel";
 
 export default class FramedPage implements FramedPageInterface {   
-    inputPagePreviewAddress?: string;
-    printableResultingImageAddress?: string;
-    printableResultingFileAddress?: string;
+    sourcePageJpegUrl?: string;
+    sourcePagePdfUrl?: string;
+    resultingJpegUrl?: string;
+    resultingPdfUrl?: string;
 
     @Exclude()
     private _rotationDegree: number;

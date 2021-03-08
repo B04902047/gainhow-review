@@ -3,6 +3,10 @@ import { ImportedFile } from '@gainhow-review/ui';
 import { UploadFileStatus } from '@gainhow-review/data'
 import testimage1 from '../../../../apps/reviewer/src/assets/testImages/1.jpg'
 import testimage2 from '../../../../apps/reviewer/src/assets/testImages/2.jpg'
+import { ExportingPage } from '@gainhow-review/ui';
+import { FramedPage } from '@gainhow-review/data';
+import { page1_1 } from './testObjects1';
+import {ImportList} from '@gainhow-review/ui';
 
 export const App = () => {
   const [m, setMessage] = useState<string>('');
@@ -13,7 +17,7 @@ export const App = () => {
   //     .then(setMessage);
   // }, []);
 
-  let testFile :UploadFileStatus = new UploadFileStatus(
+  let testFile = new UploadFileStatus(
     'testImage1',
     '1',
    'GENERATING_PRINTABLE_PAGES',
@@ -23,14 +27,20 @@ export const App = () => {
     []
   );
   return (
-    
-    <ImportedFile
-      file={testFile}
-      selectPage={()=>{}}
-      isSelected={()=>{return false}}
-    />
-    
-    );
+    <>
+      <ExportingPage
+        page={page1_1}
+        isSelected
+      />
+      <div>
+        <ImportedFile
+          file={testFile}
+          selectPage={()=>{}}
+          isSelected={()=>{return false}}
+        />
+      </div>
+    </>
+  );
   
 };
 

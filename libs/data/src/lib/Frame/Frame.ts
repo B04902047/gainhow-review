@@ -5,8 +5,8 @@ export default abstract class Frame {
     public readonly cutLines: Array<Line>;      // 裁切線：有可能是0條，但不會是undefined
     public readonly safeAreaLines: Array<Line>; // 安全範圍標示線（不建議放文字的區域）
     constructor(
-        protected maxWidth: number,
-        protected maxHeight: number
+        readonly maxWidth: number,
+        readonly maxHeight: number
     ) {
         //super(width,height);
         this.foldLines = this.createFoldLines();
