@@ -1,6 +1,6 @@
 
 import { Expose } from "class-transformer";
-import { UploadFileProcessingStage, UploadFileStatus as UploadFileStatusInterface } from "@gainhow-review/interfaces";
+import { UploadFilePageInfo, UploadFileProcessingStage, UploadFileStatus as UploadFileStatusInterface } from "@gainhow-review/interfaces";
 
 
 export default class UploadFileStatus implements UploadFileStatusInterface {
@@ -11,8 +11,7 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
         public currentStage: UploadFileProcessingStage,
         public numberOfPages?: number,
         public fileAddress?: string,
-        public previewPagesAddress?: Array<string>,
-        public printablePagesAddress?: Array<string>,
+        public pages?: Array<UploadFilePageInfo>,
         public errorStage?: UploadFileProcessingStage
     ) {}
 

@@ -13,7 +13,7 @@ export interface ReviewStatus {
     numberOfModels: number;
     modelIds: Array<string>;
     numberOfFiles: number;
-    uploadFileStatuses: Array<UploadFileStatus>;
+    uploadFileStatuses: Map<string, UploadFileStatus>;
     progress: ReviewingProgress;
 }
 // 登記審稿資訊
@@ -75,7 +75,13 @@ export interface UploadFileStatus {
     hasError: boolean;
     numberOfPages?: number;
     fileAddress?: string;
-    previewPagesAddress?: Array<string>;
-    printablePagesAddress?: Array<string>;
+    pages?: Array<UploadFilePageInfo>;
     errorStage?: UploadFileProcessingStage;   
+}
+
+export interface UploadFilePageInfo {
+    pdfAddress: string;
+    jpegAddress: string;
+    heightInMm: number;
+    widthInMm: number;
 }

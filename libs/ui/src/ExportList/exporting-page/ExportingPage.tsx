@@ -2,44 +2,68 @@
 import React, { CSSProperties } from 'react';
 
   import './ExportingPage.module.css';
-import { FramedPage } from '@gainhow-review/data';
+import { FramedPage, UploadFilePageInfo } from '@gainhow-review/data';
 import Frame from 'libs/data/src/lib/Frame/Frame';
   
 
 /* eslint-disable-next-line */
 export interface ExportingPageProps {
-  page: FramedPage;
+  framedPage: FramedPage;
   isSelected: boolean;
 }
 
 export function ExportingPage(props: ExportingPageProps): JSX.Element {
-  let frame: Frame = props.page.getFrame();
-  let heightInMm: number = props.page.getFrame().maxHeight;
-  let widthInMm: number = props.page.getFrame().maxWidth;
-  let ratio: number = widthInMm / heightInMm;
-  let heightInPx = 56;
-  let widthInPx: number = widthInMm * ratio;
+  let frame: Frame = props.framedPage.getFrame();
+  let frameHeightInMm: number = frame.maxHeight;
+  let frameWidthInMm: number = frame.maxWidth;
+  let ratio: number = frameWidthInMm / frameHeightInMm;
+  let frameHeightInPx = 96;
+  let frameWidthInPx: number = frameWidthInMm * ratio;
+  let style: CSSProperties = {
+    padding: (props.isSelected)? 7: 9,
+    paddingTop: (props.isSelected)? 5: 9,
+    paddingBottom: 0,
+    display: "inline-block",
+    backgroundColor: "white"
+  }
   let cropStyle: CSSProperties = {
     overflow: "hidden",
-    height: heightInPx,
-    width: widthInPx
+    height: frameHeightInPx,
+    width: frameWidthInPx,
+    border: (props.isSelected)? "solid 3px #1581ff": "solid 1px #707070"
   };
 
-  let positionXInMm: number = props.page.positionX;
-  let positionYInMm: number = props.page.positionY;
-  let rotationDegree: number = props.page.rotationDegree
+  let positionXInMm: number = props.framedPage.positionX;
+  let positionYInMm: number = props.framedPage.positionY;
+  let rotationDegree: number = props.framedPage.rotationDegree;
+  let sourcePage: UploadFilePageInfo = props.framedPage.getSourcePageInfo();
   let imageStyle: CSSProperties = {
-    marginLeft: widthInPx / widthInMm * positionXInMm,
-    marginTop: heightInPx / heightInMm * positionYInMm,
-    transform: `rotate(${rotationDegree})`
+    marginLeft: (frameWidthInPx / frameWidthInMm) * positionXInMm,
+    marginTop: (frameHeightInPx / frameHeightInMm) * positionYInMm,
+    width: (frameWidthInPx / frameWidthInMm) * sourcePage.widthInMm,
+    height: (frameWidthInPx / frameWidthInMm) * sourcePage.heightInMm,
+    transform: `rotate(${rotationDegree}deg)`
+  };
+
+  let pageIndexStyle: CSSProperties = {
+    width: frameWidthInPx + ((props.isSelected)? 6 : 0),
+    color: (props.isSelected)? "#1581ff" : "black",
+    fontSize: 14,
+    fontFamily: "arial",
+    textAlign: "center"
   };
 
   return (
-    <div style={cropStyle}>
-      <img
-        src={props.page.sourcePageJpegUrl}
-        style={imageStyle}
-      />
+    <div style={style}>
+      <div style={cropStyle}>
+        <img
+          src={sourcePage.jpegAddress}
+          style={imageStyle}
+        />
+      </div>
+      <div style={pageIndexStyle}>
+        {props.framedPage.pageIndex}
+      </div>
     </div>
   );
 };

@@ -1,12 +1,13 @@
 
 import { Exclude, Expose } from "class-transformer";
 import Frame from "../Frame/Frame";
-import { FramedPage as FramedPageInterface } from "@gainhow-review/interfaces";
+import { FramedPage as FramedPageInterface, UploadFileStatus } from "@gainhow-review/interfaces";
 import ReviewModel from "./ReviewModel";
+import { UploadFilePageInfo } from "../Review";
 
-export default class FramedPage implements FramedPageInterface {   
-    sourcePageJpegUrl?: string;
-    sourcePagePdfUrl?: string;
+export default class FramedPage implements FramedPageInterface { 
+    sourceFileId?: string;
+    sourcePageNumber?: number;
     resultingJpegUrl?: string;
     resultingPdfUrl?: string;
 
@@ -31,6 +32,18 @@ export default class FramedPage implements FramedPageInterface {
 
     public getFrame(): Frame | undefined {
       return this.reviewModel.getFrame(this.pageIndex);
+    }
+
+    public getSourcePageInfo(): UploadFilePageInfo | undefined {
+        if (this.sourceFileId === undefined
+            || this.sourcePageNumber === undefined
+        ) {
+            return undefined;
+        }
+        
+        let fileStatus: UploadFileStatus | undefined = this.reviewModel.reviewItem.status.uploadFileStatuses.get(this.sourceFileId);
+        if (!fileStatus || !fileStatus.pages) return undefined;
+        return fileStatus.pages[this.sourcePageNumber];
     }
 
     public reset(): void {

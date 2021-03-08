@@ -5,7 +5,7 @@ import UploadFileStatus from "./UploadFileStatus";
 export default class ReviewStatus implements ReviewStatusInterface {
 
     @Type(() => UploadFileStatus)
-    public uploadFileStatuses: Array<UploadFileStatus>;
+    public uploadFileStatuses: Map<string, UploadFileStatus>;
 
     // TODO: enum? string literal? serializable?
     public progress: ReviewingProgress;
@@ -14,7 +14,7 @@ export default class ReviewStatus implements ReviewStatusInterface {
         public numberOfModels: number,
         public modelIds: string[],
         public numberOfFiles: number,
-        uploadFileStatuses: Array<UploadFileStatus>,
+        uploadFileStatuses: Map<string, UploadFileStatus>,
         progress: ReviewingProgress
     ) {
         this.uploadFileStatuses = uploadFileStatuses;

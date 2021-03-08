@@ -17,9 +17,9 @@ export default class SingleSheetFrameDictionary extends FrameDictionary {
             SingleSheetFrameDictionary.CUT_ERROR,
         );
         let frames = new Map<string, RectangleFrame>();
-        frames.set("frontSide", frame);
+        frames.set("正面", frame);
         if (this.product.isDoubleSided) {
-            frames.set("backSide", frame);
+            frames.set("背面", frame);
         }
         return frames;
     }
