@@ -19,11 +19,9 @@ export const PRODUCT_TYPE_DISCRIMINATOR = {
     subTypes: PRODUCT_SUBTYPES
 };
 
-export default {
+export {
     Product,
     SingleSheet,
     SaddleStichedBook,
-    PerfectBoundBook,
-    PRODUCT_SUBTYPES,
-    PRODUCT_TYPE_DISCRIMINATOR
+    PerfectBoundBook
 };

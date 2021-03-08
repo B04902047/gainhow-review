@@ -7,7 +7,7 @@ import UploadFileStatus from "./Review/UploadFileStatus";
 import ReviewRegistrationInfo from "./Review/ReviewRegistrationInfo";
 import ReviewReception from "./Review/ReviewReception";
 
-export default {
+export {
     FramedPage,
     ReviewModel,
     ReviewItem,
