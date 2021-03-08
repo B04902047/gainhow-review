@@ -22,13 +22,6 @@ export const App = () => {
         page={page1_1}
         isSelected
       />
-      <div>
-        <ImportedFile
-          fileStatus={uploadFileStatus2}
-          selectPage={()=>{}}
-          isSelected={()=>{return false}}
-        />
-      </div>
     </>
   );
   

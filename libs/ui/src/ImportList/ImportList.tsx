@@ -23,7 +23,7 @@ export function ImportList(props: ImportListProps) {
   return (
     
     <ImportedFile
-      file={testFile}
+      fileStatus={testFile}
       selectPage={()=>{}}
       isSelected={()=>{return false}}
     />

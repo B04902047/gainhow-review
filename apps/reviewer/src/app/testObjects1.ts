@@ -1,6 +1,6 @@
 
 
-import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame } from '@gainhow-review/data';
+import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo } from '@gainhow-review/data';
 
 import testimage1 from '../assets/testImages/1.jpg'
 import testimage2 from '../assets/testImages/2.jpg'
@@ -38,6 +38,19 @@ const uploadFileStatus1 = new UploadFileStatus(
     6
 )
 
+const pageInfo1 = new UploadFilePageInfo(
+    "",
+    testimage1,
+    92,
+    56
+);
+
+const pageInfo2 = new UploadFilePageInfo(
+    "",
+    testimage2,
+    92,
+    56
+)
 
 const uploadFileStatus2 = new UploadFileStatus(
     'testImage1',
@@ -45,8 +58,7 @@ const uploadFileStatus2 = new UploadFileStatus(
    'GENERATING_PRINTABLE_PAGES',
     2,
     '',
-    [testimage1,testimage2],
-    []
+    [pageInfo1, pageInfo2]
   );
 
 const reviewStatus1 = new ReviewStatus(
@@ -63,23 +75,22 @@ const reviewItem = new ReviewItem(
     singleSheet1
 );
 let frameIndices: string[] = reviewItem.frameDictionary.frameIndices;
-
 const reviewModel1: ReviewModel = reviewItem.models.get(1);
-const page1_1: FramedPage = reviewModel1.framedPages.get(frameIndices[1])
-page1_1.sourcePageJpegUrl = "";
-const page1_2: FramedPage = reviewModel1.framedPages.get(frameIndices[2])
-page1_2.sourcePageJpegUrl = "";
+const page1_1: FramedPage = reviewModel1.framedPages.get(frameIndices[0]);
+page1_1.sourcePageJpegUrl = testimage1;
+const page1_2: FramedPage = reviewModel1.framedPages.get(frameIndices[1])
+page1_2.sourcePageJpegUrl = testimage2;
 
 const reviewModel2: ReviewModel = reviewItem.models.get(2);
-const page2_1 = reviewModel2.framedPages.get(frameIndices[1])
-page2_1.sourcePageJpegUrl = "";
-const page2_2 = reviewModel2.framedPages.get(frameIndices[2])
-page2_2.sourcePageJpegUrl = "";
+const page2_1 = reviewModel2.framedPages.get(frameIndices[0])
+page2_1.sourcePageJpegUrl = testimage1;
+const page2_2 = reviewModel2.framedPages.get(frameIndices[1])
+page2_2.sourcePageJpegUrl = testimage2;
 const reviewModel3: ReviewModel = reviewItem.models.get(3);
-const page3_1 = reviewModel3.framedPages.get(frameIndices[1])
-page3_1.sourcePageJpegUrl = "";
-const page3_2 = reviewModel3.framedPages.get(frameIndices[2])
-page3_2.sourcePageJpegUrl = "";
+const page3_1 = reviewModel3.framedPages.get(frameIndices[0])
+page3_1.sourcePageJpegUrl = testimage1;
+const page3_2 = reviewModel3.framedPages.get(frameIndices[1])
+page3_2.sourcePageJpegUrl = testimage2;
 
 export {
     reviewItem,
