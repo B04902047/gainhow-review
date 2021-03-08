@@ -40,7 +40,7 @@ const uploadFileStatus1 = new UploadFileStatus(
 
 
 const uploadFileStatus2 = new UploadFileStatus(
-    'testImage1',
+    'testImage13424324324234324324324324',
     '1',
    'GENERATING_PRINTABLE_PAGES',
     2,
@@ -64,26 +64,26 @@ const reviewItem = new ReviewItem(
 );
 let frameIndices: string[] = reviewItem.frameDictionary.frameIndices;
 
-const reviewModel1: ReviewModel = reviewItem.models.get(1);
-const page1_1: FramedPage = reviewModel1.framedPages.get(frameIndices[1])
-page1_1.sourcePageJpegUrl = "";
-const page1_2: FramedPage = reviewModel1.framedPages.get(frameIndices[2])
-page1_2.sourcePageJpegUrl = "";
+// const reviewModel1: ReviewModel = reviewItem.models.get(1);
+// const page1_1: FramedPage = reviewModel1.framedPages.get(frameIndices[1])
+// page1_1.sourcePageJpegUrl = "";
+// const page1_2: FramedPage = reviewModel1.framedPages.get(frameIndices[2])
+// page1_2.sourcePageJpegUrl = "";
 
-const reviewModel2: ReviewModel = reviewItem.models.get(2);
-const page2_1 = reviewModel2.framedPages.get(frameIndices[1])
-page2_1.sourcePageJpegUrl = "";
-const page2_2 = reviewModel2.framedPages.get(frameIndices[2])
-page2_2.sourcePageJpegUrl = "";
-const reviewModel3: ReviewModel = reviewItem.models.get(3);
-const page3_1 = reviewModel3.framedPages.get(frameIndices[1])
-page3_1.sourcePageJpegUrl = "";
-const page3_2 = reviewModel3.framedPages.get(frameIndices[2])
-page3_2.sourcePageJpegUrl = "";
+// const reviewModel2: ReviewModel = reviewItem.models.get(2);
+// const page2_1 = reviewModel2.framedPages.get(frameIndices[1])
+// page2_1.sourcePageJpegUrl = "";
+// const page2_2 = reviewModel2.framedPages.get(frameIndices[2])
+// page2_2.sourcePageJpegUrl = "";
+// const reviewModel3: ReviewModel = reviewItem.models.get(3);
+// const page3_1 = reviewModel3.framedPages.get(frameIndices[1])
+// page3_1.sourcePageJpegUrl = "";
+// const page3_2 = reviewModel3.framedPages.get(frameIndices[2])
+// page3_2.sourcePageJpegUrl = "";
 
 export {
     reviewItem,
-    reviewModel1,
-    page1_1,
+    // reviewModel1,
+    // page1_1,
     uploadFileStatus2
 }

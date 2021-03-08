@@ -14,7 +14,7 @@ export interface ImportedPageProps {
 
 export function ImportedPage(props: ImportedPageProps) {
 let style : CSSProperties = {
-  border: (props.isSelected)? "3px solid #1581FF" : 'none',
+  border: (props.isSelected)? "3px solid #1581FF" : "1px solid #707070",
   width: '158px',
   height: '96px',
 

@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { CSSProperties, useState } from 'react';
 
 import {ImportedPage} from '../imported-page/ImportedPage'
 
 import {UploadFileStatus} from '@gainhow-review/data'
-import openIcon from '../../../../../apps/reviewer/src/assets/icons/svg/CaretDownIcon.svg'
-import closeIcon from '../../../../../apps/reviewer/src/assets/icons/svg/CaretRightIcon.svg'
+import openIcon from '../../Icon/CaretDownIcon.svg'
+import closeIcon from '../../Icon/CaretRightIcon.svg'
 
 import './ImportedFile.module.css';
 import e from 'express';
@@ -21,7 +21,7 @@ export interface ImportedFileProps {
 
 
 export function ImportedFile(props: ImportedFileProps) {
-  const [isOpen, setOpen] = useState(true)
+  const [isOpen, setOpen] = useState<boolean>(true)
 
   function onclick():void {
     if(isOpen) { setOpen(false); }
@@ -30,8 +30,11 @@ export function ImportedFile(props: ImportedFileProps) {
   let toggleIcon = (isOpen)? openIcon : closeIcon;
 
   let pages :React.ReactElement[] = props.fileStatus.previewPagesAddress.map((pageAddress,index) => {
+    let style : CSSProperties = {
+      margin:'0px 0px 10px 0px',
+    }
     return (
-      <div>
+      <div style={style}>
       <ImportedPage
         key={index}
         pageAddress={pageAddress}
@@ -40,15 +43,36 @@ export function ImportedFile(props: ImportedFileProps) {
       />
       </div>
     );
-  })
+  });
+  let style: CSSProperties = {
+    userSelect: 'none',
+    width: '210px'
+  }
+
+  let toggleIconStyle: CSSProperties = {
+    margin:'0px 8px '
+  }
+  let textStyle: CSSProperties = {
+    margin:'0px 0px 10px 0px',
+    wordBreak: 'break-all',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+
+  }
+  let pageStyle:CSSProperties = {
+    margin:'0px 0px 0px 32px',
+    display:(isOpen)? 'block' : 'none'
+  }
   return (
-    <div>
-      <span onClick={onclick}>
-        <img src={toggleIcon}/>{props.fileStatus.fileName}
-        </span>
-        <div>
-          {pages}
-        </div>
+    <div style={style}>
+      <div onClick={onclick} style={textStyle} title={props.fileStatus.fileName}>
+        <img src={toggleIcon} style={toggleIconStyle}/>
+        <span >{props.fileStatus.fileName}</span>
+      </div>
+      <div style={pageStyle}>
+        {pages}
+      </div>
       
     </div>
   );

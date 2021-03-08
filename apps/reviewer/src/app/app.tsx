@@ -3,7 +3,6 @@ import { ImportedFile } from '@gainhow-review/ui';
 import { UploadFileStatus } from '@gainhow-review/data'
 import { ExportingPage } from '@gainhow-review/ui';
 import { FramedPage } from '@gainhow-review/data';
-import { page1_1 } from './testObjects1';
 import { uploadFileStatus2 } from "./testObjects1"
 import {ImportList} from '@gainhow-review/ui';
 
@@ -18,13 +17,10 @@ export const App = () => {
 
   return (
     <>
-      <ExportingPage
-        page={page1_1}
-        isSelected
-      />
+      
       <div>
-        <ImportedFile
-          fileStatus={uploadFileStatus2}
+        <ImportList
+          files={[uploadFileStatus2,uploadFileStatus2,uploadFileStatus2]}
           selectPage={()=>{}}
           isSelected={()=>{return false}}
         />
