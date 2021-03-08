@@ -1,26 +1,35 @@
 
-import React from 'react';
-
-
-
-
-
-  import './ImportedPage.module.css';
+import React, { CSSProperties } from 'react';
+import './ImportedPage.module.css';
   
 
 /* eslint-disable-next-line */
 export interface ImportedPageProps {
+  pageAddress : string;
+  isSelected : boolean;
+  onClick():void;
 }
 
 
 
 export function ImportedPage(props: ImportedPageProps) {
+let style : CSSProperties = {
+  border: (props.isSelected)? "3px solid #1581FF" : 'none',
+  width: '158px',
+  height: '96px',
+
+
+}
   return (
-    <div>
+    <img 
+      style={style} 
+      src={props.pageAddress} 
+      onClick={props.onClick}
+    />
       
-      <h1>Welcome to ImportedPage!</h1>
       
-    </div>
+      
+    
   );
 };
 
