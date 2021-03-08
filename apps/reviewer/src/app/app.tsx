@@ -19,15 +19,19 @@ export const App = () => {
   return (
     <>
       <div>
-        <ImportList
-          files={[uploadFileStatus2,uploadFileStatus2,uploadFileStatus2]}
-          selectPage={()=>{}}
-          isSelected={()=>{return false}}
-        />
-        <ModelInfo
-          product={singleSheet1}
-          isHidden={false}
-        />
+        <div style={{display: "inline-block"}}>
+          <ImportList
+            files={[uploadFileStatus2,uploadFileStatus2,uploadFileStatus2]}
+            selectPage={()=>{}}
+            isSelected={()=>{return false}}
+          />
+        </div>
+        <div style={{display: "inline-block", verticalAlign: "top"}}>
+          <ModelInfo
+            product={singleSheet1}
+            isHidden={false}
+          />
+        </div>
       </div>
       <ExportList
         reviewItem={reviewItem}

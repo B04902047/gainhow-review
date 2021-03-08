@@ -19,7 +19,7 @@ export interface ModelInfoProps {
 
 export function ModelInfo(props: ModelInfoProps) {
   let style: CSSProperties = {
-    height: "calc(100vh - 144px)",
+    height: "calc(100vh - 175px)",
     width: (props.isHidden)? 40: 300,
     backgroundColor: "#F7F7F7"
   };
