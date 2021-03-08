@@ -63,7 +63,7 @@ export default class ReviewModel implements ReviewModelInterface {
         }
         return framedPages;
     }
-    protected get frameIndices(): Array<string> {
+    public get frameIndices(): Array<string> {
         return this.frameDictionary.frameIndices;
     }
     public get frameDictionary(): FrameDictionary {

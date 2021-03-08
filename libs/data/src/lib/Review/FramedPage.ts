@@ -35,7 +35,12 @@ export default class FramedPage implements FramedPageInterface {
     }
 
     public getSourcePageInfo(): UploadFilePageInfo | undefined {
-        if (!this.sourceFileId || !this.sourcePageNumber) return undefined;
+        if (this.sourceFileId === undefined
+            || this.sourcePageNumber === undefined
+        ) {
+            return undefined;
+        }
+        
         let fileStatus: UploadFileStatus | undefined = this.reviewModel.reviewItem.status.uploadFileStatuses.get(this.sourceFileId);
         if (!fileStatus || !fileStatus.pages) return undefined;
         return fileStatus.pages[this.sourcePageNumber];
