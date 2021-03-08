@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { ExportingPage } from '@gainhow-review/ui';
+import { FramedPage } from '@gainhow-review/data';
+import { page1_1 } from './testObjects1';
 
 export const App = () => {
   const [m, setMessage] = useState<string>('');
@@ -11,14 +14,10 @@ export const App = () => {
 
   return (
     <>
-      <div style={{ textAlign: 'center' }}>
-        <h1>Welcome to reviewer!</h1>
-        <img
-          width="450"
-          src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"
-        />
-      </div>
-      <div>{m}</div>
+      <ExportingPage
+        page={page1_1}
+        isSelected
+      />
     </>
   );
 };

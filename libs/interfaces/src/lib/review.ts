@@ -44,10 +44,10 @@ export interface ReviewModel {
 }
 // 審稿頁與框的資訊
 export interface FramedPage {
-    sourcePageImageFileId?: string;
-    sourcePagePrintableFileId?: string;
-    resultingImageFileId?: string;
-    resultingPrintableFileId?: string;
+    sourcePageJpegUrl?: string;
+    sourcePagePdfUrl?: string;
+    resultingJpegUrl?: string;
+    resultingPdfUrl?: string;
     pageIndex: string; 
     positionX?: number;
     positionY?: number;
