@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { Paper as PaperInterface } from "../Interface";
+import { Paper as PaperInterface } from "@gainhow-review/interfaces";
 import PaperMaterial from "./PaperMaterial";
 
 export default class Paper implements PaperInterface {

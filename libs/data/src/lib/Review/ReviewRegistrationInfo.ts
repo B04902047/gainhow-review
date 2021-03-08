@@ -1,8 +1,7 @@
 import Product from "../Product/Product";
-import { ReviewRegistrationInfo as ReviewRegistrationInfoInterface } from "../Interface";
-import { deserialize, serialize, Type } from "class-transformer";
+import { ReviewRegistrationInfo as ReviewRegistrationInfoInterface } from "@gainhow-review/interfaces";
 import { PRODUCT_TYPE_DISCRIMINATOR } from "../Product";
-
+import { deserialize, Type, serialize } from "class-transformer";
 export default class ReviewRegistrationInfo implements ReviewRegistrationInfoInterface {
     
     @Type(() => Product, {

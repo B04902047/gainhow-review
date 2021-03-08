@@ -1,9 +1,9 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([["styles"],{
 
 /***/ "../../../node_modules/@nrwl/web/src/utils/third-party/cli-files/plugins/raw-css-loader.js!../../../node_modules/postcss-loader/dist/cjs.js?!./styles.css":
-/*!***************************************************************************************************************************************************************************************************************************************************!*\
-  !*** /Users/lalame888/projects/gain-how-review/node_modules/@nrwl/web/src/utils/third-party/cli-files/plugins/raw-css-loader.js!/Users/lalame888/projects/gain-how-review/node_modules/postcss-loader/dist/cjs.js??ref--5-oneOf-8-2!./styles.css ***!
-  \***************************************************************************************************************************************************************************************************************************************************/
+/*!*************************************************************************************************************************************************************************************************************************************************!*\
+  !*** /Users/lalame888/projects/gainhow-review/node_modules/@nrwl/web/src/utils/third-party/cli-files/plugins/raw-css-loader.js!/Users/lalame888/projects/gainhow-review/node_modules/postcss-loader/dist/cjs.js??ref--5-oneOf-8-2!./styles.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -12,9 +12,9 @@ module.exports = [[module.i, "/* You can add global styles to this file, and als
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
-/*!********************************************************************************************************************!*\
-  !*** /Users/lalame888/projects/gain-how-review/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
-  \********************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** /Users/lalame888/projects/gainhow-review/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -338,7 +338,7 @@ if (content.locals) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/lalame888/projects/gain-how-review/apps/uploader/src/styles.css */"./styles.css");
+module.exports = __webpack_require__(/*! /Users/lalame888/projects/gainhow-review/apps/uploader/src/styles.css */"./styles.css");
 
 
 /***/ })

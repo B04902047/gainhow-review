@@ -1,5 +1,5 @@
 
-import { Coat as CoatInterface } from "../Interface";
+import { Coat as CoatInterface } from "@gainhow-review/interfaces";
 
 export default class Coat implements CoatInterface {
     constructor (

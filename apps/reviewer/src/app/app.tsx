@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Message } from '@gainhow-review/api-interfaces';
 
 export const App = () => {
-  const [m, setMessage] = useState<Message>({ message: '' });
+  const [m, setMessage] = useState<string>('');
 
   useEffect(() => {
     fetch('/api')
@@ -19,7 +18,7 @@ export const App = () => {
           src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"
         />
       </div>
-      <div>{m.message}</div>
+      <div>{m}</div>
     </>
   );
 };

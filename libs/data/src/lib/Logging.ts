@@ -1,5 +1,5 @@
 
-import { FailureType, TransactionError as TransactionErrorInterface } from "./Interface";
+import { FailureType, TransactionError as TransactionErrorInterface } from "@gainhow-review/interfaces";
 
 export class TransactionError extends Error implements TransactionErrorInterface {
     constructor(
@@ -21,7 +21,7 @@ enum LogLevel {
     Debug = 7,         // 除錯⽤訊息。
 }
 
-interface Log {
+export interface Log {
 	dateTime: Date;
     message?: string;
     level: LogLevel;

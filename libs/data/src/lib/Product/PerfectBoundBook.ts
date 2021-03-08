@@ -1,5 +1,5 @@
 import Book from "./Book";
-import { BookPagingDirection, PerfectBoundBook as PerfectBoundBookInterface } from "../Interface";
+import { BookPagingDirection, PerfectBoundBook as PerfectBoundBookInterface } from "@gainhow-review/interfaces";
 import Paper from "../Material/Paper";
 import Coat from "../Material/Coat";
 import { Type } from "class-transformer";

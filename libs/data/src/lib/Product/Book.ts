@@ -1,4 +1,4 @@
-import { BookPagingDirection, BookSubtypeName, Book as BookInterface } from "../Interface";
+import { BookPagingDirection, BookSubtypeName, Book as BookInterface } from "@gainhow-review/interfaces";
 import Coat from "../Material/Coat";
 import Paper from "../Material/Paper";
 import Product from "./Product";

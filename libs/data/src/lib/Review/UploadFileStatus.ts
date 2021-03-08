@@ -1,6 +1,7 @@
 
 import { Expose } from "class-transformer";
-import { UploadFileProcessingStage, UploadFileStatus as UploadFileStatusInterface } from "../Interface";
+import { UploadFileProcessingStage, UploadFileStatus as UploadFileStatusInterface } from "@gainhow-review/interfaces";
+
 
 export default class UploadFileStatus implements UploadFileStatusInterface {
 

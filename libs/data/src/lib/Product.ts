@@ -1,5 +1,5 @@
 
-import { ProductSubtypeName } from "./Interface";
+import { ProductSubtypeName } from "@gainhow-review/interfaces";
 
 import Product from "./Product/Product";
 import SingleSheet from "./Product/SingleSheet";

@@ -14,9 +14,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 
 const App = () => {
-  const [m, setMessage] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({
-    message: ''
-  });
+  const [m, setMessage] = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])('');
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
     fetch('/api').then(r => r.json()).then(setMessage);
   }, []);
@@ -27,7 +25,7 @@ const App = () => {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Welcome to reviewer!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
     width: "450",
     src: "https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"
-  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, m.message));
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, m));
 };
 /* harmony default export */ __webpack_exports__["default"] = (App);
 
@@ -61,7 +59,7 @@ react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render( /*#__PURE__*/react__WEB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/lalame888/projects/gain-how-review/apps/reviewer/src/main.tsx */"./main.tsx");
+module.exports = __webpack_require__(/*! /Users/lalame888/projects/gainhow-review/apps/reviewer/src/main.tsx */"./main.tsx");
 
 
 /***/ })

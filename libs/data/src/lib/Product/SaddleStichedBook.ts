@@ -1,5 +1,5 @@
 import Book from "./Book";
-import {BookPagingDirection, SaddleStichedBook as SaddleStichedBookInterface} from "../Interface";
+import {BookPagingDirection, SaddleStichedBook as SaddleStichedBookInterface} from "@gainhow-review/interfaces";
 import Paper from "../Material/Paper";
 import Coat from "../Material/Coat";
 import SaddleStitchedBookFrameDictionary from "../FrameDictionary/SaddleStitchedBookFrameDictionary";

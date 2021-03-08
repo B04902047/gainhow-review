@@ -1,5 +1,5 @@
 import { deserialize, serialize, Type } from "class-transformer";
-import { ReviewingProgress, ReviewStatus as ReviewStatusInterface } from "../Interface";
+import { ReviewingProgress, ReviewStatus as ReviewStatusInterface } from "@gainhow-review/interfaces";
 import UploadFileStatus from "./UploadFileStatus";
 
 export default class ReviewStatus implements ReviewStatusInterface {

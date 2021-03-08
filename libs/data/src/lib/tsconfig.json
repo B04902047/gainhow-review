@@ -1,4 +1,5 @@
 {
+    "extends": "../../../../tsconfig.base.json",
     "compilerOptions": {
         "target": "ES2017",  //指定編譯生成的JS版本
         "strict": true,  //採用嚴格模式

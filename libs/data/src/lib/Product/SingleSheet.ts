@@ -1,5 +1,5 @@
 
-import {SingleSheet as SingleSheetInterface} from "../Interface";
+import {SingleSheet as SingleSheetInterface} from "@gainhow-review/interfaces";
 import Product from "./Product";
 import { Exclude, Type } from "class-transformer";
 import Coat from "../Material/Coat";

@@ -1,9 +1,9 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([["main"],{
 
-/***/ "../../../node_modules/css-loader/dist/cjs.js?!./app/App.module.css":
-/*!****************************************************************************************************************************!*\
-  !*** /Users/lalame888/projects/gain-how-review/node_modules/css-loader/dist/cjs.js??ref--5-oneOf-0-1!./app/App.module.css ***!
-  \****************************************************************************************************************************/
+/***/ "../../../node_modules/css-loader/dist/cjs.js?!./app/app.module.css":
+/*!***************************************************************************************************************************!*\
+  !*** /Users/lalame888/projects/gainhow-review/node_modules/css-loader/dist/cjs.js??ref--5-oneOf-0-1!./app/app.module.css ***!
+  \***************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -11,10 +11,10 @@
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "../../../node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, ".App_app__JAuqU {\n  font-family: sans-serif;\n  min-width: 300px;\n  max-width: 600px;\n  margin: 50px auto;\n}\n\n.App_app__JAuqU .gutter-left {\n  margin-left: 9px;\n}\n\n.App_app__JAuqU .col-span-2 {\n  grid-column: span 2;\n}\n\n.App_app__JAuqU .flex {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.App_app__JAuqU header {\n  background-color: #143055;\n  color: white;\n  padding: 5px;\n  border-radius: 3px;\n}\n\n.App_app__JAuqU main {\n  padding: 0 36px;\n}\n\n.App_app__JAuqU p {\n  text-align: center;\n}\n\n.App_app__JAuqU h1 {\n  text-align: center;\n  margin-left: 18px;\n  font-size: 24px;\n}\n\n.App_app__JAuqU h2 {\n  text-align: center;\n  font-size: 20px;\n  margin: 40px 0 10px 0;\n}\n\n.App_app__JAuqU .resources {\n  text-align: center;\n  list-style: none;\n  padding: 0;\n  display: grid;\n  grid-gap: 9px;\n  grid-template-columns: 1fr 1fr;\n}\n\n.App_app__JAuqU .resource {\n  color: #0094ba;\n  height: 36px;\n  background-color: rgba(0, 0, 0, 0);\n  border: 1px solid rgba(0, 0, 0, 0.12);\n  border-radius: 4px;\n  padding: 3px 9px;\n  text-decoration: none;\n}\n\n.App_app__JAuqU .resource:hover {\n  background-color: rgba(68, 138, 255, 0.04);\n}\n\n.App_app__JAuqU pre {\n  padding: 9px;\n  border-radius: 4px;\n  background-color: black;\n  color: #eee;\n}\n\n.App_app__JAuqU details {\n  border-radius: 4px;\n  color: #333;\n  background-color: rgba(0, 0, 0, 0);\n  border: 1px solid rgba(0, 0, 0, 0.12);\n  padding: 3px 9px;\n  margin-bottom: 9px;\n}\n\n.App_app__JAuqU summary {\n  outline: none;\n  height: 36px;\n  line-height: 36px;\n}\n\n.App_app__JAuqU .github-star-container {\n  margin-top: 12px;\n  line-height: 20px;\n}\n\n.App_app__JAuqU .github-star-container a {\n  display: flex;\n  align-items: center;\n  text-decoration: none;\n  color: #333;\n}\n\n.App_app__JAuqU .github-star-badge {\n  color: #24292e;\n  display: flex;\n  align-items: center;\n  font-size: 12px;\n  padding: 3px 10px;\n  border: 1px solid rgba(27, 31, 35, 0.2);\n  border-radius: 3px;\n  background-image: linear-gradient(-180deg, #fafbfc, #eff3f6 90%);\n  margin-left: 4px;\n  font-weight: 600;\n}\n\n.App_app__JAuqU .github-star-badge:hover {\n  background-image: linear-gradient(-180deg, #f0f3f6, #e6ebf1 90%);\n  border-color: rgba(27, 31, 35, 0.35);\n  background-position: -0.5em;\n}\n.App_app__JAuqU .github-star-badge .material-icons {\n  height: 16px;\n  width: 16px;\n  margin-right: 4px;\n}\n", ""]);
+exports.push([module.i, ".app_app__j3Q8W {\n  font-family: sans-serif;\n  min-width: 300px;\n  max-width: 600px;\n  margin: 50px auto;\n}\n\n.app_app__j3Q8W .gutter-left {\n  margin-left: 9px;\n}\n\n.app_app__j3Q8W .col-span-2 {\n  grid-column: span 2;\n}\n\n.app_app__j3Q8W .flex {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.app_app__j3Q8W header {\n  background-color: #143055;\n  color: white;\n  padding: 5px;\n  border-radius: 3px;\n}\n\n.app_app__j3Q8W main {\n  padding: 0 36px;\n}\n\n.app_app__j3Q8W p {\n  text-align: center;\n}\n\n.app_app__j3Q8W h1 {\n  text-align: center;\n  margin-left: 18px;\n  font-size: 24px;\n}\n\n.app_app__j3Q8W h2 {\n  text-align: center;\n  font-size: 20px;\n  margin: 40px 0 10px 0;\n}\n\n.app_app__j3Q8W .resources {\n  text-align: center;\n  list-style: none;\n  padding: 0;\n  display: grid;\n  grid-gap: 9px;\n  grid-template-columns: 1fr 1fr;\n}\n\n.app_app__j3Q8W .resource {\n  color: #0094ba;\n  height: 36px;\n  background-color: rgba(0, 0, 0, 0);\n  border: 1px solid rgba(0, 0, 0, 0.12);\n  border-radius: 4px;\n  padding: 3px 9px;\n  text-decoration: none;\n}\n\n.app_app__j3Q8W .resource:hover {\n  background-color: rgba(68, 138, 255, 0.04);\n}\n\n.app_app__j3Q8W pre {\n  padding: 9px;\n  border-radius: 4px;\n  background-color: black;\n  color: #eee;\n}\n\n.app_app__j3Q8W details {\n  border-radius: 4px;\n  color: #333;\n  background-color: rgba(0, 0, 0, 0);\n  border: 1px solid rgba(0, 0, 0, 0.12);\n  padding: 3px 9px;\n  margin-bottom: 9px;\n}\n\n.app_app__j3Q8W summary {\n  outline: none;\n  height: 36px;\n  line-height: 36px;\n}\n\n.app_app__j3Q8W .github-star-container {\n  margin-top: 12px;\n  line-height: 20px;\n}\n\n.app_app__j3Q8W .github-star-container a {\n  display: flex;\n  align-items: center;\n  text-decoration: none;\n  color: #333;\n}\n\n.app_app__j3Q8W .github-star-badge {\n  color: #24292e;\n  display: flex;\n  align-items: center;\n  font-size: 12px;\n  padding: 3px 10px;\n  border: 1px solid rgba(27, 31, 35, 0.2);\n  border-radius: 3px;\n  background-image: linear-gradient(-180deg, #fafbfc, #eff3f6 90%);\n  margin-left: 4px;\n  font-weight: 600;\n}\n\n.app_app__j3Q8W .github-star-badge:hover {\n  background-image: linear-gradient(-180deg, #f0f3f6, #e6ebf1 90%);\n  border-color: rgba(27, 31, 35, 0.35);\n  background-position: -0.5em;\n}\n.app_app__j3Q8W .github-star-badge .material-icons {\n  height: 16px;\n  width: 16px;\n  margin-right: 4px;\n}\n", ""]);
 // Exports
 exports.locals = {
-	"app": "App_app__JAuqU"
+	"app": "app_app__j3Q8W"
 };
 module.exports = exports;
 
@@ -22,9 +22,9 @@ module.exports = exports;
 /***/ }),
 
 /***/ "../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
-/*!********************************************************************************************************************!*\
-  !*** /Users/lalame888/projects/gain-how-review/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
-  \********************************************************************************************************************/
+/*!*******************************************************************************************************************!*\
+  !*** /Users/lalame888/projects/gainhow-review/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
+  \*******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -314,14 +314,14 @@ module.exports = function (list, options) {
 
 /***/ }),
 
-/***/ "./app/App.module.css":
+/***/ "./app/app.module.css":
 /*!****************************!*\
-  !*** ./app/App.module.css ***!
+  !*** ./app/app.module.css ***!
   \****************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var content = __webpack_require__(/*! !../../../../node_modules/css-loader/dist/cjs.js??ref--5-oneOf-0-1!./App.module.css */ "../../../node_modules/css-loader/dist/cjs.js?!./app/App.module.css");
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader/dist/cjs.js??ref--5-oneOf-0-1!./app.module.css */ "../../../node_modules/css-loader/dist/cjs.js?!./app/app.module.css");
 
 if (typeof content === 'string') {
   content = [[module.i, content, '']];
@@ -353,19 +353,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "App", function() { return App; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _App_module_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./App.module.css */ "./app/App.module.css");
-/* harmony import */ var _App_module_css__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_App_module_css__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _app_module_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./app.module.css */ "./app/app.module.css");
+/* harmony import */ var _app_module_css__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_app_module_css__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _logo_svg__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./logo.svg */ "./app/logo.svg");
 /* harmony import */ var _star_svg__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./star.svg */ "./app/star.svg");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "../../../node_modules/react-router-dom/esm/react-router-dom.js");
-
 
 
 
 
 function App() {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    className: _App_module_css__WEBPACK_IMPORTED_MODULE_1___default.a.app
+    className: _app_module_css__WEBPACK_IMPORTED_MODULE_1___default.a.app
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("header", {
     className: "flex"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_logo_svg__WEBPACK_IMPORTED_MODULE_2__["ReactComponent"], {
@@ -428,25 +426,7 @@ nx affected:test
 
 # run e2e tests for current changes
 nx affected:e2e
-  `))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("hr", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("br", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    role: "navigation"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("ul", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__["Link"], {
-    to: "/"
-  }, "Home")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__["Link"], {
-    to: "/page-2"
-  }, "Page 2")))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__["Route"], {
-    path: "/",
-    exact: true,
-    render: () => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, "This is the generated root route.", ' ', /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__["Link"], {
-      to: "/page-2"
-    }, "Click here for page 2."))
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__["Route"], {
-    path: "/page-2",
-    exact: true,
-    render: () => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_4__["Link"], {
-      to: "/"
-    }, "Click here to go back to root page."))
-  }));
+  `))));
 }
 /* harmony default export */ __webpack_exports__["default"] = (App);
 
@@ -604,13 +584,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "../../../node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "../../../node_modules/react-router-dom/esm/react-router-dom.js");
-/* harmony import */ var _app_app__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app/app */ "./app/app.tsx");
+/* harmony import */ var _app_app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app/app */ "./app/app.tsx");
 
 
 
-
-react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.StrictMode, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["BrowserRouter"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_app_app__WEBPACK_IMPORTED_MODULE_3__["default"], null))), document.getElementById('root'));
+react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.StrictMode, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_app_app__WEBPACK_IMPORTED_MODULE_2__["default"], null)), document.getElementById('root'));
 
 /***/ }),
 
@@ -621,7 +599,7 @@ react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render( /*#__PURE__*/react__WEB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/lalame888/projects/gain-how-review/apps/uploader/src/main.tsx */"./main.tsx");
+module.exports = __webpack_require__(/*! /Users/lalame888/projects/gainhow-review/apps/uploader/src/main.tsx */"./main.tsx");
 
 
 /***/ })

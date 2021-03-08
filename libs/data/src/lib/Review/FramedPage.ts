@@ -1,7 +1,7 @@
 
 import { Exclude, Expose } from "class-transformer";
 import Frame from "../Frame/Frame";
-import { FramedPage as FramedPageInterface } from "../Interface";
+import { FramedPage as FramedPageInterface } from "@gainhow-review/interfaces";
 import ReviewModel from "./ReviewModel";
 
 export default class FramedPage implements FramedPageInterface {   

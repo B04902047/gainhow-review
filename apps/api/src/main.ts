@@ -1,9 +1,8 @@
 import * as express from 'express';
-import { Message } from '@gainhow-review/api-interfaces';
 
 const app = express();
 
-const greeting: Message = { message: 'Welcome to api!' };
+const greeting: string =  'Welcome to api!' ;
 
 app.get('/api', (req, res) => {
   res.send(greeting);

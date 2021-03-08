@@ -1,6 +1,6 @@
 
 
-import * as Interface from "../Interface";
+import * as Interface from "@gainhow-review/interfaces";
 import FrameDictionary from "../FrameDictionary/FrameDictionary";
 import { Exclude } from "class-transformer";
 

@@ -10,17 +10,36 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@gainhow-review/api-interfaces": ["libs/api-interfaces/src/index.ts"],
-      "@gainhow-review/ui": ["libs/ui/src/index.ts"],
-      "@gainhow-review/data": ["libs/data/src/index.ts"],
-      "@gainhow-review/features": ["libs/features/src/index.ts"],
-      "@gainhow-review/utils": ["libs/utils/src/index.ts"]
+      "@gainhow-review/ui": [
+        "libs/ui/src/index.ts"
+      ],
+      "@gainhow-review/data": [
+        "libs/data/src/index.ts"
+      ],
+      "@gainhow-review/features": [
+        "libs/features/src/index.ts"
+      ],
+      "@gainhow-review/utils": [
+        "libs/utils/src/index.ts"
+      ],
+      "@gainhow-review/testLib": [
+        "libs/test-lib/src/index.ts"
+      ],
+      "@gainhow-review/interfaces": [
+        "libs/interfaces/src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

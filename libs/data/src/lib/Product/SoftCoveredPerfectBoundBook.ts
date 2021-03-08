@@ -1,4 +1,4 @@
-import { BookPagingDirection } from "../Interface";
+import { BookPagingDirection } from "@gainhow-review/interfaces";
 import Coat from "../Material/Coat";
 import Paper from "../Material/Paper";
 import PerfectBoundBook from "./PerfectBoundBook";

@@ -2,7 +2,7 @@
 import { deserialize, Exclude, Expose, Type } from "class-transformer";
 import Frame from "../Frame/Frame";
 import FrameDictionary from "../FrameDictionary/FrameDictionary";
-import { ReviewModel as ReviewModelInterface} from "../Interface";
+import { ReviewModel as ReviewModelInterface} from "@gainhow-review/interfaces";
 import FramedPage from "./FramedPage";
 import ReviewItem from "./ReviewItem";
 
