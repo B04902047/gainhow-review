@@ -50,7 +50,7 @@ export function ImportedFile(props: ImportedFileProps) {
   }
 
   let toggleIconStyle: CSSProperties = {
-    margin:'0px 8px '
+    margin:'0px'
   }
   let textStyle: CSSProperties = {
     margin:'0px 0px 10px 0px',
@@ -61,7 +61,7 @@ export function ImportedFile(props: ImportedFileProps) {
 
   }
   let pageStyle:CSSProperties = {
-    margin:'0px 0px 0px 32px',
+    margin:'0px 0px 0px 18px',
     display:(isOpen)? 'block' : 'none'
   }
   return (

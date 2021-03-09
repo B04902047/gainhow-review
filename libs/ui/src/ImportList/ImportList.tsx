@@ -19,15 +19,28 @@ export function ImportList(props: ImportListProps) {
     setSearchBarValue(event.target.value);
   }
   const style: CSSProperties = {
-    width: '240px',
-    height: 'calc(100vh - 175px)',
     background: '#F7F7F7 0% 0% no-repeat padding-box',
-    margin: '0px',
-    padding: '0px',
     border: '2px solid #E4E4E4'
   }
+  const toggleDivStyle: CSSProperties = {
+    
+    borderBottom:'2px solid #E4E4E4',
+    height: '21px'
+  }
+  const importListStyle: CSSProperties = {
+    width: '240px',
+    height: 'calc(100vh - 175px)',
+    margin: '0px',
+    padding: '0px 17px',
+    
+  }
+  
+  const titleDivStyle: CSSProperties = {
+    padding: '21px 0px 10px 0px',
+    borderBottom:'2px solid #E4E4E4'
+  }
   const searchBarDivStyle: CSSProperties = {
-    margin: '0px 0px 0px 8px',
+    margin: '20px 0px 0px 0px',
     width: '200px',
     height: '30px',
     background: '#F2F2F2 0% 0% no-repeat padding-box',
@@ -37,7 +50,7 @@ export function ImportList(props: ImportListProps) {
     display: 'flex',
     alignItems: 'center'
   }
-  const searchBarInputStylr: CSSProperties = {
+  const searchBarInputStyle: CSSProperties = {
     border: 'none',
     outline: 'none',
     background: '#F2F2F2 0% 0% no-repeat padding-box',
@@ -47,7 +60,7 @@ export function ImportList(props: ImportListProps) {
   }
   const fileListStyle: CSSProperties = {
     margin:'17px 0px 0px 0px',
-    height: 'calc(100vh - 175px - 33px)',
+    height: 'calc(100vh - 175px - 55px)',
     overflow: 'auto'
   }
 
@@ -69,17 +82,26 @@ export function ImportList(props: ImportListProps) {
   
   return (
     <div style={style}>
-      <div style={searchBarDivStyle}>
-        <input 
-          style={searchBarInputStylr} 
-          value={searchBarValue} 
-          onChange={(event) => { searchBarInputChangeHandler(event); }}
-        />
-        <img src={searchBarIcon}/>
+      <div style={toggleDivStyle}>
+
       </div>
-      <div style={fileListStyle}> 
-        {files}
-      </div>
+      <div style={importListStyle}>
+        
+        <div style={titleDivStyle}>
+          <span>輸入檔案</span>
+        </div>
+        <div style={searchBarDivStyle}>
+          <input 
+            style={searchBarInputStyle} 
+            value={searchBarValue} 
+            onChange={(event) => { searchBarInputChangeHandler(event); }}
+          />
+          <img src={searchBarIcon}/>
+        </div>
+        <div style={fileListStyle}> 
+          {files}
+        </div>
+    </div>
    </div>
     );
     
