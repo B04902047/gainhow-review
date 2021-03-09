@@ -21,7 +21,7 @@ export default class ReviewItem implements ReviewItem {
     
     constructor(
         status: ReviewStatus,
-        product: Product, 
+        product: Product,
     ) {
         this.status = status;
         this.product = product;
@@ -33,6 +33,12 @@ export default class ReviewItem implements ReviewItem {
     }
     public get numberOfModels(): number {
         return this.status.numberOfModels;
+    }
+
+    public getFramedPage(modelIndex: number, frameIndex: string): FramedPage | undefined {
+        let model: ReviewModel | undefined = this.models.get(modelIndex);
+        if (!model) return undefined;
+        return model.framedPages.get(frameIndex);
     }
 
     public set models(models: Map<number, ReviewModel>) {
@@ -80,5 +86,30 @@ export default class ReviewItem implements ReviewItem {
     }
     public static toJson(item: ReviewItem): string {
         return serialize(item);
+    }
+
+
+    public setReviewModel(modelIndex: number, model: ReviewModel): ReviewItem {
+        let newReviewItem = new ReviewItem(
+            this.status,
+            this.product
+        );
+        newReviewItem.models
+            = new Map<number, ReviewModel>(this.models)
+                .set(modelIndex, model);
+        return newReviewItem;
+    }
+
+    public setFramedPage(modelIndex: number, frameIndex: string, framedPage: FramedPage): ReviewItem {
+        let newReviewItem = new ReviewItem(
+            this.status,
+            this.product
+        );
+        let newModels = new Map<number, ReviewModel>(this.models);
+        let newModel: ReviewModel | undefined = newModels.get(modelIndex)?.setFramedPage(frameIndex, framedPage);
+        if (!newModel) throw new Error("modelIndex out of index")
+        newModels.set(modelIndex, newModel);
+        newReviewItem.models = newModels;
+        return newReviewItem;
     }
 }

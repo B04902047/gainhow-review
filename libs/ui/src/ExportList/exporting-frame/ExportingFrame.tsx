@@ -1,7 +1,7 @@
 
 import React, { CSSProperties } from 'react';
 
-  import './ExportingPage.module.css';
+  import './ExportingFrame.module.css';
 import { FramedPage, UploadFilePageInfo } from '@gainhow-review/data';
 import Frame from 'libs/data/src/lib/Frame/Frame';
   
@@ -10,9 +10,10 @@ import Frame from 'libs/data/src/lib/Frame/Frame';
 export interface ExportingPageProps {
   framedPage: FramedPage;
   isSelected: boolean;
+  onSelect(): void;
 }
 
-export function ExportingPage(props: ExportingPageProps): JSX.Element {
+export function ExportingFrame(props: ExportingPageProps): JSX.Element {
   let frame: Frame = props.framedPage.getFrame();
   let frameHeightInMm: number = frame.maxHeight;
   let frameWidthInMm: number = frame.maxWidth;
@@ -59,14 +60,15 @@ export function ExportingPage(props: ExportingPageProps): JSX.Element {
         <img
           src={sourcePage.jpegAddress}
           style={imageStyle}
+          onClick={props.onSelect}
         />
       </div>
       <div style={pageIndexStyle}>
-        {props.framedPage.pageIndex}
+        {props.framedPage.frameIndex}
       </div>
     </div>
   );
 };
 
 
-export default ExportingPage;
+export default ExportingFrame;

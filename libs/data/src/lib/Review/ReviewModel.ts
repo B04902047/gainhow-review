@@ -29,6 +29,17 @@ export default class ReviewModel implements ReviewModelInterface {
         return this.frameDictionary.getFrame(index);
     }
 
+    public setFramedPage(index: string, framedPage: FramedPage): ReviewModel {
+        let newReviewModel = new ReviewModel(
+            this.modelIndexInReviewItem,
+            this.reviewItem
+        );
+        newReviewModel.framedPages
+            = new Map(this.framedPages)
+                .set(index, framedPage);
+        return newReviewModel;
+    }
+
     @Expose()
     @Type(() => FramedPage)
     public get framedPages(): Map<string, FramedPage> {

@@ -18,7 +18,7 @@ export default class FramedPage implements FramedPageInterface {
     public reviewModel: ReviewModel;
 
     constructor (
-        public readonly pageIndex: string,
+        public readonly frameIndex: string,
         reviewModel: ReviewModel,
         public positionX: number = 0,
         public positionY: number = 0,
@@ -31,7 +31,7 @@ export default class FramedPage implements FramedPageInterface {
     }
 
     public getFrame(): Frame | undefined {
-      return this.reviewModel.getFrame(this.pageIndex);
+      return this.reviewModel.getFrame(this.frameIndex);
     }
 
     public getSourcePageInfo(): UploadFilePageInfo | undefined {

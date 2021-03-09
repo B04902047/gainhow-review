@@ -1,7 +1,7 @@
 
 import { FramedPage, ReviewModel } from '@gainhow-review/data';
 import React, { CSSProperties } from 'react';
-import ExportingPage from '../exporting-page/ExportingPage';
+import ExportingFrame from '../exporting-frame/ExportingFrame';
 
 
 
@@ -12,7 +12,8 @@ import ExportingPage from '../exporting-page/ExportingPage';
 
 /* eslint-disable-next-line */
 export interface ExportingModelProps {
-  selectedPageIndex?: string;
+  selectedFrameIndex?: string;
+  onFrameSelect(frameIndex: string): void;
   reviewModel: ReviewModel
 }
 
@@ -27,19 +28,20 @@ export function ExportingModel(props: ExportingModelProps) {
     fontWeight: "bold"
   }
   let pageIndices: string[] = props.reviewModel.frameIndices;
-  let pages: Map<string, FramedPage> = props.reviewModel.framedPages;
+  let framedPages: Map<string, FramedPage> = props.reviewModel.framedPages;
   return (
     <div style={style}>
       <div style={modelIndexStyle}>
         第 {props.reviewModel.modelIndexInReviewItem} 款
       </div>
       <div>
-        {pageIndices.map((pageIndex: string) => {
+        {pageIndices.map((frameIndex: string) => {
           return (
-            <ExportingPage
-              key={pageIndex}
-              framedPage={pages.get(pageIndex)}
-              isSelected={props.selectedPageIndex === pageIndex}
+            <ExportingFrame
+              key={frameIndex}
+              onSelect={() => props.onFrameSelect(frameIndex)}
+              framedPage={framedPages.get(frameIndex)}
+              isSelected={props.selectedFrameIndex === frameIndex}
             />
           )
         })}

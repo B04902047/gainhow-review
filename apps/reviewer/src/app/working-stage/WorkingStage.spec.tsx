@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import ExportingPage from './ExportingPage';
+import WorkingStage from './WorkingStage';
 
-describe('ExportingPage', () => {
+describe('WorkingStage', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(< ExportingPage />);
+    const { baseElement } = render(< WorkingStage />);
     expect(baseElement).toBeTruthy();
   });
 });

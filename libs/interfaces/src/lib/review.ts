@@ -48,7 +48,7 @@ export interface FramedPage {
     sourcePagePdfUrl?: string;
     resultingJpegUrl?: string;
     resultingPdfUrl?: string;
-    pageIndex: string; 
+    frameIndex: string; 
     positionX?: number;
     positionY?: number;
     scaleX?: number;

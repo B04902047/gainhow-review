@@ -13,9 +13,10 @@ import ExportingModel from './exporting-model/ExportingModel';
 /* eslint-disable-next-line */
 export interface ExportListProps {
   selectedModelIndex: number;
-  selectedPageIndex: string;
+  selectedFrameIndex: string;
   reviewItem: ReviewItem;
   style: CSSProperties;
+  onFrameSelect(modelIndex: number, frameIndex: string): void;
 }
 
 export function ExportList(props: ExportListProps) {
@@ -47,8 +48,9 @@ export function ExportList(props: ExportListProps) {
               style={modelStyle}
             >
               <ExportingModel
+                onFrameSelect={(frameIndex: string) => props.onFrameSelect(modelIndex, frameIndex)}
                 reviewModel={models.get(modelIndex)}
-                selectedPageIndex={(props.selectedModelIndex === modelIndex)? props.selectedPageIndex : undefined}
+                selectedFrameIndex={(props.selectedModelIndex === modelIndex)? props.selectedFrameIndex : undefined}
               />
             </div>
           )
