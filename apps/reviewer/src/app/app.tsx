@@ -15,7 +15,7 @@ export const App = () => {
   //     .then((r) => r.json())
   //     .then(setMessage);
   // }, []);
-  const [modelInfoIsHidden, hideModelInfo] = useState<boolean>(false);
+  const [modelInfoIsHidden, setModelInfoIsHidden] = useState<boolean>(false);
   let modelInfoStyle: CSSProperties = {
     display: "inline-block",
     verticalAlign: "top",
@@ -38,7 +38,8 @@ export const App = () => {
         </div>
         <ModelInfo
           product={singleSheet1}
-          isHidden={false}
+          isHidden={modelInfoIsHidden}
+          onToggle={() => setModelInfoIsHidden(!modelInfoIsHidden)}
           style={modelInfoStyle}
         />
       </div>

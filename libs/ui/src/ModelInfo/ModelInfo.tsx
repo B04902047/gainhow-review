@@ -3,6 +3,7 @@ import { Product } from '@gainhow-review/data';
 import React, { CSSProperties, useState } from 'react';
 import DoubleLeftIcon from '../Icon/DoubleLeftIcon.svg';
 import DoubleRightIcon from '../Icon/DoubleRightIcon.svg';
+import MenuIcon from '../Icon/MenuIcon.svg';
 
   import './ModelInfo.module.css';
   
@@ -12,6 +13,7 @@ export interface ModelInfoProps {
   product: Product;
   isHidden: boolean;
   style: CSSProperties;
+  onToggle(): void;
 }
 
 export function ModelInfo(props: ModelInfoProps) {
@@ -25,7 +27,7 @@ export function ModelInfo(props: ModelInfoProps) {
   };
   let toggleIconStyle: CSSProperties = {
     margin: 6
-  }
+  };
   let bodyStyle: CSSProperties = {
     padding: 27
   }
@@ -51,28 +53,37 @@ export function ModelInfo(props: ModelInfoProps) {
     <div style={style}>
       <div style={headerStyle}>
         <img
-          style={toggleIconStyle}
+          style={{padding: 6}}
           src={(props.isHidden)? DoubleLeftIcon: DoubleRightIcon}
+          onClick={props.onToggle}
         />
       </div>
-      <div style={bodyStyle}>
-        <div style={titleStyle}>
-          訂單資訊
+      {(props.isHidden)?
+        <img
+          style={{width: 20, padding: 8}}
+          src={MenuIcon}
+          onClick={props.onToggle}
+        />
+          :
+        <div style={bodyStyle}>
+          <div style={titleStyle}>
+            訂單資訊
+          </div>
+          <div style={productNameStyle}>
+            {props.product.productSubTypeChineseName}
+          </div>
+          {props.product.getInfo().map(info => {
+            return (
+              <li
+                key={info}
+                style={productInfoStyle}
+              >
+                {info}
+              </li>
+            );
+          })}
         </div>
-        <div style={productNameStyle}>
-          {props.product.productSubTypeChineseName}
-        </div>
-        {props.product.getInfo().map(info => {
-          return (
-            <li
-              key={info}
-              style={productInfoStyle}
-            >
-              {info}
-            </li>
-          );
-        })}
-      </div>
+      }
     </div>
   );
 };
