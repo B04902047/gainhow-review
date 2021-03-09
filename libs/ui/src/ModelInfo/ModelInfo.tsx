@@ -18,12 +18,14 @@ export interface ModelInfoProps {
 
 export function ModelInfo(props: ModelInfoProps) {
   let style: CSSProperties = {
+    border: "2px solid #E4E4E4",
+    borderBottom: "none",
     backgroundColor: "#F7F7F7",
     ...props.style
   };
   let headerStyle: CSSProperties = {
     height: 21,
-    border: "2px solid #E4E4E4"
+    borderBottom: "2px solid #E4E4E4"
   };
   let bodyStyle: CSSProperties = {
     padding: 27
