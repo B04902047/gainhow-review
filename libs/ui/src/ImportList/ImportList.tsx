@@ -30,7 +30,6 @@ export function ImportList(props: ImportListProps) {
     height: 'calc(100vh - 175px)',
     margin: '0px',
     padding: '0px 17px',
-    
   }
   
   const titleDivStyle: CSSProperties = {

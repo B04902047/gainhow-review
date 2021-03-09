@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { ExportingModel, ExportList, ImportedFile, ModelInfo } from '@gainhow-review/ui';
+import { ExportingModel, ExportList, ModelInfo } from '@gainhow-review/ui';
 import { UploadFileStatus } from '@gainhow-review/data'
 import { ExportingPage } from '@gainhow-review/ui';
 import { FramedPage } from '@gainhow-review/data';
@@ -8,34 +8,38 @@ import { uploadFileStatus2 } from "./testObjects1"
 import {ImportList} from '@gainhow-review/ui';
 
 export const App = () => {
-  const [m, setMessage] = useState<string>('');
-
+  // const [m, setMessage] = useState<string>('');
   // useEffect(() => {
   //   fetch('/api')
   //     .then((r) => r.json())
   //     .then(setMessage);
   // }, []);
+  let [importListIsHidden, setImportListIsHidden] = useState<boolean>(false);
+  let importListStyle: CSSProperties = {
+    //display: "inline-block",
+    //width: (importListIsHidden)? 40: 240,
+    //height: "calc(100vh - 175px)",
+  }
   const [modelInfoIsHidden, setModelInfoIsHidden] = useState<boolean>(false);
   let modelInfoStyle: CSSProperties = {
     display: "inline-block",
     verticalAlign: "top",
-    height: "calc(100vh - 175px)",
-    width: (modelInfoIsHidden)? 40: 300
+    width: (modelInfoIsHidden)? 40: 300,
+    height: "calc(100vh - 175px)"
   };
   let exportListStyle: CSSProperties = {
     width: `calc(100vw - 300px)`,
     height: 144,
   }
   return (
-    <>
+    <div>
       <div>
-        <div style={{display: "inline-block"}}>
-          <ImportList
-            files={[uploadFileStatus2,uploadFileStatus2,uploadFileStatus2]}
-            selectPage={()=>{}}
-            isSelected={()=>{return false}}
-          />
-        </div>
+        <ImportList
+          style={importListStyle}
+          files={[uploadFileStatus2, uploadFileStatus2, uploadFileStatus2]}
+          selectPage={()=>{}}
+          isSelected={()=>{return false}}
+        />
         <ModelInfo
           product={singleSheet1}
           isHidden={modelInfoIsHidden}
@@ -49,7 +53,7 @@ export const App = () => {
         selectedModelIndex={1}
         selectedPageIndex="背面"
       />
-    </>
+    </div>
   );
   
 };
