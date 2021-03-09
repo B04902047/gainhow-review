@@ -5,12 +5,11 @@ import ImportedFile from './imported-file/ImportedFile';
 import searchBarIcon from '../Icon/SearchBarIcon.svg';
 /* eslint-disable-next-line */
 export interface ImportListProps {
-  files: Array<UploadFileStatus>
-  selectPage(fileIndex : string, pageIndex : string) : void
-  isSelected(fileIndex : string, pageIndex : string) : boolean
+  files: Array<UploadFileStatus>;
+  selectPage(fileIndex : string, pageIndex : string) : void;
+  isSelected(fileIndex : string, pageIndex : string) : boolean;
+  style: CSSProperties;
 }
-
-export { ImportedFile };
 
 export function ImportList(props: ImportListProps) {
   const [searchBarValue, setSearchBarValue] = useState('');
@@ -23,7 +22,6 @@ export function ImportList(props: ImportListProps) {
     border: '2px solid #E4E4E4'
   }
   const toggleDivStyle: CSSProperties = {
-    
     borderBottom:'2px solid #E4E4E4',
     height: '21px'
   }
@@ -77,8 +75,6 @@ export function ImportList(props: ImportListProps) {
       />
     );
   });
- 
-  
   
   return (
     <div style={style}>
@@ -104,9 +100,7 @@ export function ImportList(props: ImportListProps) {
     </div>
    </div>
     );
-    
-  
-};
 
+};
 
 export default ImportList;
