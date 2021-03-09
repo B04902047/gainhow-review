@@ -7,12 +7,11 @@ import FoldIcon from '../Icon/DoubleLeftIcon.svg';
 import UnfoldIcon from '../Icon/DoubleRightIcon.svg';
 /* eslint-disable-next-line */
 export interface ImportListProps {
-  files: Array<UploadFileStatus>
-  selectPage(fileIndex : string, pageIndex : string) : void
-  isSelected(fileIndex : string, pageIndex : string) : boolean
+  files: Array<UploadFileStatus>;
+  selectPage(fileIndex : string, pageIndex : string) : void;
+  isSelected(fileIndex : string, pageIndex : string) : boolean;
+  style: CSSProperties;
 }
-
-export { ImportedFile };
 
 export function ImportList(props: ImportListProps) {
   const [searchBarValue, setSearchBarValue] = useState<string>('');
@@ -84,8 +83,6 @@ export function ImportList(props: ImportListProps) {
       />
     );
   });
- 
-  
   
   return (
     <div style={style}>
@@ -111,9 +108,7 @@ export function ImportList(props: ImportListProps) {
     </div>
    </div>
     );
-    
-  
-};
 
+};
 
 export default ImportList;

@@ -5,33 +5,24 @@ import './ImportedPage.module.css';
 
 /* eslint-disable-next-line */
 export interface ImportedPageProps {
-  pageAddress : string;
-  isSelected : boolean;
-  onClick():void;
+  pageAddress: string;
+  isSelected: boolean;
+  onClick(): void;
 }
-
-
 
 export function ImportedPage(props: ImportedPageProps) {
-let style : CSSProperties = {
-  border: (props.isSelected)? "3px solid #1581FF" : "1px solid #707070",
-  width: '158px',
-  height: '96px',
-
-
-}
+  let style: CSSProperties = {
+    border: (props.isSelected)? "3px solid #1581FF" : "1px solid #707070",
+    width: '158px',
+    height: '96px'
+  }
   return (
     <img 
       style={style} 
       src={props.pageAddress} 
       onClick={props.onClick}
     />
-      
-      
-      
-    
   );
 };
-
 
 export default ImportedPage;
