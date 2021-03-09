@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { ExportingModel, ExportList, ImportedFile, ModelInfo } from '@gainhow-review/ui';
 import { UploadFileStatus } from '@gainhow-review/data'
 import { ExportingPage } from '@gainhow-review/ui';
@@ -15,7 +15,17 @@ export const App = () => {
   //     .then((r) => r.json())
   //     .then(setMessage);
   // }, []);
-
+  const [modelInfoIsHidden, hideModelInfo] = useState<boolean>(false);
+  let modelInfoStyle: CSSProperties = {
+    display: "inline-block",
+    verticalAlign: "top",
+    height: "calc(100vh - 175px)",
+    width: (modelInfoIsHidden)? 40: 300
+  };
+  let exportListStyle: CSSProperties = {
+    width: `calc(100vw - 300px)`,
+    height: 144,
+  }
   return (
     <>
       <div>
@@ -26,14 +36,14 @@ export const App = () => {
             isSelected={()=>{return false}}
           />
         </div>
-        <div style={{display: "inline-block", verticalAlign: "top"}}>
-          <ModelInfo
-            product={singleSheet1}
-            isHidden={false}
-          />
-        </div>
+        <ModelInfo
+          product={singleSheet1}
+          isHidden={false}
+          style={modelInfoStyle}
+        />
       </div>
       <ExportList
+        style={exportListStyle}
         reviewItem={reviewItem}
         selectedModelIndex={1}
         selectedPageIndex="背面"
