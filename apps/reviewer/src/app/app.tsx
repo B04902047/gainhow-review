@@ -15,21 +15,27 @@ export const App = () => {
   //     .then(setMessage);
   // }, []);
   let [importListIsHidden, setImportListIsHidden] = useState<boolean>(false);
+  let middleAreaHeight: string = "calc(100vh - 182px)";
   let importListStyle: CSSProperties = {
     display: "inline-block",
     width: (importListIsHidden)? 40: 240,
-    height: "calc(100vh - 175px)",
+    height: middleAreaHeight,
   }
   const [modelInfoIsHidden, setModelInfoIsHidden] = useState<boolean>(false);
   let modelInfoStyle: CSSProperties = {
     display: "inline-block",
     verticalAlign: "top",
     width: (modelInfoIsHidden)? 40: 300,
-    height: "calc(100vh - 175px)"
+    height: middleAreaHeight
   };
+  let workSpaceStyle: CSSProperties = {
+    display: "inline-block",
+    height: middleAreaHeight,
+    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 4px)`
+  }
   let exportListStyle: CSSProperties = {
-    width: `calc(100vw - 300px)`,
-    height: 144,
+    width: `calc(100vw - 300px - 2px)`,
+    height: 160,
   }
   return (
     <div>
@@ -42,7 +48,8 @@ export const App = () => {
           isHidden={importListIsHidden}
           onToggle={() => setImportListIsHidden(!importListIsHidden)}
         />
-        
+        <div style={workSpaceStyle}>
+        </div>
         <ModelInfo
           product={singleSheet1}
           isHidden={modelInfoIsHidden}
