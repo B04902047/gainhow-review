@@ -44,7 +44,10 @@ export function ImportList(props: ImportListProps) {
   
   const titleStyle: CSSProperties = {
     padding: '21px 0px 10px 0px',
-    borderBottom:'2px solid #E4E4E4'
+    borderBottom:'2px solid #E4E4E4',
+    fontWeight: 'bold',
+    fontSize: '18px',
+    fontFamily: 'Arial'
   }
   const searchBarStyle: CSSProperties = {
     margin: '20px 0px 0px 0px',
