@@ -51,7 +51,9 @@ export function ImportedFile(props: ImportedFileProps) {
     wordBreak: 'break-all',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
-    textOverflow: 'ellipsis'
+    textOverflow: 'ellipsis',
+    fontSize: '16px',
+    fontFamily: 'Arial'
   };
 
   let pagesStyle: CSSProperties = {
