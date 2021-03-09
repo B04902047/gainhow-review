@@ -21,7 +21,8 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
   let frameHeightInPx = 96;
   let frameWidthInPx: number = frameWidthInMm * ratio;
   let style: CSSProperties = {
-    padding: (props.isSelected)? 7: 9,
+    paddingLeft: (props.isSelected)? 7: 9,
+    paddingRight: (props.isSelected)? 7: 9,
     paddingTop: (props.isSelected)? 5: 9,
     paddingBottom: 0,
     display: "inline-block",

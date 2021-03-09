@@ -42,7 +42,9 @@ export default class FramedPage implements FramedPageInterface {
         }
         
         let fileStatus: UploadFileStatus | undefined = this.reviewModel.reviewItem.status.uploadFileStatuses.get(this.sourceFileId);
-        if (!fileStatus || !fileStatus.pages) return undefined;
+        if (!fileStatus || !fileStatus.pages) {
+            return undefined;
+        }
         return fileStatus.pages[this.sourcePageNumber];
     }
 

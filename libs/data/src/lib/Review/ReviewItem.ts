@@ -94,22 +94,21 @@ export default class ReviewItem implements ReviewItem {
             this.status,
             this.product
         );
-        newReviewItem.models
+        let newReviewModels
             = new Map<number, ReviewModel>(this.models)
                 .set(modelIndex, model);
+        newReviewModels.forEach((model) => {
+            model.reviewItem = newReviewItem;
+        })
+        newReviewItem.models = newReviewModels;
         return newReviewItem;
     }
 
     public setFramedPage(modelIndex: number, frameIndex: string, framedPage: FramedPage): ReviewItem {
-        let newReviewItem = new ReviewItem(
-            this.status,
-            this.product
-        );
-        let newModels = new Map<number, ReviewModel>(this.models);
-        let newModel: ReviewModel | undefined = newModels.get(modelIndex)?.setFramedPage(frameIndex, framedPage);
-        if (!newModel) throw new Error("modelIndex out of index")
-        newModels.set(modelIndex, newModel);
-        newReviewItem.models = newModels;
-        return newReviewItem;
+        let oldModel: ReviewModel | undefined
+            = this.models.get(modelIndex);
+        if (!oldModel) throw new Error("modelIndex out of index");
+        let newModel: ReviewModel = oldModel.setFramedPage(frameIndex, framedPage);
+        return this.setReviewModel(modelIndex, newModel);
     }
 }

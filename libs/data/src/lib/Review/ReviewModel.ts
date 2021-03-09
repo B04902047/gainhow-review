@@ -34,9 +34,13 @@ export default class ReviewModel implements ReviewModelInterface {
             this.modelIndexInReviewItem,
             this.reviewItem
         );
-        newReviewModel.framedPages
+        let newFramedPages
             = new Map(this.framedPages)
                 .set(index, framedPage);
+        newFramedPages.forEach((framedPage) => {
+            framedPage.reviewModel = newReviewModel;
+        })
+        newReviewModel.framedPages = newFramedPages;
         return newReviewModel;
     }
 

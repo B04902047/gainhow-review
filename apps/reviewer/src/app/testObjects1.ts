@@ -30,7 +30,7 @@ const singleSheet1 = new SingleSheet(
 
 const reviewId1: string = "test-review-id";
 const fileName1: string = "test-file-name";
-const fileId1: string = "test-file-id";
+const fileId1: string = "test-file-id1";
 
 
 const pageInfo3 = new UploadFilePageInfo(
@@ -51,7 +51,7 @@ const uploadFileStatus1 = new UploadFileStatus(
     fileName1,
     fileId1,
     "GENERATING_PRINTABLE_PAGES",
-    6,
+    2,
     "",
     [pageInfo3, pageInfo4]
 )
@@ -72,7 +72,7 @@ const pageInfo2 = new UploadFilePageInfo(
 
 const uploadFileStatus2 = new UploadFileStatus(
     'testImage13424324324234324324324324',
-    '1',
+    'file2',
    'GENERATING_PRINTABLE_PAGES',
     2,
     '',
@@ -89,7 +89,7 @@ const reviewStatus1 = new ReviewStatus(
     3,
     ["test-review-id-01", "test-review-id-02", "test-review-id-03"],
     1,
-    new Map().set(fileId1, uploadFileStatus1),
+    uploadFileStatuses1,
     "WAITING_PRINTABLE_REVIEW"
 );
 
@@ -97,6 +97,7 @@ const reviewItem = new ReviewItem(
     reviewStatus1,
     singleSheet1
 );
+
 let frameIndices: string[] = reviewItem.frameDictionary.frameIndices;
 const reviewModel1: ReviewModel = reviewItem.models.get(1);
 const page1_1: FramedPage = reviewModel1.framedPages.get(frameIndices[0]);

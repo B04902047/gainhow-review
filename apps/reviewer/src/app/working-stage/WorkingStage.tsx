@@ -30,7 +30,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
     verticalAlign: "top",
     width: (importListIsHidden)? 40: 240,
     height: middleAreaHeight,
-  }
+  };
   const [modelInfoIsHidden, setModelInfoIsHidden] = useState<boolean>(false);
   let modelInfoStyle: CSSProperties = {
     display: "inline-block",
@@ -46,7 +46,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
     border: "solid 2px #E4E4E4",
     borderBottom: "none",
     width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 12px)`
-  }
+  };
   let exportListStyle: CSSProperties = {
     display: 'inline-block',
     verticalAlign: 'top',
@@ -75,7 +75,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
       <div>
         <ImportList
           style={importListStyle}
-          files={uploadFileStatuses1}
+          files={bufferedReviewItem.status.uploadFileStatuses}
           selectPage={(fileId: string, pageIndex: number) => {
             let newFramedPage: FramedPage = new FramedPage(
               selectedFramedPage.frameIndex,
