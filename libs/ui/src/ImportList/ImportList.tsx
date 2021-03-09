@@ -5,7 +5,7 @@ import ImportedFile from './imported-file/ImportedFile';
 import searchBarIcon from '../Icon/SearchBarIcon.svg';
 import DoubleLeftIcon from '../Icon/DoubleLeftIcon.svg';
 import DoubleRightIcon from '../Icon/DoubleRightIcon.svg';
-
+import FolderIcon from '../Icon/FolderIcon.svg';
 /* eslint-disable-next-line */
 
 export interface ImportListProps {
@@ -30,11 +30,12 @@ export function ImportList(props: ImportListProps) {
 
   const headerStyle: CSSProperties = {
     borderBottom:'2px solid #E4E4E4',
-    height: '23px',
-    display: 'flex',
+    height: '23px'
   };
   const toggleIconStyle: CSSProperties = {
     padding: '6px',
+    float: 'right',
+    marginRight: '8px'
   }
   const bodyStyle: CSSProperties = {
     margin: '0px',
@@ -69,7 +70,11 @@ export function ImportList(props: ImportListProps) {
     height: `calc(${props.style.height} - 160px)`,
     overflow: 'auto'
   }
-
+  const folderIconStyle: CSSProperties = {
+    width: '20px',
+    padding: '8px',
+    marginTop: '8px'
+  }
   let fileIds: string[] = Array.from(props.files.keys());
   let importedFiles: React.ReactElement[] = fileIds.filter((fileId: string) => {
     let fileStatus: UploadFileStatus = props.files.get(fileId);
@@ -97,7 +102,9 @@ export function ImportList(props: ImportListProps) {
         />
       </div>
       {(props.isHidden)?
-        <img src=""/>
+        <img 
+          style={folderIconStyle}
+          src={FolderIcon}/>
           :
         <div style={bodyStyle}>
           <div style={titleStyle}> 輸入檔案 </div>
