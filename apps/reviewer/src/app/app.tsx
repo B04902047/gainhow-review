@@ -18,6 +18,7 @@ export const App = () => {
   let middleAreaHeight: string = "calc(100vh - 182px)";
   let importListStyle: CSSProperties = {
     display: "inline-block",
+    verticalAlign: "top",
     width: (importListIsHidden)? 40: 240,
     height: middleAreaHeight,
   }
@@ -31,7 +32,10 @@ export const App = () => {
   let workSpaceStyle: CSSProperties = {
     display: "inline-block",
     height: middleAreaHeight,
-    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 4px)`
+    backgroundColor: "#E4E4E4",
+    border: "solid 2px #E4E4E4",
+    borderBottom: "none",
+    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 8px)`
   }
   let exportListStyle: CSSProperties = {
     width: `calc(100vw - 300px - 2px)`,
@@ -63,6 +67,8 @@ export const App = () => {
         selectedModelIndex={1}
         selectedPageIndex="背面"
       />
+      <div>
+      </div>
     </div>
   );
   
