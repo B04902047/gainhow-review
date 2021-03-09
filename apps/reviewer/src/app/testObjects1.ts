@@ -2,8 +2,8 @@
 
 import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo } from '@gainhow-review/data';
 
-import testimage1 from '../assets/testImages/1.jpg'
-import testimage2 from '../assets/testImages/2.jpg'
+import testImage1 from '../assets/testImages/1.jpg'
+import testImage2 from '../assets/testImages/2.jpg'
 
 const paperMaterial1 = new PaperMaterial("一級卡");
 const paperMaterial2 = new PaperMaterial("象牙卡");
@@ -32,20 +32,20 @@ const reviewId1: string = "test-review-id";
 const fileName1: string = "test-file-name";
 const fileId1: string = "test-file-id";
 
-const pageInfo1 = new UploadFilePageInfo(
-    "",
-    testimage1,
-    92,
-    56
-);
 
-const pageInfo2 = new UploadFilePageInfo(
+const pageInfo3 = new UploadFilePageInfo(
     "",
-    testimage2,
-    92,
-    56
+    "https://cdn.vox-cdn.com/thumbor/iAy4n7zv75DQ2t3EFEJUcqkg7c0=/0x0:1024x512/1820x1213/filters:focal(289x75:451x237):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/67654822/halloween2020.0.jpg",
+    100,
+    60
 )
 
+const pageInfo4 = new UploadFilePageInfo(
+    "",
+    "https://cdn.vox-cdn.com/thumbor/iAy4n7zv75DQ2t3EFEJUcqkg7c0=/0x0:1024x512/1820x1213/filters:focal(289x75:451x237):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/67654822/halloween2020.0.jpg",
+    100,
+    60
+)
 
 const uploadFileStatus1 = new UploadFileStatus(
     fileName1,
@@ -53,9 +53,22 @@ const uploadFileStatus1 = new UploadFileStatus(
     "GENERATING_PRINTABLE_PAGES",
     6,
     "",
-    [pageInfo1, pageInfo2]
+    [pageInfo3, pageInfo4]
 )
 
+const pageInfo1 = new UploadFilePageInfo(
+    "",
+    testImage1,
+    92,
+    56
+);
+
+const pageInfo2 = new UploadFilePageInfo(
+    "",
+    testImage2,
+    92,
+    56
+)
 
 const uploadFileStatus2 = new UploadFileStatus(
     'testImage13424324324234324324324324',
@@ -65,6 +78,11 @@ const uploadFileStatus2 = new UploadFileStatus(
     '',
     [pageInfo1, pageInfo2]
   );
+
+const uploadFileStatuses1 = new Map<string, UploadFileStatus>()
+    .set(uploadFileStatus1.fileId, uploadFileStatus1)
+    .set(uploadFileStatus2.fileId, uploadFileStatus2)
+    .set("wfeads", uploadFileStatus2);
 
 const reviewStatus1 = new ReviewStatus(
     reviewId1,
@@ -111,5 +129,6 @@ export {
     reviewItem,
     reviewModel1,
     page1_1,
-    uploadFileStatus2
+    uploadFileStatus2,
+    uploadFileStatuses1
 }

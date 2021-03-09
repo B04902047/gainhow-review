@@ -25,9 +25,6 @@ export function ModelInfo(props: ModelInfoProps) {
     height: 21,
     border: "2px solid #E4E4E4"
   };
-  let toggleIconStyle: CSSProperties = {
-    margin: 6
-  };
   let bodyStyle: CSSProperties = {
     padding: 27
   }

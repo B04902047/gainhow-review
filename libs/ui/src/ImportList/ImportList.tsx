@@ -3,52 +3,49 @@ import './ImportList.module.css';
 import {UploadFileStatus} from '@gainhow-review/data'
 import ImportedFile from './imported-file/ImportedFile';
 import searchBarIcon from '../Icon/SearchBarIcon.svg';
-import FoldIcon from '../Icon/DoubleLeftIcon.svg';
-import UnfoldIcon from '../Icon/DoubleRightIcon.svg';
+import DoubleLeftIcon from '../Icon/DoubleLeftIcon.svg';
+import DoubleRightIcon from '../Icon/DoubleRightIcon.svg';
+
 /* eslint-disable-next-line */
+
 export interface ImportListProps {
-  files: Array<UploadFileStatus>;
-  selectPage(fileIndex : string, pageIndex : string) : void;
-  isSelected(fileIndex : string, pageIndex : string) : boolean;
+  files: Map<string, UploadFileStatus>;
+  selectPage(fileIndex : string, pageIndex : number) : void;
+  isSelected(fileIndex : string, pageIndex : number) : boolean;
   style: CSSProperties;
+  isHidden: boolean;
+  onToggle(): void;
 }
 
 export function ImportList(props: ImportListProps) {
   const [searchBarValue, setSearchBarValue] = useState<string>('');
-  const [isOpened, setisOpen] = useState<boolean>(true);
-  function searchBarInputChangeHandler(event: React.ChangeEvent<HTMLInputElement>): void {
-    setSearchBarValue(event.target.value);
-  }
-  let foldIcon = (isOpened)? FoldIcon: UnfoldIcon ;
+  
+  let toggleIcon = (props.isHidden)? DoubleRightIcon: DoubleLeftIcon;
   const style: CSSProperties = {
     background: '#F7F7F7 0% 0% no-repeat padding-box',
-    border: '2px solid #E4E4E4'
-  }
-  const toggleDivStyle: CSSProperties = {
+    border: '2px solid #E4E4E4',
+    borderBottom: 'none',
+    ...props.style
+  };
+
+  const headerStyle: CSSProperties = {
     borderBottom:'2px solid #E4E4E4',
     height: '23px',
     display: 'flex',
-  }
+  };
   const toggleIconStyle: CSSProperties = {
     padding: '6px',
   }
-  const importListStyle: CSSProperties = {
-    width: '240px',
-    height: 'calc(100vh - 175px)',
+  const bodyStyle: CSSProperties = {
     margin: '0px',
-    padding: '0px 17px',
-<<<<<<< HEAD
-=======
-    
-    
->>>>>>> de709d839cc53fb764dcd4ee43b2f9b8161114d1
+    padding: '0px 17px'
   }
   
-  const titleDivStyle: CSSProperties = {
+  const titleStyle: CSSProperties = {
     padding: '21px 0px 10px 0px',
     borderBottom:'2px solid #E4E4E4'
   }
-  const searchBarDivStyle: CSSProperties = {
+  const searchBarStyle: CSSProperties = {
     margin: '20px 0px 0px 0px',
     width: '200px',
     height: '30px',
@@ -68,50 +65,57 @@ export function ImportList(props: ImportListProps) {
     width: '162px'
   }
   const fileListStyle: CSSProperties = {
-    margin:'17px 0px 0px 0px',
-    height: 'calc(100vh - 175px - 55px)',
+    margin: '17px 0px 0px 0px',
+    height: `calc(${props.style.height} - 160px)`,
     overflow: 'auto'
   }
 
-  let files: React.ReactElement[] = props.files.filter((file) => {
-    if (searchBarValue === '' || file.fileName.includes(searchBarValue)) return true;
+  let fileIds: string[] = Array.from(props.files.keys());
+  let importedFiles: React.ReactElement[] = fileIds.filter((fileId: string) => {
+    let fileStatus: UploadFileStatus = props.files.get(fileId);
+    if (searchBarValue === '' || fileStatus.fileName.includes(searchBarValue)) return true;
     else return false;
-  }).map((file, fileIndex) => {
+  }).map((fileId: string) => {
+    let fileStatus: UploadFileStatus = props.files.get(fileId);
     return (
       <ImportedFile
-        key={fileIndex}
-        fileStatus={file}
-        selectPage={(pageIndex : string) => { props.selectPage(fileIndex.toString(),pageIndex); }}
-        isSelected={(pageIndex : string) => { return props.isSelected(fileIndex.toString(),pageIndex); }}
+        key={fileId}
+        fileStatus={fileStatus}
+        onPageSelect={(pageIndex : number) => { props.selectPage(fileId, pageIndex); }}
+        isSelected={(pageIndex : number) => { return props.isSelected(fileId, pageIndex); }}
       />
     );
   });
   
   return (
     <div style={style}>
-      <div style={toggleDivStyle}>
-      <img src={foldIcon} style={toggleIconStyle}/>
+      <div style={headerStyle}>
+        <img
+          style={toggleIconStyle}
+          onClick={() => props.onToggle()}
+          src={toggleIcon}
+        />
       </div>
-      <div style={importListStyle}>
-        
-        <div style={titleDivStyle}>
-          <span>輸入檔案</span>
+      {(props.isHidden)?
+        <img src=""/>
+          :
+        <div style={bodyStyle}>
+          <div style={titleStyle}> 輸入檔案 </div>
+          <div style={searchBarStyle}>
+            <input 
+              style={searchBarInputStyle} 
+              value={searchBarValue} 
+              onChange={(event) => setSearchBarValue(event.target.value)}
+            />
+            <img src={searchBarIcon}/>
+          </div>
+          <div style={fileListStyle}> 
+            {importedFiles}
+          </div>
         </div>
-        <div style={searchBarDivStyle}>
-          <input 
-            style={searchBarInputStyle} 
-            value={searchBarValue} 
-            onChange={(event) => { searchBarInputChangeHandler(event); }}
-          />
-          <img src={searchBarIcon}/>
-        </div>
-        <div style={fileListStyle}> 
-          {files}
-        </div>
+      }
     </div>
-   </div>
-    );
-
+  );
 };
 
 export default ImportList;

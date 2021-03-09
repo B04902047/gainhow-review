@@ -3,7 +3,7 @@ import { ExportingModel, ExportList, ModelInfo } from '@gainhow-review/ui';
 import { UploadFileStatus } from '@gainhow-review/data'
 import { ExportingPage } from '@gainhow-review/ui';
 import { FramedPage } from '@gainhow-review/data';
-import { page1_1, reviewItem, reviewModel1, singleSheet1 } from './testObjects1';
+import { page1_1, reviewItem, reviewModel1, singleSheet1, uploadFileStatuses1 } from './testObjects1';
 import { uploadFileStatus2 } from "./testObjects1"
 import {ImportList} from '@gainhow-review/ui';
 
@@ -16,9 +16,9 @@ export const App = () => {
   // }, []);
   let [importListIsHidden, setImportListIsHidden] = useState<boolean>(false);
   let importListStyle: CSSProperties = {
-    //display: "inline-block",
-    //width: (importListIsHidden)? 40: 240,
-    //height: "calc(100vh - 175px)",
+    display: "inline-block",
+    width: (importListIsHidden)? 40: 240,
+    height: "calc(100vh - 175px)",
   }
   const [modelInfoIsHidden, setModelInfoIsHidden] = useState<boolean>(false);
   let modelInfoStyle: CSSProperties = {
@@ -36,10 +36,13 @@ export const App = () => {
       <div>
         <ImportList
           style={importListStyle}
-          files={[uploadFileStatus2, uploadFileStatus2, uploadFileStatus2]}
+          files={uploadFileStatuses1}
           selectPage={()=>{}}
           isSelected={()=>{return false}}
+          isHidden={importListIsHidden}
+          onToggle={() => setImportListIsHidden(!importListIsHidden)}
         />
+        
         <ModelInfo
           product={singleSheet1}
           isHidden={modelInfoIsHidden}

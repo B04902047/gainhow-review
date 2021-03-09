@@ -5,22 +5,22 @@ import {UploadFilePageInfo} from '@gainhow-review/data'
 
 /* eslint-disable-next-line */
 export interface ImportedPageProps {
-  page: UploadFilePageInfo;
+  info: UploadFilePageInfo;
   isSelected: boolean;
   onClick(): void;
-
 }
 
 export function ImportedPage(props: ImportedPageProps) {
+  const widthInPx: number = 158;
   let style: CSSProperties = {
     border: (props.isSelected)? "3px solid #1581FF" : "1px solid #707070",
-    width: '158px',
-    height: 158 * props.page.heightInMm / props.page.widthInMm
+    width: widthInPx,
+    height: widthInPx * props.info.heightInMm / props.info.widthInMm
   }
   return (
     <img 
       style={style} 
-      src={props.page.jpegAddress} 
+      src={props.info.jpegAddress} 
       onClick={props.onClick}
     />
   );
