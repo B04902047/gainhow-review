@@ -1,32 +1,31 @@
 
 import { Product } from '@gainhow-review/data';
-import React, { CSSProperties } from 'react';
-
-
-
-
+import React, { CSSProperties, useState } from 'react';
+import DoubleLeftIcon from '../Icon/DoubleLeftIcon.svg';
+import DoubleRightIcon from '../Icon/DoubleRightIcon.svg';
 
   import './ModelInfo.module.css';
   
 
 /* eslint-disable-next-line */
 export interface ModelInfoProps {
-  product: Product
+  product: Product;
   isHidden: boolean;
+  style: CSSProperties;
 }
-
-
 
 export function ModelInfo(props: ModelInfoProps) {
   let style: CSSProperties = {
-    height: "calc(100vh - 175px)",
-    width: (props.isHidden)? 40: 300,
-    backgroundColor: "#F7F7F7"
+    backgroundColor: "#F7F7F7",
+    ...props.style
   };
   let headerStyle: CSSProperties = {
     height: 21,
     border: "2px solid #E4E4E4"
   };
+  let toggleIconStyle: CSSProperties = {
+    margin: 6
+  }
   let bodyStyle: CSSProperties = {
     padding: 27
   }
@@ -50,7 +49,12 @@ export function ModelInfo(props: ModelInfoProps) {
   }
   return (
     <div style={style}>
-      <div style={headerStyle}/>
+      <div style={headerStyle}>
+        <img
+          style={toggleIconStyle}
+          src={(props.isHidden)? DoubleLeftIcon: DoubleRightIcon}
+        />
+      </div>
       <div style={bodyStyle}>
         <div style={titleStyle}>
           訂單資訊
@@ -60,7 +64,10 @@ export function ModelInfo(props: ModelInfoProps) {
         </div>
         {props.product.getInfo().map(info => {
           return (
-            <li style={productInfoStyle}>
+            <li
+              key={info}
+              style={productInfoStyle}
+            >
               {info}
             </li>
           );
@@ -69,6 +76,5 @@ export function ModelInfo(props: ModelInfoProps) {
     </div>
   );
 };
-
 
 export default ModelInfo;

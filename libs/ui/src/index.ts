@@ -1,5 +1,5 @@
 
-export * from './ModelInfo/model-info/ModelInfo';
+export * from './ModelInfo/ModelInfo';
 export * from './ImportList/ImportList';
 
 export * from './ExportList/ExportList';

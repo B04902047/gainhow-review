@@ -14,7 +14,8 @@ import ExportingModel from './exporting-model/ExportingModel';
 export interface ExportListProps {
   selectedModelIndex: number;
   selectedPageIndex: string;
-  reviewItem: ReviewItem
+  reviewItem: ReviewItem;
+  style: CSSProperties;
 }
 
 export function ExportList(props: ExportListProps) {
@@ -23,10 +24,9 @@ export function ExportList(props: ExportListProps) {
     paddingTop: 5,
     paddingLeft: 37,
     paddingBottom: 26,
-    width: `calc(100vw - 300px)`,
-    height: 144,
     overflow: "auto",
-    whiteSpace: "nowrap"
+    whiteSpace: "nowrap",
+    ...props.style
   };
   let modelIndices: number[] = Array.from(props.reviewItem.models.keys());
   let models: Map<number, ReviewModel> = props.reviewItem.models;

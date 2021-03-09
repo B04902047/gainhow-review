@@ -54,11 +54,11 @@ export function ImportList(props: ImportListProps) {
     if (searchBarValue === '' || file.fileName.includes(searchBarValue)) {
       return (
         <ImportedFile
-        key={fileIndex}
-        fileStatus={file}
-        selectPage={(pageIndex : string) => { props.selectPage(fileIndex.toString(),pageIndex); }}
-        isSelected={(pageIndex : string) => { return props.isSelected(fileIndex.toString(),pageIndex); }}
-      />
+          key={fileIndex}
+          fileStatus={file}
+          selectPage={(pageIndex : string) => { props.selectPage(fileIndex.toString(),pageIndex); }}
+          isSelected={(pageIndex : string) => { return props.isSelected(fileIndex.toString(),pageIndex); }}
+        />
       );
     }
     else {
