@@ -27,7 +27,8 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
     paddingBottom: 0,
     display: "inline-block",
     backgroundColor: "white"
-  }
+  };
+  
   let cropStyle: CSSProperties = {
     overflow: "hidden",
     height: frameHeightInPx,
