@@ -6,7 +6,6 @@ import { ImportedPage } from '../imported-page/ImportedPage'
 import { UploadFileStatus } from '@gainhow-review/data'
 import openIcon from '../../Icon/CaretDownIcon.svg'
 import closeIcon from '../../Icon/CaretRightIcon.svg'
-
 import './ImportedFile.module.css';
   
 /* eslint-disable-next-line */
@@ -70,7 +69,7 @@ export function ImportedFile(props: ImportedFileProps) {
           style={toggleIconStyle}
           src={toggleIcon}
         />
-        <span>{props.fileStatus.fileName}</span>
+        <span> {props.fileStatus.fileName}</span>
       </div>
       {!isFolded && (
         <div style={pagesStyle}>
