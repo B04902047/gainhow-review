@@ -26,11 +26,11 @@ export function ImportList(props: ImportListProps) {
   }
   const toggleDivStyle: CSSProperties = {
     borderBottom:'2px solid #E4E4E4',
-    height: '21px',
+    height: '23px',
     display: 'flex',
   }
   const toggleIconStyle: CSSProperties = {
-    height: '16px',
+    padding: '6px',
   }
   const importListStyle: CSSProperties = {
     width: '240px',
