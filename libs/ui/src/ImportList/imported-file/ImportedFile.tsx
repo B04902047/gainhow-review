@@ -37,7 +37,7 @@ export function ImportedFile(props: ImportedFileProps) {
       <div style={style}>
       <ImportedPage
         key={index}
-        pageAddress={page.jpegAddress}
+        page={page}
         isSelected={props.isSelected(index.toString())}
         onClick={() => { props.selectPage(index.toString()) }}
       />
