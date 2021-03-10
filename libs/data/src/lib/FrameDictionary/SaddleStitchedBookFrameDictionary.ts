@@ -3,14 +3,17 @@ import BleededRectangleFrame from "../Frame/BleededRectangleFrame";
 import BookFrameDictionary from "./BookFrameDictionary";
 import RectangleFrame from "../Frame/RectangleFrame";
 import SaddleStitchedBookCoverFrame from "../Frame/SaddleStitchedBookCoverFrame";
+import { Frame } from "../Frame";
 
 export default class SaddleStitchedBookFrameDictionary extends BookFrameDictionary {
+    protected frames: Map<string, Frame>;
     private static readonly INNER_PAGE_CUT_ERROR = 3;
     private static readonly COVER_CUT_ERROR = 3;
     constructor(
         readonly product: SaddleStichedBook
     ) {
-        super(product);       
+        super(product);
+        this.frames = this.createFrames();     
     }
     protected createBookCoverFrame(): SaddleStitchedBookCoverFrame {
         return new SaddleStitchedBookCoverFrame(

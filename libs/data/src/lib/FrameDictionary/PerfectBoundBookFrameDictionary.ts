@@ -5,15 +5,18 @@ import BookFrameDictionary from "./BookFrameDictionary";
 import Line from "../Frame/Line";
 import PerfectBoundBookSoftCoverFrame from "../Frame/PerfectBoundBookSoftCoverFrame";
 import PerfectBoundBookHardCoverFrame from "../Frame/PerfectBoundHardCoverFrame";
+import { Frame } from "../Frame";
 
 export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary {
+    protected frames: Map<string, Frame>;
     private static readonly INNER_PAGE_CUT_ERROR = 3;
     private static readonly COVER_CUT_ERROR = 3;
     private static readonly BOUND_SIDE_SAFE_DISTANCE: number = 5;
     constructor(
         readonly product: PerfectBoundBook
     ) {
-        super(product);       
+        super(product);
+        this.frames = this.createFrames();    
     }
     protected createInnerPageFrames(): Map<string, BleededRectangleFrame> {
         let innerPageFrames = new Map<string, BleededRectangleFrame>();
@@ -50,33 +53,18 @@ export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary
     }
     protected createLeftInnerPageFramePrototype(): BleededRectangleFrame {
         class PerfectBoundLeftInnerPageFrame extends BleededRectangleFrame {
-            protected createSafeAreaLines(): Line[] {
-                let left: number = this.cutError * 2;
-                let right: number = this.maxWidth - this.cutError - PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE;
-                let top: number = this.cutError * 2;
-                let bottom: number = this.maxHeight - this.cutError * 2;
-                let leftSafeAreaLine: Line = new Line(
-                    left, top,
-                    left, bottom
-                );
-                let rightSafeAreaLine: Line = new Line(
-                    right, top,
-                    right, bottom
-                );
-                let topSafeAreaLine: Line = new Line(
-                    left, top,
-                    right, top
-                );
-                let bottomSafeAreaLine: Line = new Line(
-                    left, bottom,
-                    right, bottom
-                );
-                return [
-                    leftSafeAreaLine,
-                    rightSafeAreaLine,
-                    topSafeAreaLine,
-                    bottomSafeAreaLine
-                ];
+            protected createSafeArea(): string {
+                let cutErrorPercentageInMaxWidth: number
+                    = this.cutError / this.maxWidth * 100;
+                let cutErrorPercentageInMaxHeight: number
+                    = this.cutError / this.maxHeight * 100;
+                let boundSideSafeDistancePercentageInMaxWidth: number
+                    = PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE / this.maxWidth * 100;
+                let left: number = cutErrorPercentageInMaxWidth * 2;
+                let right: number = 100 - cutErrorPercentageInMaxWidth - boundSideSafeDistancePercentageInMaxWidth;
+                let top: number = cutErrorPercentageInMaxHeight * 2;
+                let bottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
+                return `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
             }
         }
         return new PerfectBoundLeftInnerPageFrame(
@@ -87,33 +75,18 @@ export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary
     }
     protected createRightInnerPageFramePrototype(): BleededRectangleFrame {
         class PerfectBoundRightInnerPageFrame extends BleededRectangleFrame {
-            protected createSafeAreaLines(): Line[] {
-                let left: number = this.cutError + PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE;
-                let right: number = this.maxWidth - this.cutError * 2;
-                let top: number = this.cutError * 2;
-                let bottom: number = this.maxHeight - this.cutError * 2;
-                let leftSafeAreaLine: Line = new Line(
-                    left, top,
-                    left, bottom
-                );
-                let rightSafeAreaLine: Line = new Line(
-                    right, top,
-                    right, bottom
-                );
-                let topSafeAreaLine: Line = new Line(
-                    left, top,
-                    right, top
-                );
-                let bottomSafeAreaLine: Line = new Line(
-                    left, bottom,
-                    right, bottom
-                );
-                return [
-                    leftSafeAreaLine,
-                    rightSafeAreaLine,
-                    topSafeAreaLine,
-                    bottomSafeAreaLine
-                ];
+            protected createSafeArea(): string {
+                let cutErrorPercentageInMaxWidth: number
+                    = this.cutError / this.maxWidth * 100;
+                let cutErrorPercentageInMaxHeight: number
+                    = this.cutError / this.maxHeight * 100;
+                let boundSideSafeDistancePercentageInMaxWidth: number
+                    = PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE / this.maxWidth * 100;
+                let left: number = cutErrorPercentageInMaxWidth + boundSideSafeDistancePercentageInMaxWidth;
+                let right: number = 100 - cutErrorPercentageInMaxWidth * 2;
+                let top: number = cutErrorPercentageInMaxHeight * 2;
+                let bottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
+                return `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
             }
         }
         return new PerfectBoundRightInnerPageFrame(
@@ -124,33 +97,18 @@ export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary
     }
     protected createBottomToTopPagedPageFramePrototype(): BleededRectangleFrame {
         class PerfectBoundBottomToTopPagedPageFrame extends BleededRectangleFrame {
-            protected createSafeAreaLines(): Line[] {
-                let left: number = this.cutError * 2;
-                let right: number = this.maxWidth - this.cutError * 2;
-                let top: number = this.cutError + PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE;
-                let bottom: number = this.maxHeight - this.cutError * 2;
-                let leftSafeAreaLine: Line = new Line(
-                    left, top,
-                    left, bottom
-                );
-                let rightSafeAreaLine: Line = new Line(
-                    right, top,
-                    right, bottom
-                );
-                let topSafeAreaLine: Line = new Line(
-                    left, top,
-                    right, top
-                );
-                let bottomSafeAreaLine: Line = new Line(
-                    left, bottom,
-                    right, bottom
-                );
-                return [
-                    leftSafeAreaLine,
-                    rightSafeAreaLine,
-                    topSafeAreaLine,
-                    bottomSafeAreaLine
-                ];
+            protected createSafeArea(): string {
+                let cutErrorPercentageInMaxWidth: number
+                    = this.cutError / this.maxWidth * 100;
+                let cutErrorPercentageInMaxHeight: number
+                    = this.cutError / this.maxHeight * 100;
+                let boundSideSafeDistancePercentageInMaxHeight: number
+                    = PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE / this.maxHeight * 100;
+                let left: number = cutErrorPercentageInMaxWidth * 2;
+                let right: number = 100 - cutErrorPercentageInMaxWidth * 2;
+                let top: number = cutErrorPercentageInMaxHeight + boundSideSafeDistancePercentageInMaxHeight;
+                let bottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
+                return `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
             }
         }
         return new PerfectBoundBottomToTopPagedPageFrame(

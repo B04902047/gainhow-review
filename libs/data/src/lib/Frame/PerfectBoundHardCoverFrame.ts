@@ -3,6 +3,7 @@ import BookCoverFrame from "./BookCoverFrame";
 import Line from "./Line";
 
 export default class PerfectBoundBookHardCoverFrame extends BookCoverFrame {
+    public foldLines: Line[];
     constructor(
         readonly bookWidth: number,         // 書的寬度（mm）
         readonly bookHeight: number,        // 書的高度（mm）
@@ -15,23 +16,24 @@ export default class PerfectBoundBookHardCoverFrame extends BookCoverFrame {
             bookHeight,
             cutError
         );
+        this.foldLines = this.createFoldLines();
     }
     protected createFoldLines(): Line[] {
         let leftHingeLeftFoldLine: Line = new Line(
-            this.cutError + this.bookWidth, 0,
-            this.cutError + this.bookWidth, this.bookHeight
+            (this.cutError + this.bookWidth) / this.maxWidth * 100, 0,
+            (this.cutError + this.bookWidth) / this.maxWidth * 100, this.bookHeight / this.maxHeight * 100
         );
         let leftHingeRightFoldLine: Line = new Line(
-            this.cutError + this.bookWidth + this.outerHingeWidth, 0,
-            this.cutError + this.bookWidth + this.outerHingeWidth, this.bookHeight
+            (this.cutError + this.bookWidth + this.outerHingeWidth) / this.maxWidth * 100, 0,
+            (this.cutError + this.bookWidth + this.outerHingeWidth) / this.maxWidth * 100, this.bookHeight / this.maxHeight * 100
         );
         let rightHingeLeftFoldLine: Line = new Line(
-            this.width - this.cutError - this.bookWidth - this.outerHingeWidth, 0,
-            this.width - this.cutError - this.bookWidth - this.outerHingeWidth, this.bookHeight
+            (this.width - this.cutError - this.bookWidth - this.outerHingeWidth) / this.maxWidth * 100, 0,
+            (this.width - this.cutError - this.bookWidth - this.outerHingeWidth) / this.maxWidth * 100, this.bookHeight / this.maxHeight * 100
         );
         let rightHingeRightFoldLine: Line = new Line(
-            this.width - this.cutError - this.bookWidth, 0,
-            this.width - this.cutError - this.bookWidth, this.bookHeight
+            (this.width - this.cutError - this.bookWidth) / this.maxWidth * 100, 0,
+            (this.width - this.cutError - this.bookWidth) / this.maxWidth * 100, this.bookHeight / this.maxHeight * 100
         );
         return [
             leftHingeLeftFoldLine,

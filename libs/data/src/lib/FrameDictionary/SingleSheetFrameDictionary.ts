@@ -4,10 +4,12 @@ import FrameDictionary from "./FrameDictionary";
 import RectangleFrame from "../Frame/RectangleFrame";
 
 export default class SingleSheetFrameDictionary extends FrameDictionary {
+    protected frames: Map<string, RectangleFrame>;
     constructor(
         readonly product: SingleSheet 
         ) {
         super(product);
+        this.frames = this.createFrames();
     }
     private static readonly CUT_ERROR = 2;
     protected createFrames(): Map<string, RectangleFrame> {
