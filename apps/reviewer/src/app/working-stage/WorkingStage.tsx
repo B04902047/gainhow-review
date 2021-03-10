@@ -163,8 +163,8 @@ function Button(props: ButtonProps): JSX.Element {
     borderRadius: 20,
     fontSize: 18,
     color: (props.isPrimary)? 'white': blue,
-    ...props.style
-  }
+    ...props.style,
+  };
   return (
     <button
       style={style}
