@@ -4,7 +4,7 @@ import { ImportList, ModelInfo, ExportList } from '@gainhow-review/ui';
 import { realpath } from 'fs';
 import React, { CSSProperties, useState } from 'react';
 import { reviewItem, singleSheet1, uploadFileStatuses1 } from '../testObjects1';
-
+import { Canvans } from './canvans/Canvans'
   import './WorkingStage.module.css';
   
 
@@ -99,8 +99,11 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
           isHidden={importListIsHidden}
           onToggle={() => setImportListIsHidden(!importListIsHidden)}
         />
-        <div style={workSpaceStyle}>
-        </div>
+        <Canvans 
+          style={workSpaceStyle}
+          framePage={bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex)}
+        />
+        
         <ModelInfo
           product={bufferedReviewItem.product}
           isHidden={modelInfoIsHidden}

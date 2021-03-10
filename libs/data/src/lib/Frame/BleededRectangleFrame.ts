@@ -35,6 +35,12 @@ export default class BleededRectangleFrame extends RectangleFrame {
         return [];
     }
     protected createCutLines(): Line[] {
+        console.log('--')
+
+        console.log(this)
+        console.log(this.cutError)
+
+        console.log('--')
         let leftCutLine: Line = new Line(
             this.cutError, 0,
             this.cutError, this.maxHeight
@@ -68,5 +74,6 @@ export default class BleededRectangleFrame extends RectangleFrame {
             widthWithoutBleeding + (2 * cutError),
             heightWithoutBleeding + (2 * cutError)
         );
+        
     }
 }
