@@ -9,7 +9,16 @@ export const App = () => {
   //     .then((r) => r.json())
   //     .then(setMessage);
   // }, []);
-  return <WorkingStage initialReviewItem={reviewItem}/>
+  // return <WorkingStage initialReviewItem={reviewItem}/>
+  return (
+    <div style={{
+      width: 100,
+      height: 100,
+      backgroundColor: 'red',
+      clipPath: 'polygon(2mm 1)'
+    }}>
+    </div>
+  )
 };
 
 export default App;

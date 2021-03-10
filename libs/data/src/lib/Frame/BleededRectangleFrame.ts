@@ -2,68 +2,11 @@ import Line from "./Line";
 import RectangleFrame from "./RectangleFrame";
 
 export default class BleededRectangleFrame extends RectangleFrame {
-    protected createSafeAreaLines(): Line[] {
-        let twiceCutError: number = this.cutError * 2;
-        let left: number = twiceCutError;
-        let right: number = this.maxWidth - twiceCutError;
-        let top: number = twiceCutError;
-        let bottom: number = this.maxHeight - twiceCutError;
-        let leftSafeAreaLine: Line = new Line(
-            left, top,
-            left, bottom
-        );
-        let rightSafeAreaLine: Line = new Line(
-            right, top,
-            right, bottom
-        );
-        let topSafeAreaLine: Line = new Line(
-            left, top,
-            right, top
-        );
-        let bottomSafeAreaLine: Line = new Line(
-            left, bottom,
-            right, bottom
-        );
-        return [
-            leftSafeAreaLine,
-            rightSafeAreaLine,
-            topSafeAreaLine,
-            bottomSafeAreaLine
-        ];
-    }
-    protected createFoldLines(): Line[] {
-        return [];
-    }
-    protected createCutLines(): Line[] {
-        console.log('--')
-
-        console.log(this)
-        console.log(this.cutError)
-
-        console.log('--')
-        let leftCutLine: Line = new Line(
-            this.cutError, 0,
-            this.cutError, this.maxHeight
-        );
-        let rightCutLine: Line = new Line(
-            this.maxWidth - this.cutError, 0,
-            this.maxWidth - this.cutError, this.maxHeight
-        );
-        let topCutLine: Line = new Line(
-            0, this.cutError,
-            this.maxWidth, this.cutError
-        );
-        let bottomCutLine: Line = new Line(
-            0, this.maxHeight - this.cutError,
-            this.maxWidth, this.maxHeight - this.cutError
-        );
-        return [
-            leftCutLine,
-            rightCutLine,
-            topCutLine,
-            bottomCutLine
-        ];
-    }
+    public foldLines: Line[] = [];
+    public bleedingArea: string;
+    public shape: string;
+    public safeArea?: string | undefined;
+    public cutOutAreas: string[] = [];
 
     constructor(
         public readonly widthWithoutBleeding: number,   // 裁切後的寬（mm）
@@ -74,6 +17,34 @@ export default class BleededRectangleFrame extends RectangleFrame {
             widthWithoutBleeding + (2 * cutError),
             heightWithoutBleeding + (2 * cutError)
         );
-        
+        this.safeArea = this.createSafeArea();
+        this.shape = this.createShape();
+        this.bleedingArea = this.createBleedingArea();
+    }
+
+    protected createSafeArea(): string {
+        let cutErrorPercentageInMaxWidth: number
+            = this.cutError / this.maxWidth * 100;
+        let cutErrorPercentageInMaxHeight: number
+            = this.cutError / this.maxHeight * 100;
+        let left: number = cutErrorPercentageInMaxWidth * 2;
+        let right: number = 100 - cutErrorPercentageInMaxWidth * 2;
+        let top: number = cutErrorPercentageInMaxHeight * 2;
+        let bottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
+        return `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
+    }
+    protected createShape(): string {
+        let cutErrorPercentageInMaxWidth: number
+            = this.cutError / this.maxWidth * 100;
+        let cutErrorPercentageInMaxHeight: number
+            = this.cutError / this.maxHeight * 100;
+        let left: number = cutErrorPercentageInMaxWidth;
+        let right: number = 100 - cutErrorPercentageInMaxWidth;
+        let top: number = cutErrorPercentageInMaxHeight;
+        let bottom: number = 100 - cutErrorPercentageInMaxHeight;
+        return `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
+    }
+    protected createBleedingArea(): string {
+        return `polygon(0% 0%, 0% 100%, 100% 100%, 100%, 0%)`;
     }
 }
