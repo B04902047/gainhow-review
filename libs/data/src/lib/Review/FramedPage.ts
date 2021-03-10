@@ -63,6 +63,7 @@ export default class FramedPage implements FramedPageInterface {
     public get rotationDegree(): number {
         return this._rotationDegree;
     }
+
     public set rotationDegree(degree: number) {
         this._rotationDegree = degree % 360;
     }
