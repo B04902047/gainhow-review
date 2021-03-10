@@ -33,7 +33,6 @@ export function Canvans(props: CanvansProps) {
   function calcFrameWidth(): string {
     let calcWidthByMaxWidth = `calc(${props.style.width})`;
     let calcWidthByMaxHeight = `calc(${frame.maxWidth} * ${props.style.height} / ${frame.maxHeight} )`
-console.log(props.framePage.getFrame());
     return `min(${calcWidthByMaxWidth} , ${calcWidthByMaxHeight})`
     
   }
@@ -102,62 +101,17 @@ console.log(props.framePage.getFrame());
     
   }
 
-  //==============================================
-  const konvaOrangilImageStyle: CSSProperties = {
-    width: `calc(${frameWidthtInPx} * ${viewPercentage/100})`,
-    height: `calc(${frameHeightInPx} * ${viewPercentage/100})`,
-    position: 'absolute',
-                top: 200,
-                left: 300,
-                opacity:0.3
-    
-  } // 問題： 要用absolute 而且沒有overflow效果
-    //  參閱https://konvajs.org/docs/sandbox/Editable_Text.html
-
-  let konvaStage: React.ReactElement = (
-<Stage width={window.innerWidth} height={window.innerHeight}>
-        <Layer>
-            <FrameLine
-            frame={props.framePage.getFrame()}
-            positionX={framePositionX}
-            positionY={framePositionY}
-            frameViewWidth={frameWidthtInPx}
-            frameViewHeight={frameHeightInPx}
-            
-            />
-            <Portal>
-              <img 
-              style={konvaOrangilImageStyle}
-              src={imageAddress}
-              />
-            </Portal>
-          
-          
-        </Layer>
-      </Stage>
-
-  );
-
-  //==============================================
   return (
     <div style={style}>
 
-<div style={CanvansStyle}>
-      {
-(true)? 
-<>
-    <img 
+      <div style={CanvansStyle}>
+      
+        <img 
               style={orangilImageStyle}
               src={imageAddress}
-              />
-    <div style={cutLineStyle}></div>
-</>
-: konvaStage
+        />
+        <div style={cutLineStyle}></div>
 
-      }
-              
-           
-     
       </div>
     </div>
   );
