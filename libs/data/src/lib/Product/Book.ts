@@ -26,5 +26,6 @@ export default abstract class Book extends Product implements BookInterface {
     }
     productSubTypeChineseName = "書籍";
     public getInfo(): Array<string> {
+
     }
 }

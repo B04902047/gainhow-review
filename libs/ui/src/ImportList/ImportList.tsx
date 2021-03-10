@@ -39,7 +39,7 @@ export function ImportList(props: ImportListProps) {
   }
   const bodyStyle: CSSProperties = {
     margin: '0px',
-    padding: '0px 17px'
+    padding: '0px 15px'
   }
   
   const titleStyle: CSSProperties = {
