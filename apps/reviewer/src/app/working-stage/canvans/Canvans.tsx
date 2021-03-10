@@ -21,7 +21,7 @@ export function Canvans(props: CanvansProps) {
   let imageAddress: string = sourcePageInfo.jpegAddress;
   let frame: Frame = props.framePage.getFrame();
 
-  let frameWeithtInPx: string = calcFrameWidth();
+  let frameWidthtInPx: string = calcFrameWidth();
   let frameHeightInPx: string = calcFrameheight();
   let framePositionX: string = calcFramePositionX();
   let framePositionY: string = calcFramePositionY();
@@ -44,14 +44,14 @@ console.log(props.framePage.getFrame());
     return `min(${calcHeightByMaxHeight} , ${calcHeightByMaxWidth})` 
   }
   function calcFramePositionX(): string {
-    return `calc(calc(${props.style.width} - ${frameWeithtInPx}) / 2)`;
+    return `calc(calc(${props.style.width} - ${frameWidthtInPx}) / 2)`;
   }
   function calcFramePositionY(): string {
     return `calc(calc(${props.style.height} - ${frameHeightInPx}) / 2)`;
   }
 
   function calcImageScale(): string {
-    return `calc(${frameWeithtInPx} / ${frame.maxWidth})`;
+    return `calc(${frameWidthtInPx} / ${frame.maxWidth})`;
   }
   function calcImageWidthInPx(): string {
     return `calc(${imageScale} * ${sourcePageInfo.widthInMm})`;
@@ -84,8 +84,8 @@ console.log(props.framePage.getFrame());
     
   } 
   const cutLineStyle: CSSProperties = {
-    width: `calc(${imageWidthInPx})`,
-    height: `calc(${imageHeightInPx} )`,
+    width: `calc(${frameWidthtInPx})`,
+    height: `calc(${frameHeightInPx} )`,
     top: `calc(${framePositionY} - 2px)`,
     left: `calc(${framePositionX} - 2px)`,
     position: 'absolute',
@@ -104,7 +104,7 @@ console.log(props.framePage.getFrame());
 
   //==============================================
   const konvaOrangilImageStyle: CSSProperties = {
-    width: `calc(${frameWeithtInPx} * ${viewPercentage/100})`,
+    width: `calc(${frameWidthtInPx} * ${viewPercentage/100})`,
     height: `calc(${frameHeightInPx} * ${viewPercentage/100})`,
     position: 'absolute',
                 top: 200,
@@ -121,7 +121,7 @@ console.log(props.framePage.getFrame());
             frame={props.framePage.getFrame()}
             positionX={framePositionX}
             positionY={framePositionY}
-            frameViewWidth={frameWeithtInPx}
+            frameViewWidth={frameWidthtInPx}
             frameViewHeight={frameHeightInPx}
             
             />
