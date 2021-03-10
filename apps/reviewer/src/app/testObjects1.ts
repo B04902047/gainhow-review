@@ -36,15 +36,15 @@ const fileId1: string = "test-file-id1";
 const pageInfo3 = new UploadFilePageInfo(
     "",
     "https://cdn.vox-cdn.com/thumbor/iAy4n7zv75DQ2t3EFEJUcqkg7c0=/0x0:1024x512/1820x1213/filters:focal(289x75:451x237):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/67654822/halloween2020.0.jpg",
-    100,
-    60
+    92,
+    61
 )
 
 const pageInfo4 = new UploadFilePageInfo(
     "",
     "https://cdn.vox-cdn.com/thumbor/iAy4n7zv75DQ2t3EFEJUcqkg7c0=/0x0:1024x512/1820x1213/filters:focal(289x75:451x237):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/67654822/halloween2020.0.jpg",
-    100,
-    60
+    92,
+    61
 )
 
 const uploadFileStatus1 = new UploadFileStatus(
