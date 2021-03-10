@@ -2,6 +2,8 @@ import BookCoverFrame from "./BookCoverFrame";
 import Line from "./Line";
 
 export default class SaddleStitchedBookCoverFrame extends BookCoverFrame {
+    public foldLines: Line[];
+
     constructor(
         bookWidth: number,
         bookHeight: number,
@@ -12,12 +14,13 @@ export default class SaddleStitchedBookCoverFrame extends BookCoverFrame {
             bookHeight,
             cutError
         );
+        this.foldLines = this.createFoldLines();
     }
     protected createFoldLines(): Line[] {
         let middle: number = this.maxWidth / 2;
         let middleLine: Line = new Line(
-            middle, 0,
-            middle, this.maxHeight
+            middle / this.maxWidth * 100, 0,
+            middle / this.maxWidth * 100, 100
         )
         return [middleLine];
     }
