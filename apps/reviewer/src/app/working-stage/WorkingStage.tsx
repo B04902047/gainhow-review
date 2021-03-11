@@ -6,6 +6,7 @@ import React, { CSSProperties, useState } from 'react';
 import { reviewItem, singleSheet1, uploadFileStatuses1 } from '../testObjects1';
 import { Canvans as Canvas } from './canvans/Canvans'
 import { SideToolBar } from './side-tool-bar/SideToolBar';
+import WorkSpace from './work-space/WorkSpace';
 
   import './WorkingStage.module.css';
   
@@ -40,12 +41,6 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
     width: (modelInfoIsHidden)? 40: 300,
     height: middleAreaHeight
   };
-  let leftToolBarStyle: CSSProperties = {
-    display: "inline-block",
-    width: 50,
-    height: middleAreaHeight,
-    verticalAlign: "top",
-  }
   let workSpaceStyle: CSSProperties = {
     display: "inline-block",
     height: middleAreaHeight,
@@ -53,7 +48,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
     backgroundColor: "#E4E4E4",
     border: "solid 2px #E4E4E4",
     borderBottom: "none",
-    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - ${leftToolBarStyle.width}px - 12px)`
+    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 12px)`
   };
   let exportListStyle: CSSProperties = {
     display: 'inline-block',
@@ -107,13 +102,11 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
           isHidden={importListIsHidden}
           onToggle={() => setImportListIsHidden(!importListIsHidden)}
         />
-        <SideToolBar style={leftToolBarStyle}/>
-        <Canvas
-          style={workSpaceStyle}
-          framePage={bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex)}
-        />
       
-        
+        <WorkSpace
+          style={workSpaceStyle}
+          framedPage={bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex)}
+        />
         <ModelInfo
           product={bufferedReviewItem.product}
           isHidden={modelInfoIsHidden}
