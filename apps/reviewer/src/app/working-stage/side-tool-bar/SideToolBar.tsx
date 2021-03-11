@@ -40,7 +40,6 @@ export function SideToolBar(props: SideToolBarProps): JSX.Element {
       <Icon src={SaveIcon}/>
       <hr style={hrStyle}/>
       <ZoomingToolBar zoom={props.zoom}/>
-      <Icon src={ResetSizeIcon}/>
     </div>
   );
 };
@@ -168,6 +167,15 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
           setPositions(([oldMousePosition, oldZoomPadPosition]) => {
             let newZoomPadPosition: number = oldZoomPadPosition - zoomPadMovementPerClickOnIcons;
             if (newZoomPadPosition < 0) newZoomPadPosition = 0;
+            return [oldMousePosition, newZoomPadPosition];
+          });
+        }}
+      />
+      <Icon
+        src={ResetSizeIcon}
+        onClick={() => {
+          setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+            let newZoomPadPosition: number = zoomBarLength / 2;
             return [oldMousePosition, newZoomPadPosition];
           });
         }}
