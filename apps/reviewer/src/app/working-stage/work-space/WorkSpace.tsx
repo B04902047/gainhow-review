@@ -15,8 +15,9 @@ export interface WorkSpaceProps {
 
 export function WorkSpace(props: WorkSpaceProps) {
 
-  const [viewPercentage, setViewPercentage] = useState<number>(60);
-  
+  const initialViewPercentage: number = 60;
+  const [viewPercentage, setViewPercentage] = useState<number>(initialViewPercentage);
+
   let leftToolBarStyle: CSSProperties = {
     display: "inline-block",
     width: '50px',
@@ -36,7 +37,10 @@ export function WorkSpace(props: WorkSpaceProps) {
 
   return (
     <div style={props.style}>
-      <SideToolBar style={leftToolBarStyle}/>
+      <SideToolBar
+        style={leftToolBarStyle}
+        zoom={(ratio) => setViewPercentage(initialViewPercentage * ratio / 100)}
+      />
       <Canvans
         style={canvasStyle}
         framePage={props.framedPage}

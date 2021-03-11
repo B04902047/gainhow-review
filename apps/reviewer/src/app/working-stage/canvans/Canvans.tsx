@@ -26,7 +26,6 @@ export function Canvans(props: CanvansProps) {
   let imageHeightInPx: string = `calc(${imageScale} * ${sourcePageInfo.heightInMm})`;
   let imagePostionXInPx: string = `calc(${imageScale} * calc(${props.framePage.positionX}))`;
   let imagePostionYInPx: string = `calc(${imageScale} * calc(${props.framePage.positionY}))`;
-console.log(imagePostionXInPx)
 
   function calcFrameWidth(): string {
     let calcWidthByMaxWidth = `calc(${props.style.width})`;
