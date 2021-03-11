@@ -39,10 +39,7 @@ export function SideToolBar(props: SideToolBarProps): JSX.Element {
       <hr style={hrStyle}/>
       <Icon src={SaveIcon}/>
       <hr style={hrStyle}/>
-      <ZoomingToolBar
-        zoom={props.zoom}
-      />
-      <Icon src={ResetSizeIcon}/>
+      <ZoomingToolBar zoom={props.zoom}/>
     </div>
   );
 };
@@ -52,6 +49,7 @@ export default SideToolBar;
 interface IconProps {
   src: string;
   style?: CSSProperties;
+  onClick?(): void;
 }
 
 function Icon(props: IconProps): JSX.Element {
@@ -65,7 +63,10 @@ function Icon(props: IconProps): JSX.Element {
   }
   return (
     <div style={style}>
-      <img src={props.src}/>
+      <img
+        src={props.src}
+        onClick={props.onClick}
+      />
     </div>
   );
 }
@@ -82,7 +83,8 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
     paddingTop: 5,
     paddingBottom: 5,
   };
-  let zoomBarLength: number = 120;
+  const zoomPadMovementPerClickOnIcons: number = 5;
+  const zoomBarLength: number = 120;
   let [[mousePosition, zoomPadPosition], setPositions]
     = useState<[number, number]>([0, zoomBarLength / 2]);
   let upperZoomBarStyle: CSSProperties = {
@@ -115,7 +117,11 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
   let transparentImage = new Image(0, 0);
   transparentImage.src = transparentImageSource;
   let [dragImage, _] = useState<HTMLImageElement>(transparentImage);
-  
+
+  useEffect(() => {
+    props.zoom(zoomPadPosition / (zoomBarLength / 2) * 100);
+  }, [zoomPadPosition]);
+
   return (
     <div
       style={style}
@@ -126,11 +132,20 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
         let newZoomPadPosition: number = oldZoomPadPosition + offset;
         if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
         if (newZoomPadPosition < 0) newZoomPadPosition = 0;
-        props.zoom(newZoomPadPosition / halfZoomBarLength * 100)
         return [newMousePosition, newZoomPadPosition];
       })}
     >
-      <Icon style={zoomIconStyle} src={ZoomOutIcon}/>
+      <Icon
+        style={zoomIconStyle}
+        src={ZoomOutIcon}
+        onClick={() => {
+          setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+            let newZoomPadPosition: number = oldZoomPadPosition + zoomPadMovementPerClickOnIcons;
+            if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
+            return [oldMousePosition, newZoomPadPosition];
+          });
+        }}
+      />
       <div style={upperZoomBarStyle}/>
       <div
         style={zoomPadStyle}
@@ -145,7 +160,26 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
         }}
       />
       <div style={lowerZoomBarStyle}/>
-      <Icon style={zoomIconStyle} src={ZoomInIcon}/>
+      <Icon
+        style={zoomIconStyle}
+        src={ZoomInIcon}
+        onClick={() => {
+          setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+            let newZoomPadPosition: number = oldZoomPadPosition - zoomPadMovementPerClickOnIcons;
+            if (newZoomPadPosition < 0) newZoomPadPosition = 0;
+            return [oldMousePosition, newZoomPadPosition];
+          });
+        }}
+      />
+      <Icon
+        src={ResetSizeIcon}
+        onClick={() => {
+          setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+            let newZoomPadPosition: number = zoomBarLength / 2;
+            return [oldMousePosition, newZoomPadPosition];
+          });
+        }}
+      />
     </div>
   );
 }
