@@ -42,14 +42,18 @@ export function Canvans(props: CanvansProps) {
   const style: CSSProperties = {
     userSelect: 'none',
     position: 'relative',
-    overflow: 'hidden',
+    overflow: 'auto',
     ...props.style
   };
 
+  const CanvansMargin: number = 10;
   const CanvansStyle: CSSProperties = {
     transform:`scale(${props.viewPercentage / 100})`,
-    width: 'inherit',
-    height: 'inherit',
+    width: `calc(${props.style.width})`,
+    height: `calc(${props.style.height})`,
+    margin: `calc(${CanvansMargin * props.viewPercentage/100 *2 }px)`,
+    top: `calc(${CanvansMargin * props.viewPercentage/100 *2 }px)`,
+    left: `calc(${CanvansMargin * props.viewPercentage/100 *2 }px)`
   };
 
   const orangilImageStyle: CSSProperties = {
