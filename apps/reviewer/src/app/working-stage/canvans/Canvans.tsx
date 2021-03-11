@@ -7,11 +7,10 @@ import { FramedPage, Frame, UploadFilePageInfo } from '@gainhow-review/data'
 export interface CanvansProps {
   framePage: FramedPage;
   style: CSSProperties;
+  viewPercentage: number;
 }
 
 export function Canvans(props: CanvansProps) {
-
-  const [viewPercentage, setViewPercentage] = useState<number>(60);
   
   let sourcePageInfo: UploadFilePageInfo = props.framePage.getSourcePageInfo();
   let imageAddress: string = sourcePageInfo.jpegAddress;
@@ -49,7 +48,7 @@ console.log(imagePostionXInPx)
   };
 
   const CanvansStyle: CSSProperties = {
-    transform:`scale(${viewPercentage/100})`,
+    transform:`scale(${props.viewPercentage / 100})`,
     width: 'inherit',
     height: 'inherit',
   };

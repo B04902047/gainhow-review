@@ -1,7 +1,7 @@
 
 import { FramedPage } from '@gainhow-review/data';
 import { Canvans } from '../canvans/Canvans';
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import SideToolBar from '../side-tool-bar/SideToolBar';
 
   import './WorkSpace.module.css';
@@ -15,6 +15,8 @@ export interface WorkSpaceProps {
 
 export function WorkSpace(props: WorkSpaceProps) {
 
+  const [viewPercentage, setViewPercentage] = useState<number>(60);
+  
   let leftToolBarStyle: CSSProperties = {
     display: "inline-block",
     width: '50px',
@@ -38,6 +40,7 @@ export function WorkSpace(props: WorkSpaceProps) {
       <Canvans
         style={canvasStyle}
         framePage={props.framedPage}
+        viewPercentage={viewPercentage}
       />
     </div>
   );
