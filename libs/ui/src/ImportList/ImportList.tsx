@@ -35,7 +35,8 @@ export function ImportList(props: ImportListProps) {
   const toggleIconStyle: CSSProperties = {
     padding: '6px',
     float: 'right',
-    marginRight: '8px'
+    marginRight: '8px',
+    userSelect: 'none'
   }
   const bodyStyle: CSSProperties = {
     margin: '0px',
@@ -66,7 +67,10 @@ export function ImportList(props: ImportListProps) {
     background: '#F2F2F2 0% 0% no-repeat padding-box',
     margin: '0px 0px 0px 10px',
     padding: '0px',
-    width: '162px'
+    width: '158px'
+  }
+  const searchBarIconStyle: CSSProperties = {
+    userSelect: 'none'
   }
   const fileListStyle: CSSProperties = {
     margin: '17px 0px 0px 0px',
@@ -76,7 +80,8 @@ export function ImportList(props: ImportListProps) {
   const folderIconStyle: CSSProperties = {
     width: '20px',
     padding: '8px',
-    marginTop: '8px'
+    marginTop: '8px',
+    userSelect: 'none'
   }
   let fileIds: string[] = Array.from(props.files.keys());
   let importedFiles: React.ReactElement[] = fileIds.filter((fileId: string) => {
@@ -113,11 +118,12 @@ export function ImportList(props: ImportListProps) {
           <div style={titleStyle}> 輸入檔案 </div>
           <div style={searchBarStyle}>
             <input 
+              type="search"
               style={searchBarInputStyle} 
               value={searchBarValue} 
               onChange={(event) => setSearchBarValue(event.target.value)}
             />
-            <img src={searchBarIcon}/>
+            <img src={searchBarIcon} style={searchBarIconStyle}/>
           </div>
           <div style={fileListStyle}> 
             {importedFiles}

@@ -15,7 +15,8 @@ export function ImportedPage(props: ImportedPageProps) {
   let style: CSSProperties = {
     border: (props.isSelected)? "3px solid #1581FF" : "1px solid #707070",
     width: widthInPx,
-    height: widthInPx * props.info.heightInMm / props.info.widthInMm
+    height: widthInPx * props.info.heightInMm / props.info.widthInMm,
+    margin:  (props.isSelected)? '0px' : '2px'
   }
   return (
     <img 

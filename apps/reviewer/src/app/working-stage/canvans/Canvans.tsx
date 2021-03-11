@@ -23,12 +23,15 @@ export function Canvans(props: CanvansProps) {
 
   let frameWidthtInPx: string = calcFrameWidth();
   let frameHeightInPx: string = calcFrameheight();
-  let framePositionX: string = calcFramePositionX();
-  let framePositionY: string = calcFramePositionY();
+  let framePositionX: string = `calc(calc(${props.style.width} - ${frameWidthtInPx}) / 2)`;
+  let framePositionY: string = `calc(calc(${props.style.height} - ${frameHeightInPx}) / 2)`;
 
-  let imageScale: string  = calcImageScale();
-  let imageWidthInPx: string = calcImageWidthInPx();
-  let imageHeightInPx: string = calcImageHeightInPx();
+  let imageScale: string  = `calc(${frameWidthtInPx} / ${frame.maxWidth})`;
+  let imageWidthInPx: string = `calc(${imageScale} * ${sourcePageInfo.widthInMm})`;
+  let imageHeightInPx: string = `calc(${imageScale} * ${sourcePageInfo.heightInMm})`;
+  let imagePostionXInPx: string = `calc(${imageScale} * calc(${props.framePage.positionX}))`;
+  let imagePostionYInPx: string = `calc(${imageScale} * calc(${props.framePage.positionY}))`;
+console.log(imagePostionXInPx)
 
   function calcFrameWidth(): string {
     let calcWidthByMaxWidth = `calc(${props.style.width})`;
@@ -42,23 +45,7 @@ export function Canvans(props: CanvansProps) {
 
     return `min(${calcHeightByMaxHeight} , ${calcHeightByMaxWidth})` 
   }
-  function calcFramePositionX(): string {
-    return `calc(calc(${props.style.width} - ${frameWidthtInPx}) / 2)`;
-  }
-  function calcFramePositionY(): string {
-    return `calc(calc(${props.style.height} - ${frameHeightInPx}) / 2)`;
-  }
-
-  function calcImageScale(): string {
-    return `calc(${frameWidthtInPx} / ${frame.maxWidth})`;
-  }
-  function calcImageWidthInPx(): string {
-    return `calc(${imageScale} * ${sourcePageInfo.widthInMm})`;
-  }
-  function calcImageHeightInPx(): string {
-    return `calc(${imageScale} * ${sourcePageInfo.heightInMm})`;
-  }
-
+  
   const style: CSSProperties = {
     userSelect: 'none',
     position: 'relative',
@@ -74,23 +61,25 @@ export function Canvans(props: CanvansProps) {
   const orangilImageStyle: CSSProperties = {
     width: `calc(${imageWidthInPx})`,
     height: `calc(${imageHeightInPx})`,
-    top: `calc(${framePositionY} + ${props.framePage.positionY}px)`,
-    left: `calc(${framePositionX} + ${props.framePage.positionX}px)`,
+    top: `calc(${framePositionY} + ${imagePostionYInPx})`,
+    left: `calc(${framePositionX} + ${imagePostionXInPx})`,
     transform: `
       rotate(${props.framePage.rotationDegree}deg) 
-      scale(${props.framePage.scaleX},${props.framePage.scaleY})`,
+      scale(${props.framePage.scaleX}, ${props.framePage.scaleY})`,
     position: 'absolute'
     
   } 
+  const cutLineBorderWidth: number = 2;
   const cutLineStyle: CSSProperties = {
     width: `calc(${frameWidthtInPx})`,
     height: `calc(${frameHeightInPx} )`,
-    top: `calc(${framePositionY} - 2px)`,
-    left: `calc(${framePositionX} - 2px)`,
+    top: `calc(${framePositionY} - ${cutLineBorderWidth}px)`,
+    left: `calc(${framePositionX} - ${cutLineBorderWidth}px)`,
     position: 'absolute',
-    border: '2px solid #E2007F'
-    ,
-    zIndex: 100
+    border: `${cutLineBorderWidth}px solid #E2007F`,
+    zIndex: 100,
+    overflow: 'hidden',
+    background: 'white'
     
   }
 
@@ -106,11 +95,13 @@ export function Canvans(props: CanvansProps) {
 
       <div style={CanvansStyle}>
       
-        <img 
-              style={orangilImageStyle}
-              src={imageAddress}
-        />
-        <div style={cutLineStyle}></div>
+        
+        <div style={cutLineStyle}>
+          <img 
+                style={orangilImageStyle}
+                src={imageAddress}
+          />
+        </div>
 
       </div>
     </div>
