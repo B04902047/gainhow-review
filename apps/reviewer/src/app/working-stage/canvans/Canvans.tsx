@@ -56,8 +56,8 @@ console.log(imagePostionXInPx)
   const orangilImageStyle: CSSProperties = {
     width: `calc(${imageWidthInPx})`,
     height: `calc(${imageHeightInPx})`,
-    top: `calc(${framePositionY} + ${imagePostionYInPx}px)`,
-    left: `calc(${framePositionX} + ${imagePostionXInPx}px)`,
+    top: `${imagePostionYInPx}`,
+    left: `${imagePostionXInPx}`,
     transform: `
       rotate(${props.framePage.rotationDegree}deg) 
       scale(${props.framePage.scaleX}, ${props.framePage.scaleY})`,
