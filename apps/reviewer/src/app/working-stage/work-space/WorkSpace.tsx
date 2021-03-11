@@ -39,7 +39,7 @@ export function WorkSpace(props: WorkSpaceProps) {
     <div style={props.style}>
       <SideToolBar
         style={leftToolBarStyle}
-        zoom={(ratio) => setViewPercentage(initialViewPercentage * ratio / 100)}
+        zoom={(ratio) => setViewPercentage(Math.pow(initialViewPercentage, ratio / 100))}
       />
       <Canvans
         style={canvasStyle}
