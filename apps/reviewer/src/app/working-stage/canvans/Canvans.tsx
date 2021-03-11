@@ -2,16 +2,12 @@
 import React, { CSSProperties, useState } from 'react';
 import './Canvans.module.css';
 import { FramedPage, Frame, UploadFilePageInfo } from '@gainhow-review/data'  
-import { FrameLine } from '../frame-line/FrameLine';
-import {Layer, Line as KonvaLine, Stage, Group,Image} from 'react-konva';
-import Portal from './Portal';
+
 /* eslint-disable-next-line */
 export interface CanvansProps {
-  framePage: FramedPage,
-  style: CSSProperties
+  framePage: FramedPage;
+  style: CSSProperties;
 }
-
-
 
 export function Canvans(props: CanvansProps) {
 
@@ -37,12 +33,11 @@ console.log(imagePostionXInPx)
     let calcWidthByMaxWidth = `calc(${props.style.width})`;
     let calcWidthByMaxHeight = `calc(${frame.maxWidth} * ${props.style.height} / ${frame.maxHeight} )`
     return `min(${calcWidthByMaxWidth} , ${calcWidthByMaxHeight})`
-    
   }
+
   function calcFrameheight(): string {
     let calcHeightByMaxHeight = `calc(${props.style.height} )`;
     let calcHeightByMaxWidth = `calc(${frame.maxHeight} * ${props.style.width} / ${frame.maxWidth} )`
-
     return `min(${calcHeightByMaxHeight} , ${calcHeightByMaxWidth})` 
   }
   
@@ -51,12 +46,13 @@ console.log(imagePostionXInPx)
     position: 'relative',
     overflow: 'hidden',
     ...props.style
-  }
+  };
+
   const CanvansStyle: CSSProperties = {
     transform:`scale(${viewPercentage/100})`,
     width: 'inherit',
     height: 'inherit',
-  }
+  };
 
   const orangilImageStyle: CSSProperties = {
     width: `calc(${imageWidthInPx})`,
@@ -67,9 +63,10 @@ console.log(imagePostionXInPx)
       rotate(${props.framePage.rotationDegree}deg) 
       scale(${props.framePage.scaleX}, ${props.framePage.scaleY})`,
     position: 'absolute'
-    
-  } 
+  };
+
   const cutLineBorderWidth: number = 2;
+
   const cutLineStyle: CSSProperties = {
     width: `calc(${frameWidthtInPx})`,
     height: `calc(${frameHeightInPx} )`,
@@ -80,33 +77,26 @@ console.log(imagePostionXInPx)
     zIndex: 100,
     overflow: 'hidden',
     background: 'white'
-    
-  }
+  };
 
   const FrameLineStyle: CSSProperties = {
     width: props.style.width,
-    height: props.style.height
-   
-    
-  }
+    height: props.style.height  
+  };
 
   return (
     <div style={style}>
-
       <div style={CanvansStyle}>
-      
-        
         <div style={cutLineStyle}>
           <img 
-                style={orangilImageStyle}
-                src={imageAddress}
+            style={orangilImageStyle}
+            src={imageAddress}
           />
         </div>
-
       </div>
     </div>
   );
-};
+}
 
 
 export default Canvans;

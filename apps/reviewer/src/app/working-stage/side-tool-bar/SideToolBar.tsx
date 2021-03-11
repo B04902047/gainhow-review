@@ -23,6 +23,7 @@ export function SideToolBar(props: SideToolBarProps): JSX.Element {
   let style: CSSProperties = {
     width: 50,
     backgroundColor: '#F7F7F7',
+    overflow: 'auto',
     ...props.style
   };
   let hrStyle: CSSProperties = {
