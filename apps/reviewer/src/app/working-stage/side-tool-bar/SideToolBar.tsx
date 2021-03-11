@@ -119,6 +119,10 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
   transparentImage.src = transparentImageSource;
   let [dragImage, _] = useState<HTMLImageElement>(transparentImage);
 
+  useEffect(() => {
+    props.zoom(zoomPadPosition / (zoomBarLength / 2) * 100);
+  }, [zoomPadPosition]);
+
   return (
     <div
       style={style}
@@ -129,7 +133,6 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
         let newZoomPadPosition: number = oldZoomPadPosition + offset;
         if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
         if (newZoomPadPosition < 0) newZoomPadPosition = 0;
-        props.zoom(newZoomPadPosition / halfZoomBarLength * 100)
         return [newMousePosition, newZoomPadPosition];
       })}
     >
@@ -140,7 +143,6 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
           setPositions(([oldMousePosition, oldZoomPadPosition]) => {
             let newZoomPadPosition: number = oldZoomPadPosition + zoomPadMovementPerClickOnIcons;
             if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
-            props.zoom(newZoomPadPosition / (zoomBarLength / 2) * 100);
             return [oldMousePosition, newZoomPadPosition];
           });
         }}
@@ -166,7 +168,6 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
           setPositions(([oldMousePosition, oldZoomPadPosition]) => {
             let newZoomPadPosition: number = oldZoomPadPosition - zoomPadMovementPerClickOnIcons;
             if (newZoomPadPosition < 0) newZoomPadPosition = 0;
-            props.zoom(newZoomPadPosition / (zoomBarLength / 2) * 100)
             return [oldMousePosition, newZoomPadPosition];
           });
         }}
