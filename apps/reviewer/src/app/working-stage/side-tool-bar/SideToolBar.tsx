@@ -7,17 +7,13 @@ import ZoomInIcon from '../../../assets/icons/ZoomInIcon.svg';
 import ZoomOutIcon from '../../../assets/icons/ZoomOutIcon.svg';
 import ResetSizeIcon from '../../../assets/icons/ResetSizeIcon.svg';
 
-
-
-
-
   import './SideToolBar.module.css';
   
 
 /* eslint-disable-next-line */
 export interface SideToolBarProps {
   style: CSSProperties;
-  zoom(percentage: number): void;
+  zoom(power: number): void;
 }
 
 export function SideToolBar(props: SideToolBarProps): JSX.Element {
@@ -119,7 +115,7 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
   let [dragImage, _] = useState<HTMLImageElement>(transparentImage);
 
   useEffect(() => {
-    props.zoom(zoomPadPosition / (zoomBarLength / 2) * 100);
+    props.zoom(zoomPadPosition / (zoomBarLength / 2));
   }, [zoomPadPosition]);
 
   return (
@@ -128,7 +124,6 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
       onDragOver={(event) => setPositions(([oldMousePosition, oldZoomPadPosition]) => {
         let newMousePosition: number = event.pageY;
         let offset: number = oldMousePosition - newMousePosition;
-        let halfZoomBarLength: number = zoomBarLength / 2;
         let newZoomPadPosition: number = oldZoomPadPosition + offset;
         if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
         if (newZoomPadPosition < 0) newZoomPadPosition = 0;
