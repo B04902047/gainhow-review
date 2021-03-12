@@ -6,6 +6,7 @@ import Line from "../Frame/Line";
 import PerfectBoundBookSoftCoverFrame from "../Frame/PerfectBoundBookSoftCoverFrame";
 import PerfectBoundBookHardCoverFrame from "../Frame/PerfectBoundHardCoverFrame";
 import { Frame } from "../Frame";
+import { Mark } from "../Frame/Frame";
 
 export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary {
     protected frames: Map<string, Frame>;
@@ -53,18 +54,51 @@ export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary
     }
     protected createLeftInnerPageFramePrototype(): BleededRectangleFrame {
         class PerfectBoundLeftInnerPageFrame extends BleededRectangleFrame {
-            protected createSafeArea(): string {
+            protected createMarks(): Array<Mark> {
+                
+
                 let cutErrorPercentageInMaxWidth: number
                     = this.cutError / this.maxWidth * 100;
                 let cutErrorPercentageInMaxHeight: number
                     = this.cutError / this.maxHeight * 100;
                 let boundSideSafeDistancePercentageInMaxWidth: number
                     = PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE / this.maxWidth * 100;
-                let left: number = cutErrorPercentageInMaxWidth * 2;
-                let right: number = 100 - cutErrorPercentageInMaxWidth - boundSideSafeDistancePercentageInMaxWidth;
-                let top: number = cutErrorPercentageInMaxHeight * 2;
-                let bottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
-                return `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
+                let safeAreaLeft: number = cutErrorPercentageInMaxWidth * 2;
+                let safeAreaRight: number = 100 - cutErrorPercentageInMaxWidth - boundSideSafeDistancePercentageInMaxWidth;
+                let safeAreaTop: number = cutErrorPercentageInMaxHeight * 2;
+                let safeAreaBottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
+                let marks: Array<Mark> = [];
+                let safeArea: Mark;
+                let safeAreaWidth: number = safeAreaRight - safeAreaLeft;
+                let safeAreaHeight: number = safeAreaBottom - safeAreaTop;
+
+                const safeAreaSVGStyle: string = `
+                    width:100%; height:100%;
+                `;
+                const saveAreaRectStyle: string = `
+                fill:none;
+                stroke-width:2;
+                stroke:rgb(102 102 102) ;
+                stroke-dasharray:10,10;
+                `;
+                safeArea = {
+                    positionX: 0,
+                    positionY: 0,
+                    svgString :`
+                        <svg style='${safeAreaSVGStyle}' xmlns='http://www.w3.org/2000/svg' >
+                            <rect 
+                                style='${saveAreaRectStyle}'
+                                x='${safeAreaLeft}%'
+                                y='${safeAreaTop}%'
+                                width='${safeAreaWidth}%'
+                                height='${safeAreaHeight}%' 
+                            />
+                        </svg>
+                    `
+                }
+                marks.push(safeArea);
+                return marks;
+               // return `polygon(${safeAreaLeft}% ${safeAreaTop}%, ${safeAreaRight}% ${safeAreaTop}%, ${safeAreaRight}% ${safeAreaBottom}%, ${safeAreaLeft}% ${safeAreaBottom}%)`;
             }
         }
         return new PerfectBoundLeftInnerPageFrame(
@@ -75,18 +109,51 @@ export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary
     }
     protected createRightInnerPageFramePrototype(): BleededRectangleFrame {
         class PerfectBoundRightInnerPageFrame extends BleededRectangleFrame {
-            protected createSafeArea(): string {
+            protected createMarks(): Array<Mark> {
+                let marks: Array<Mark> = [];
+                let safeArea: Mark;
                 let cutErrorPercentageInMaxWidth: number
                     = this.cutError / this.maxWidth * 100;
                 let cutErrorPercentageInMaxHeight: number
                     = this.cutError / this.maxHeight * 100;
                 let boundSideSafeDistancePercentageInMaxWidth: number
                     = PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE / this.maxWidth * 100;
-                let left: number = cutErrorPercentageInMaxWidth + boundSideSafeDistancePercentageInMaxWidth;
-                let right: number = 100 - cutErrorPercentageInMaxWidth * 2;
-                let top: number = cutErrorPercentageInMaxHeight * 2;
-                let bottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
-                return `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
+                let safeAreaLeft: number = cutErrorPercentageInMaxWidth + boundSideSafeDistancePercentageInMaxWidth;
+                let safeAreaRight: number = 100 - cutErrorPercentageInMaxWidth * 2;
+                let safeAreaTop: number = cutErrorPercentageInMaxHeight * 2;
+                let safeAreaBottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
+
+                let safeAreaWidth: number = safeAreaRight - safeAreaLeft;
+                let safeAreaHeight: number = safeAreaBottom - safeAreaTop;
+
+                const safeAreaSVGStyle: string = `
+                    width:100%; height:100%;
+                `;
+                const safeAreaRectStyle: string = `
+                    fill:none;
+                    stroke-width:2;
+                    stroke:rgb(102 102 102) ;
+                    stroke-dasharray:10,10;
+                `;
+                safeArea = {
+                    positionX: 0,
+                    positionY: 0,
+                    svgString :`
+                    <svg style='${safeAreaSVGStyle}' xmlns='http://www.w3.org/2000/svg' >
+                        <rect 
+                            style='${safeAreaRectStyle}'
+                            x='${safeAreaLeft}%'
+                            y='${safeAreaTop}%'
+                            width='${safeAreaWidth}%'
+                            height='${safeAreaHeight}%' 
+                        />
+                    </svg>
+                `
+            }
+                marks.push(safeArea);
+                return marks;
+               
+              //  return `polygon(${safeAreaLeft}% ${safeAreaTop}%, ${safeAreaRight}% ${safeAreaTop}%, ${safeAreaRight}% ${safeAreaBottom}%, ${safeAreaLeft}% ${safeAreaBottom}%)`;
             }
         }
         return new PerfectBoundRightInnerPageFrame(
@@ -97,18 +164,51 @@ export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary
     }
     protected createBottomToTopPagedPageFramePrototype(): BleededRectangleFrame {
         class PerfectBoundBottomToTopPagedPageFrame extends BleededRectangleFrame {
-            protected createSafeArea(): string {
+            protected createMarks(): Array<Mark> {
+                let marks: Array<Mark> = [];
+                let safeArea: Mark;
                 let cutErrorPercentageInMaxWidth: number
                     = this.cutError / this.maxWidth * 100;
                 let cutErrorPercentageInMaxHeight: number
                     = this.cutError / this.maxHeight * 100;
                 let boundSideSafeDistancePercentageInMaxHeight: number
                     = PerfectBoundBookFrameDictionary.BOUND_SIDE_SAFE_DISTANCE / this.maxHeight * 100;
-                let left: number = cutErrorPercentageInMaxWidth * 2;
-                let right: number = 100 - cutErrorPercentageInMaxWidth * 2;
-                let top: number = cutErrorPercentageInMaxHeight + boundSideSafeDistancePercentageInMaxHeight;
-                let bottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
-                return `polygon(${left}% ${top}%, ${right}% ${top}%, ${right}% ${bottom}%, ${left}% ${bottom}%)`;
+                let safeAreaLeft: number = cutErrorPercentageInMaxWidth * 2;
+                let safeAreaRight: number = 100 - cutErrorPercentageInMaxWidth * 2;
+                let safeAreaTop: number = cutErrorPercentageInMaxHeight + boundSideSafeDistancePercentageInMaxHeight;
+                let safeAreaBottom: number = 100 - cutErrorPercentageInMaxHeight * 2;
+
+
+                let safeAreaWidth: number = safeAreaRight - safeAreaLeft;
+                let safeAreaHeight: number = safeAreaBottom - safeAreaTop;
+
+                const safeAreaSVGStyle: string = `
+                width:100%; height:100%;
+                `;
+                const safeAreaRectStyle: string = `
+                    fill:none;
+                    stroke-width:2;
+                    stroke:rgb(102 102 102) ;
+                    stroke-dasharray:10,10;
+                `;
+                safeArea = {
+                    positionX: 0,
+                    positionY: 0,
+                    svgString: `
+                        <svg style='${safeAreaSVGStyle}' xmlns='http://www.w3.org/2000/svg' >
+                            <rect 
+                                style='${safeAreaRectStyle}'
+                                x='${safeAreaLeft}%'
+                                y='${safeAreaTop}%'
+                                width='${safeAreaWidth}%'
+                                height='${safeAreaHeight}%' 
+                            />
+                        </svg>
+                    `
+            }
+                marks.push(safeArea);
+                return marks;
+                //return `polygon(${safeAreaLeft}% ${safeAreaTop}%, ${safeAreaRight}% ${safeAreaTop}%, ${safeAreaRight}% ${safeAreaBottom}%, ${safeAreaLeft}% ${safeAreaBottom}%)`;
             }
         }
         return new PerfectBoundBottomToTopPagedPageFrame(

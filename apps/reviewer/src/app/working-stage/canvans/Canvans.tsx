@@ -50,7 +50,7 @@ export function Canvans(props: CanvansProps) {
 
   }
 
-  //useEffect(scrollToViewCenter,[props.viewPercentage])
+  useEffect(scrollToMiddle,[props.viewPercentage])
   let frame: Frame = props.framePage.getFrame();
 
   let frameWidthtInPx: string = calcFrameWidth();
@@ -77,7 +77,7 @@ export function Canvans(props: CanvansProps) {
     ...props.style
   };
 
-  const cutLineBorderWidth: number = 3;
+  
   const CanvansStyle: CSSProperties = {
     transform: `scale(${props.viewPercentage / 100})`,
     transformOrigin:'0 0',
@@ -89,16 +89,14 @@ export function Canvans(props: CanvansProps) {
   };
 
 
-  const cutLineStyle: CSSProperties = {
+  const framePageComponentStyle: CSSProperties = {
     width: `calc(${frameWidthtInPx})`,
     height: `calc(${frameHeightInPx} )`,
     top: `calc(50% - calc(${frameHeightInPx} / 2))`,
     left: `calc(50% - calc(${frameWidthtInPx} / 2))`,
     position: 'absolute',
-    //border: `${cutLineBorderWidth}px solid #E2007F`,
     zIndex: 100,
-    overflow: 'hidden',
-    background: 'white'
+    background: 'white',
   };
 
 
@@ -112,17 +110,16 @@ export function Canvans(props: CanvansProps) {
     fontSize: '20px'
   }
 
+ 
   return (
     <div style={style} ref={myRef}>
         <div style={CanvansStyle} >
-          <div style={cutLineStyle}>
-            <FramePageComponent
+          <div style={framePageComponentStyle}>
+          <FramePageComponent
               mmToPxScale={imageScale}
               framePage={props.framePage}
             />
-           
           </div>
-
           <div style={editingFrameNameStyle}>{props.framePage.frameIndex}</div>
         </div>
     </div>
