@@ -22,6 +22,7 @@ export function FrameLine(props: FrameLineProps) {
     background: props.borderColor,
     position:'absolute',
     zIndex: props.zIndex
+    
   }
 
   const innerStyle: CSSProperties = {
@@ -36,7 +37,7 @@ export function FrameLine(props: FrameLineProps) {
 
   
   return (
-    <div style={borderStyle}>
+    <div style={borderStyle} draggable="false">
       <div style={innerStyle}>
         {props.children}
       </div>

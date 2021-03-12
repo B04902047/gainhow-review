@@ -63,10 +63,13 @@ export default class BleededRectangleFrame extends RectangleFrame {
             </svg>
         `
         }
-
         const cutMarkLineLength: number = 5;
         const cutMarkLineMargin: number = 3;
-        const cutMarkOffset: number = cutMarkLineLength + cutMarkLineMargin;
+        const cutMarkWidthScale:number = (this.maxHeight/this.maxWidth);
+        const cutMarkHeightScale: number = 1;
+        const cutMarkOffsetX: number = (cutMarkLineLength + cutMarkLineMargin) * cutMarkWidthScale;
+        const cutMarkOffsetY: number = (cutMarkLineLength + cutMarkLineMargin) * cutMarkHeightScale;
+
         const cutMarkStyle: string = `
             width:calc(100% ); height:calc(100% );
         `
@@ -75,67 +78,67 @@ export default class BleededRectangleFrame extends RectangleFrame {
             stroke-width:1;
             stroke:rgb(51 51 51) ; 
         `
-        const cutErrorPercentageIncutMarkWidth = this.cutError / (this.maxWidth * (1 + cutMarkOffset*2/100)) * 100;
-        const cutErrorPercentageIncutMarkHeight = this.cutError / (this.maxHeight * (1 + cutMarkOffset*2/100)) * 100;
+        const cutErrorPercentageIncutMarkWidth = this.cutError / (this.maxWidth * (1 + cutMarkOffsetX*2/100)) * 100;
+        const cutErrorPercentageIncutMarkHeight = this.cutError / (this.maxHeight * (1 + cutMarkOffsetY*2/100)) * 100;
 
 
-        const cutMarkLineX: string = `calc(${cutErrorPercentageIncutMarkWidth}% + ${cutMarkOffset/(1 + cutMarkOffset*2/100)}% )`;
-        const cutMarkLineY: string = `calc(${cutErrorPercentageIncutMarkHeight}% + ${cutMarkOffset/(1 + cutMarkOffset*2/100)}% )`;
+        const cutMarkLineX: string = `calc(${cutErrorPercentageIncutMarkWidth}% + ${cutMarkOffsetX/(1 + cutMarkOffsetX*2/100)}% )`;
+        const cutMarkLineY: string = `calc(${cutErrorPercentageIncutMarkHeight}% + ${cutMarkOffsetY/(1 + cutMarkOffsetY*2/100)}% )`;
         cutMark = {
-            positionX: cutMarkOffset,
-            positionY: cutMarkOffset,
+            positionX: cutMarkOffsetX,
+            positionY: cutMarkOffsetY,
             svgString: `
                 <svg style='${cutMarkStyle}' xmlns='http://www.w3.org/2000/svg' >
                     <line style='${cutMarkLineStyle}'
                         x1='${cutMarkLineX}'
                         y1='0%'
                         x2='${cutMarkLineX}'
-                        y2='${cutMarkLineLength}%'
+                        y2='${cutMarkLineLength*cutMarkHeightScale}%'
                     />
 
                     <line style='${cutMarkLineStyle}'
                         x1='calc(100% - ${cutMarkLineX})'
                         y1='0%'
                         x2='calc(100% - ${cutMarkLineX})'
-                        y2='${cutMarkLineLength}%'
+                        y2='${cutMarkLineLength*cutMarkHeightScale}%'
                     />
 
                     <line style='${cutMarkLineStyle}'
                         x1='calc(100% - ${cutMarkLineX})'
                         y1='100%'
                         x2='calc(100% - ${cutMarkLineX})'
-                        y2='calc(100% - ${cutMarkLineLength}%)'
+                        y2='calc(100% - ${cutMarkLineLength*cutMarkHeightScale}%)'
                     />
 
                     <line style='${cutMarkLineStyle}'
                         x1='calc(${cutMarkLineX})'
                         y1='100%'
                         x2='calc(${cutMarkLineX})'
-                        y2='calc(100% - ${cutMarkLineLength}%)'
+                        y2='calc(100% - ${cutMarkLineLength*cutMarkHeightScale}%)'
                     />
 
                     <line style='${cutMarkLineStyle}'
                         x1='0%'
                         y1='${cutMarkLineY}'
-                        x2='${cutMarkLineLength}%'
+                        x2='${cutMarkLineLength*cutMarkWidthScale}%'
                         y2='${cutMarkLineY}'
                     />
                     <line style='${cutMarkLineStyle}'
                         x1='100%'
                         y1='${cutMarkLineY}'
-                        x2='calc(100% - ${cutMarkLineLength}%)'
+                        x2='calc(100% - ${cutMarkLineLength*cutMarkWidthScale}%)'
                         y2='${cutMarkLineY}'
                     />
                     <line style='${cutMarkLineStyle}'
                         x1='100%'
                         y1='calc(100% - ${cutMarkLineY})'
-                        x2='calc(100% - ${cutMarkLineLength}%)'
+                        x2='calc(100% - ${cutMarkLineLength*cutMarkWidthScale}%)'
                         y2='calc(100% - ${cutMarkLineY})'
                     />
                     <line style='${cutMarkLineStyle}'
                         x1='0%'
                         y1='calc(100% - ${cutMarkLineY})'
-                        x2='calc(${cutMarkLineLength}%)'
+                        x2='calc(${cutMarkLineLength*cutMarkWidthScale}%)'
                         y2='calc(100% - ${cutMarkLineY})'
                     />
                     

@@ -14,6 +14,8 @@ import { FrameLine } from '../frame-line/FrameLine';
 export interface FramePageComponentProps {
   mmToPxScale: string;
   framePage: FramedPage;
+  isEditing: boolean;
+  onImageClick(e:React.MouseEvent): void;
 }
 
 
@@ -75,31 +77,36 @@ export function FramePageComponent(props: FramePageComponentProps) {
         key={index}
         src={svgDataUrl} 
         style={style}
+        draggable="false"
       />
     );
 
 
   });
   return (
-    <>
+    <div onClick={(e)=>props.onImageClick(e)}>
     <FrameLine
       borderWidth={cutLineBorderWidth}
       clipPath={shapeArea} 
       borderColor={'#E2007F'}
       zIndex={cutLineZIndex}
     >
-        <img src={imageAddress} style={clipedImageStyle}></img>
+        <img 
+          src={imageAddress} 
+          style={clipedImageStyle}
+          onClick={(e)=>props.onImageClick(e)}
+        />
     </FrameLine>
     <FrameLine
       borderWidth={bleedingAreaBorderWidth}
-      clipPath={bleedingArea} 
+      clipPath={(props.isEditing) ? '' : bleedingArea} 
       borderColor={'#333333'}
       zIndex={bleedingAreaZIndex}
     >
         <img src={imageAddress} style={originalImageStyle}></img>
     </FrameLine>
     {marks}
-    </>
+    </div>
   );
 };
 

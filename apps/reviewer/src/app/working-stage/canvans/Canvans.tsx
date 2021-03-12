@@ -8,6 +8,8 @@ export interface CanvansProps {
   framePage: FramedPage;
   style: CSSProperties;
   viewPercentage: number;
+  isEditing: boolean;
+  setIsEditing(isEditing: boolean): void;
 }
 
 
@@ -85,7 +87,8 @@ export function Canvans(props: CanvansProps) {
     height: `calc(${props.style.height})`,
     top: `max(calc(50% - calc(calc(${props.style.height}) * ${props.viewPercentage/100}) / 2), 0px)`,
     left: `max(calc(50% - calc(calc(${props.style.width}) * ${props.viewPercentage/100}) /2 ), 0px)`,
-    position: 'absolute'
+    position: 'absolute',
+    overflow: (props.isEditing)? 'visible': 'hidden'
   };
 
 
@@ -112,12 +115,18 @@ export function Canvans(props: CanvansProps) {
 
  
   return (
-    <div style={style} ref={myRef}>
-        <div style={CanvansStyle} >
+    <div style={style} ref={myRef} >
+        <div 
+          style={CanvansStyle} 
+          onClick={()=>{if(props.isEditing) props.setIsEditing(false)}}>
           <div style={framePageComponentStyle}>
           <FramePageComponent
               mmToPxScale={imageScale}
               framePage={props.framePage}
+              isEditing={props.isEditing}
+              onImageClick={(e)=>{
+                
+                 props.setIsEditing(true);e.stopPropagation();}}
             />
           </div>
           <div style={editingFrameNameStyle}>{props.framePage.frameIndex}</div>
