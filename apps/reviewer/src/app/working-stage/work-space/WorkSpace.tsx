@@ -15,7 +15,7 @@ export interface WorkSpaceProps {
 
 export function WorkSpace(props: WorkSpaceProps) {
 
-  const initialViewPercentage: number = 60;
+  const initialViewPercentage: number = 100;
   const [viewPercentage, setViewPercentage] = useState<number>(initialViewPercentage);
 
   let leftToolBarStyle: CSSProperties = {
