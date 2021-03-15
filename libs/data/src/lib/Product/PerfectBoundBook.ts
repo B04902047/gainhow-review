@@ -43,6 +43,7 @@ export default abstract class PerfectBoundBook extends Book implements PerfectBo
             coverCoating,
             innerPageCoating
         );
+
     }
 
     protected _frameDictionary?: FrameDictionary;

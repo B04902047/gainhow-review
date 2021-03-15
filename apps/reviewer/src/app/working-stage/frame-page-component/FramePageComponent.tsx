@@ -84,21 +84,21 @@ export function FramePageComponent(props: FramePageComponentProps) {
     transformOrigin: '50% 50%',
     border: `${imageTransformFrameLineWidth}px solid #1581FF`,
     position: 'absolute',
-    zIndex: imageTransformFrameZIndex
+    zIndex: imageTransformFrameZIndex,
+    cursor: 'move'
   }
   
   const imageTransformFrameIconStyle: CSSProperties = {
     width: `18px`,
     height: '18px',
     border: '1px soild #1581FF',
-  //  borderRadius: 10,
     background: '#1581FF',
     position: 'absolute'  ,
   }
 
   const imageTransformFrameIconOffset: number = -imageTransformFrameLineWidth * 2;
   const imageTransformFrameIconMiddle: string = `calc(50% + calc(${imageTransformFrameIconOffset}px))`;
-  let imageTransformFrameIconS: React.ReactElement = (
+  let imageTransformFrameIcons: React.ReactElement = (
     <>
       <i // 左上
         style={{
@@ -193,7 +193,7 @@ export function FramePageComponent(props: FramePageComponentProps) {
       {
         (props.isEditing) ? 
           <div style={imageTransformFrameStyle}>
-            {imageTransformFrameIconS}
+            {imageTransformFrameIcons}
           </div> 
             :
           <></>

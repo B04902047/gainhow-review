@@ -29,7 +29,7 @@ export default class ReviewModel implements ReviewModelInterface {
         return this.frameDictionary.getFrame(index);
     }
 
-    public setFramedPage(index: string, framedPage: FramedPage): ReviewModel {
+    public setFramedPageImmutably(index: string, framedPage: FramedPage): ReviewModel {
         let newReviewModel = new ReviewModel(
             this.modelIndexInReviewItem,
             this.reviewItem

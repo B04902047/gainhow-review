@@ -50,7 +50,7 @@ export default class FramedPage implements FramedPageInterface {
 
     public reset(): void {
         this.rotate(0);   // 回到原本的角度
-        this.moveTo(0, 0);  // 回到原點
+        this.moveTo(0, 0);  // 回到預設原點
         this.scale(1, 1);   // 回到原本的縮放
     }
 
@@ -92,6 +92,33 @@ export default class FramedPage implements FramedPageInterface {
         this.positionX = x;
         this.positionY = y;
     }
+
+    public clone(): FramedPage {
+        return Object.assign(this);
+    }
     // 需要的method : setFile  getPreviewImage getResultImage getResultFlie
     // cleanFile? 空白頁? 選擇了頁是不是可以改選擇用空白頁 
+
+    private calculateInitialPostionXandPostionY () {
+        let positionX: number;
+        let positionY: number;
+        let sourcePage: UploadFilePageInfo | undefined= this.getSourcePageInfo();
+            let frame: Frame | undefined = this.getFrame();
+            if (sourcePage && frame) { //有指定的sourceFile
+                let sourceWidth: number = sourcePage.widthInMm;
+                let sourceHeight: number = sourcePage.heightInMm;
+                let frameWidth: number = frame.maxWidth;
+                let frameHeight: number = frame.maxHeight;
+                positionX = (frameWidth - sourceWidth) / 2;
+                positionY =(frameHeight - sourceHeight) / 2;
+            }
+            else {
+                positionX = 0;
+                positionY = 0;
+            }
+        return ({
+            positionX: positionX,
+            positionY: positionY
+        })
+    }
 }
