@@ -79,8 +79,7 @@ export function ImportList(props: ImportListProps) {
   }
   const folderIconStyle: CSSProperties = {
     width: '20px',
-    padding: '8px',
-    marginTop: '8px',
+    padding: '16px 8px',
     userSelect: 'none'
   }
   let fileIds: string[] = Array.from(props.files.keys());
@@ -112,7 +111,9 @@ export function ImportList(props: ImportListProps) {
       {(props.isHidden)?
         <img 
           style={folderIconStyle}
-          src={FolderIcon}/>
+          src={FolderIcon}
+          onClick={() => props.onToggle()}
+        />
           :
         <div style={bodyStyle}>
           <div style={titleStyle}> 輸入檔案 </div>
