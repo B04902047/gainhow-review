@@ -8,5 +8,6 @@ module.exports = {
     "<rootDir>/libs/data",
     "<rootDir>/libs/features",
     "<rootDir>/libs/utils",
+    "<rootDir>/apps/web-server",
   ],
 };
