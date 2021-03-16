@@ -48,7 +48,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
     backgroundColor: "#E4E4E4",
     border: "solid 2px #E4E4E4",
     borderBottom: "none",
-    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 12px)`
+    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px)`
   };
   let exportListStyle: CSSProperties = {
     display: 'inline-block',

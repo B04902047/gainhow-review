@@ -32,8 +32,9 @@ export function WorkSpace(props: WorkSpaceProps) {
     backgroundColor: "#E4E4E4",
     border: "solid 2px #E4E4E4",
     borderBottom: "none",
-    width: `calc(${props.style.width} - ${leftToolBarStyle.width} - 4px)`
+    width: `calc(${props.style.width} - ${leftToolBarStyle.width} - 5px)`
   };
+  console.log(props.style.width, leftToolBarStyle.width, canvasStyle.width);
 
   return (
     <div style={props.style}>

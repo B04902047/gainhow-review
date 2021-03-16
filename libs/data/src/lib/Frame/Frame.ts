@@ -9,5 +9,6 @@ export default abstract class Frame {
     constructor(
         readonly maxWidth: number,  // 最大寬度（mm）
         readonly maxHeight: number  // 最大高度（mm）
-    ) {}
+    ) {
+    }
 }
