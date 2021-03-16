@@ -6,6 +6,8 @@ import ReviewModel from "./ReviewModel";
 import ReviewStatus from "./ReviewStatus";
 import { deserialize, Exclude, Expose, serialize, Type } from "class-transformer";
 import FramedPage from "./FramedPage";
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+
 export default class ReviewItem implements ReviewItem {
     
     @Exclude()
@@ -18,6 +20,9 @@ export default class ReviewItem implements ReviewItem {
         discriminator: PRODUCT_TYPE_DISCRIMINATOR
     })
     public readonly product: Product;
+
+    @PrimaryGeneratedColumn()
+    public reviewId?: string;
     
     constructor(
         status: ReviewStatus,
@@ -28,9 +33,6 @@ export default class ReviewItem implements ReviewItem {
         this.createAndSetBlankModels();
     }
 
-    public get reviewId(): string {
-        return this.status.reviewId;
-    }
     public get numberOfModels(): number {
         return this.status.numberOfModels;
     }

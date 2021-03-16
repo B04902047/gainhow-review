@@ -9,7 +9,6 @@ export interface ReviewItem {
 }
 // 審稿狀態
 export interface ReviewStatus {
-    reviewId: string;
     numberOfModels: number;
     modelIds: Array<string>;
     numberOfFiles: number;
@@ -27,6 +26,7 @@ export interface ReviewRegistrationInfo {
  */
 // 審稿狀態
 export const REVIEWING_PROGRESS = [
+    "REGISTERING", // '正在登記審稿'
     "REGISTERED", // '已登記審稿，但還沒開始上傳檔案',
     "UPLOADING", // '已經開始上傳檔案，但還有檔案沒上傳完畢',
     "GENERATING_PREVIEW_PAGES", // '所有檔案都上傳完畢，但還有檔案預覽圖在生成中',
