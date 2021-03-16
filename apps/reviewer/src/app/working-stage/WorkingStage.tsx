@@ -30,6 +30,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
     width: (importListIsHidden)? 40: 240,
     height: middleAreaHeight,
   };
+  
   const [modelInfoIsHidden, setModelInfoIsHidden] = useState<boolean>(false);
   let modelInfoStyle: CSSProperties = {
     display: "inline-block",
@@ -37,6 +38,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
     width: (modelInfoIsHidden)? 40: 300,
     height: middleAreaHeight
   };
+
   let workSpaceStyle: CSSProperties = {
     display: "inline-block",
     height: middleAreaHeight,
@@ -44,14 +46,16 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
     backgroundColor: "#E4E4E4",
     border: "solid 2px #E4E4E4",
     borderBottom: "none",
-    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px)`
+    width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px)`,
   };
+
   let exportListStyle: CSSProperties = {
     display: 'inline-block',
     verticalAlign: 'top',
     width: `calc(100vw - 300px - 6px)`,
     height: 160,
   };
+
   let downRightAreaStyle: CSSProperties = {
     display: 'inline-block',
     width: 300,
@@ -71,7 +75,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
   };
   return (
     <div>
-      <div>
+      <div style={{whiteSpace: 'nowrap'}}>
         <ImportList
           style={importListStyle}
           files={bufferedReviewItem.status.uploadFileStatuses}

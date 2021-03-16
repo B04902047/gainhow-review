@@ -57,12 +57,14 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
   };
 
   return (
-    <div style={style}>
+    <div
+      style={style}
+      onClick={props.onSelect}
+    >
       <div style={cropStyle}>
         <img
           src={sourcePage.jpegAddress}
           style={imageStyle}
-          onClick={props.onSelect}
         />
       </div>
       <div style={pageIndexStyle}>

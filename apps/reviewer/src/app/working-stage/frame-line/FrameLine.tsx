@@ -15,6 +15,7 @@ export interface FrameLineProps {
 
 
 export function FrameLine(props: FrameLineProps) {
+
   const borderStyle: CSSProperties = {
     width: '100%',
     height: '100%',
@@ -22,9 +23,8 @@ export function FrameLine(props: FrameLineProps) {
     background: props.borderColor,
     position:'absolute',
     zIndex: props.zIndex
-    
-  }
-
+  };
+  
   const innerStyle: CSSProperties = {
     top: `${props.borderWidth}px`,
     left: `${props.borderWidth}px`,
@@ -33,9 +33,8 @@ export function FrameLine(props: FrameLineProps) {
     position: 'absolute',
     background: 'white',
     clipPath: props.clipPath
-  }
+  };
 
-  
   return (
     <div style={borderStyle} draggable="false">
       <div style={innerStyle}>
