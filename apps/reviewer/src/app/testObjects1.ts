@@ -85,13 +85,14 @@ const uploadFileStatuses1 = new Map<string, UploadFileStatus>()
     .set("wfeads", uploadFileStatus2);
 
 const reviewStatus1 = new ReviewStatus(
-    reviewId1,
-    3,
-    ["test-review-id-01", "test-review-id-02", "test-review-id-03"],
-    1,
-    uploadFileStatuses1,
-    "WAITING_PRINTABLE_REVIEW"
+    3
 );
+
+reviewStatus1.numberOfModels = 3;
+reviewStatus1.modelIds = ["test-review-id-01", "test-review-id-02", "test-review-id-03"];
+reviewStatus1.numberOfFiles = 1;
+reviewStatus1.uploadFileStatuses = uploadFileStatuses1;
+reviewStatus1.progress = "WAITING_PRINTABLE_REVIEW";
 
 const reviewItem = new ReviewItem(
     reviewStatus1,
