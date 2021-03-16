@@ -17,6 +17,7 @@ export function WorkSpace(props: WorkSpaceProps) {
 
   const initialViewPercentage: number = 100;
   const [viewPercentage, setViewPercentage] = useState<number>(initialViewPercentage);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   let leftToolBarStyle: CSSProperties = {
     display: "inline-block",
@@ -46,6 +47,8 @@ export function WorkSpace(props: WorkSpaceProps) {
         style={canvasStyle}
         framePage={props.framedPage}
         viewPercentage={viewPercentage}
+        isEditing={isEditing}
+        setIsEditing={(isEditing: boolean)=>setIsEditing(isEditing)}
       />
     </div>
   );

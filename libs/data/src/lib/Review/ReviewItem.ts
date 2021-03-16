@@ -89,7 +89,7 @@ export default class ReviewItem implements ReviewItem {
     }
 
 
-    public setReviewModel(modelIndex: number, model: ReviewModel): ReviewItem {
+    public setReviewModelImmutably(modelIndex: number, model: ReviewModel): ReviewItem {
         let newReviewItem = new ReviewItem(
             this.status,
             this.product
@@ -104,11 +104,11 @@ export default class ReviewItem implements ReviewItem {
         return newReviewItem;
     }
 
-    public setFramedPage(modelIndex: number, frameIndex: string, framedPage: FramedPage): ReviewItem {
+    public setFramedPageImmutably(modelIndex: number, frameIndex: string, framedPage: FramedPage): ReviewItem {
         let oldModel: ReviewModel | undefined
             = this.models.get(modelIndex);
         if (!oldModel) throw new Error("modelIndex out of index");
-        let newModel: ReviewModel = oldModel.setFramedPage(frameIndex, framedPage);
-        return this.setReviewModel(modelIndex, newModel);
+        let newModel: ReviewModel = oldModel.setFramedPageImmutably(frameIndex, framedPage);
+        return this.setReviewModelImmutably(modelIndex, newModel);
     }
 }

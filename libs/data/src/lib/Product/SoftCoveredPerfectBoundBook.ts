@@ -28,5 +28,7 @@ export class SoftCoveredPerfectBoundBook extends PerfectBoundBook {
             threadSewn,
             "standard"
         );
+        this.productSubTypeChineseName = `${(threadSewn)?'穿線':''}膠裝書`;
+
     }
 }

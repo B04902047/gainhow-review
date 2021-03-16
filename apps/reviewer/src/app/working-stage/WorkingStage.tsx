@@ -1,11 +1,7 @@
 
 import { FramedPage, ReviewItem } from '@gainhow-review/data';
 import { ImportList, ModelInfo, ExportList } from '@gainhow-review/ui';
-import { realpath } from 'fs';
 import React, { CSSProperties, useState } from 'react';
-import { reviewItem, singleSheet1, uploadFileStatuses1 } from '../testObjects1';
-import { Canvans as Canvas } from './canvans/Canvans'
-import { SideToolBar } from './side-tool-bar/SideToolBar';
 import WorkSpace from './work-space/WorkSpace';
 
   import './WorkingStage.module.css';
@@ -86,7 +82,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
             );
             newFramedPage.sourceFileId = fileId;
             newFramedPage.sourcePageNumber = pageIndex;
-            let newReviewItemForBuffering: ReviewItem = bufferedReviewItem.setFramedPage(
+            let newReviewItemForBuffering: ReviewItem = bufferedReviewItem.setFramedPageImmutably(
               newFramedPage.reviewModel.modelIndexInReviewItem,
               newFramedPage.frameIndex,
               newFramedPage

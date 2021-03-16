@@ -28,6 +28,7 @@ export default class SaddleStichedBook extends Book implements SaddleStichedBook
             coverCoating, 
             innerPageCoating
         );
+        this.productSubTypeChineseName = '騎馬釘書';
     }
     protected createFrameDictionary(): FrameDictionary {
         return new SaddleStitchedBookFrameDictionary(this);
