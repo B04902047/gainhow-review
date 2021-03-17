@@ -9,7 +9,7 @@ import ReviewItem from "./ReviewItem";
 export default class ReviewModel implements ReviewModelInterface {
 
     @Exclude()
-    protected _framedPages: Map<string, FramedPage> = new Map();
+    protected _framedPages: Array<FramedPage> = new Array();
 
     @Exclude()
     protected _frameDictionary?: FrameDictionary;
@@ -18,25 +18,26 @@ export default class ReviewModel implements ReviewModelInterface {
     public reviewItem: ReviewItem;
 
     constructor(
-        public readonly modelIndexInReviewItem: number,
+        public readonly modelName: string,
         reviewItem: ReviewItem
     ) {
         this.reviewItem = reviewItem;
         this.createAndSetBlankFramedPages();
     }
 
-    public getFrame(index: string): Frame | undefined {
-        return this.frameDictionary.getFrame(index);
+    public getFrame(name: string): Frame | undefined {
+        return this.frameDictionary.getFrame(name);
     }
 
-    public setFramedPageImmutably(index: string, framedPage: FramedPage): ReviewModel {
+    public setFramedPageImmutably(index: number, framedPage: FramedPage): ReviewModel {
         let newReviewModel = new ReviewModel(
-            this.modelIndexInReviewItem,
+            this.modelName,
             this.reviewItem
         );
-        let newFramedPages
-            = new Map(this.framedPages)
-                .set(index, framedPage);
+        let newFramedPages = new Array<FramedPage>();
+            newFramedPages = [...this.framedPages];
+            newFramedPages[index] = framedPage;
+            
         newFramedPages.forEach((framedPage) => {
             framedPage.reviewModel = newReviewModel;
         })
@@ -46,40 +47,29 @@ export default class ReviewModel implements ReviewModelInterface {
 
     @Expose()
     @Type(() => FramedPage)
-    public get framedPages(): Map<string, FramedPage> {
-        if (this._framedPages.size !== this.numberOfFramedPages) return this.createAndSetBlankFramedPages();
+    public get framedPages(): Array<FramedPage> {
+        if (this._framedPages.length !== this.numberOfFramedPages) return this.createAndSetBlankFramedPages();
         return this._framedPages;
     }
 
     @Expose({toPlainOnly: true})
     public get numberOfFramedPages(): number {
-        return this.frameIndices.length;
+        return this.frameNames.length;
     }
-    public set framedPages(framedPages: Map<string, FramedPage>) {
-        if (framedPages.size !== this.numberOfFramedPages) throw new Error("map size inconsistent");
+    public set framedPages(framedPages: Array<FramedPage>) {
+        if (framedPages.length !== this.numberOfFramedPages) throw new Error("map size inconsistent");
         this._framedPages = framedPages;
     }
-    protected createAndSetBlankFramedPages(): Map<string, FramedPage> {
+    protected createAndSetBlankFramedPages(): Array<FramedPage> {
         this.framedPages = this.createBlankFramedPages();
         return this.framedPages;
     }
 
-    protected createBlankFramedPages(): Map<string, FramedPage> {
-        let framedPages = new Map();
-        let frameIndices = this.frameIndices;
-        for (const frameIndex of frameIndices) {
-            framedPages.set(
-                frameIndex,
-                new FramedPage(
-                    frameIndex,
-                    this
-                )
-            )
-        }
-        return framedPages;
+    protected createBlankFramedPages(): Array<FramedPage> {
+        return this.frameNames.map((name) => new FramedPage(name, this));
     }
-    public get frameIndices(): Array<string> {
-        return this.frameDictionary.frameIndices;
+    public get frameNames(): Array<string> {
+        return this.frameDictionary.frameNames;
     }
     public get frameDictionary(): FrameDictionary {
         if (!this._frameDictionary) return this.getAndSetFrameDictionary();

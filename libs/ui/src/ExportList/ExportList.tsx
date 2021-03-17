@@ -13,10 +13,10 @@ import ExportingModel from './exporting-model/ExportingModel';
 /* eslint-disable-next-line */
 export interface ExportListProps {
   selectedModelIndex: number;
-  selectedFrameIndex: string;
+  selectedFrameIndex: number;
   reviewItem: ReviewItem;
   style: CSSProperties;
-  onFrameSelect(modelIndex: number, frameIndex: string): void;
+  onFrameSelect(modelIndex: number, frameIndex: number): void;
 }
 
 export function ExportList(props: ExportListProps) {
@@ -33,28 +33,27 @@ export function ExportList(props: ExportListProps) {
   let modelsStyle: CSSProperties = {
     marginLeft: 37
   }
-  let modelIndices: number[] = Array.from(props.reviewItem.models.keys());
-  let models: Map<number, ReviewModel> = props.reviewItem.models;
+  let models: ReviewModel[] = props.reviewItem.models;
   let modelStyle: CSSProperties = {
     display: "inline-block",
   };
   return (
     <div style={style}>
       <div style={modelsStyle}>
-        {modelIndices.map((modelIndex => {
+        {models.map((model: ReviewModel, modelIndex: number) => {
           return (
             <div
               key={modelIndex}
               style={modelStyle}
             >
               <ExportingModel
-                onFrameSelect={(frameIndex: string) => props.onFrameSelect(modelIndex, frameIndex)}
-                reviewModel={models.get(modelIndex)}
+                onFrameSelect={(frameIndex: number) => props.onFrameSelect(modelIndex, frameIndex)}
+                reviewModel={model}
                 selectedFrameIndex={(props.selectedModelIndex === modelIndex)? props.selectedFrameIndex : undefined}
               />
             </div>
           )
-        }))}
+        })}
       </div>
     </div>
   );

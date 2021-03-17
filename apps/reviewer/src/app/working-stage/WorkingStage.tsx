@@ -16,10 +16,9 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
 
   let [bufferedReviewItem, updateBufferedReviewItem] = useState<ReviewItem>(props.initialReviewItem);
 
-  let firstModelIndex: number = 1;
-  let firstFrameIndex: string = bufferedReviewItem.frameDictionary.frameIndices[0];
-  let [[selectedModelIndex, selectedFrameIndex], selectFrame] = useState<[number, string]>([firstModelIndex, firstFrameIndex]);
-  let selectedFramedPage: FramedPage | undefined = bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex);
+  let [[selectedModelIndex, selectedFrameIndex], selectFrame] = useState<[number, number]>([0, 0]);
+  let selectedFramedPage: FramedPage | undefined
+    = bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex);
   if (!selectedFramedPage) throw new Error("debug: selected frame is undefined???å");
 
   let [importListIsHidden, setImportListIsHidden] = useState<boolean>(false);
@@ -81,14 +80,14 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
           files={bufferedReviewItem.status.uploadFileStatuses}
           selectPage={(fileId: string, pageIndex: number) => {
             let newFramedPage: FramedPage = new FramedPage(
-              selectedFramedPage.frameIndex,
+              selectedFramedPage.frameName,
               selectedFramedPage.reviewModel
             );
             newFramedPage.sourceFileId = fileId;
             newFramedPage.sourcePageNumber = pageIndex;
             let newReviewItemForBuffering: ReviewItem = bufferedReviewItem.setFramedPageImmutably(
-              newFramedPage.reviewModel.modelIndexInReviewItem,
-              newFramedPage.frameIndex,
+              selectedModelIndex,
+              selectedFrameIndex,
               newFramedPage
             );
             updateBufferedReviewItem(newReviewItemForBuffering);
@@ -102,7 +101,6 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
           isHidden={importListIsHidden}
           onToggle={() => setImportListIsHidden(!importListIsHidden)}
         />
-      
         <WorkSpace
           style={workSpaceStyle}
           framedPage={bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex)}
@@ -119,7 +117,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
         reviewItem={bufferedReviewItem}
         selectedModelIndex={selectedModelIndex}
         selectedFrameIndex={selectedFrameIndex}
-        onFrameSelect={(modelIndex: number, frameIndex: string) => selectFrame([modelIndex, frameIndex])}
+        onFrameSelect={(modelIndex: number, frameIndex: number) => selectFrame([modelIndex, frameIndex])}
       />
       <div style={downRightAreaStyle}>
         <Button

@@ -99,7 +99,7 @@ const reviewItem = new ReviewItem(
     singleSheet1
 );
 
-let frameIndices: string[] = reviewItem.frameDictionary.frameIndices;
+let frameIndices: string[] = reviewItem.frameDictionary.frameNames;
 const reviewModel1: ReviewModel = reviewItem.models.get(1);
 const page1_1: FramedPage = reviewModel1.framedPages.get(frameIndices[0]);
 page1_1.sourceFileId = fileId1;

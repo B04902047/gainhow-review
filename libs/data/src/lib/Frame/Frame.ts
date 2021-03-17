@@ -17,6 +17,7 @@ export default abstract class Frame {
  
 
     constructor(
+        public readonly frameName : string,  //frameIndex
         readonly maxWidth: number,  // 最大寬度（mm）
         readonly maxHeight: number  // 最大高度（mm）
     ) {

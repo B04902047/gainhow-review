@@ -39,16 +39,16 @@ export type ReviewingProgress = typeof REVIEWING_PROGRESS[number];
 
 // 審稿頁與框的配對
 export interface ReviewModel {
-    readonly modelIndexInReviewItem: number;
-    framedPages: Map<string, FramedPage>;
+    readonly modelName: string;
+    framedPages: Array<FramedPage>;
 }
 // 審稿頁與框的資訊
 export interface FramedPage {
+    frameName: string;
     sourcePageJpegUrl?: string;
     sourcePagePdfUrl?: string;
     resultingJpegUrl?: string;
     resultingPdfUrl?: string;
-    frameIndex: string; 
     positionX?: number;
     positionY?: number;
     scaleX?: number;

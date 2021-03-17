@@ -6,7 +6,7 @@ export default abstract class FrameDictionary {
     constructor(
         readonly product: Product  
     ) {}
-    public get frameIndices(): Array<string> {
+    public get frameNames(): Array<string> {
         return Array.from(this.frames.keys());
     }
     public getFrame(frameIndex: string): Frame | undefined {

@@ -11,7 +11,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 export default class ReviewItem implements ReviewItem {
     
     @Exclude()
-    protected _models: Map<number, ReviewModel> = new Map();
+    protected _models: Array<ReviewModel> = [];
 
     @Type(() => ReviewStatus)
     public readonly status: ReviewStatus;
@@ -37,37 +37,34 @@ export default class ReviewItem implements ReviewItem {
         return this.status.numberOfModels;
     }
 
-    public getFramedPage(modelIndex: number, frameIndex: string): FramedPage | undefined {
-        let model: ReviewModel | undefined = this.models.get(modelIndex);
+    public getFramedPage(modelIndex: number, frameIndex: number): FramedPage | undefined {
+        let model: ReviewModel | undefined = this.models[modelIndex];
         if (!model) return undefined;
-        return model.framedPages.get(frameIndex);
+        return model.framedPages[frameIndex];
     }
 
-    public set models(models: Map<number, ReviewModel>) {
-        if (models.size !== this.numberOfModels) {
-            throw new Error(`number of models inconsistent: should be ${this.numberOfModels}, but has ${models.size}`);
+    public set models(models: Array<ReviewModel>) {
+        if (models.length !== this.numberOfModels) {
+            throw new Error(`number of models inconsistent: should be ${this.numberOfModels}, but has ${models.length}`);
         }
         this._models = models;
     }
 
     @Expose()
     @Type(() => ReviewModel)
-    public get models(): Map<number, ReviewModel> {
-        if (this._models.size !== this.numberOfModels) return this.createAndSetBlankModels();
+    public get models(): Array<ReviewModel> {
+        if (this._models.length !== this.numberOfModels) return this.createAndSetBlankModels();
         return this._models;
     }
 
-    protected createAndSetBlankModels(): Map<number, ReviewModel> {
+    protected createAndSetBlankModels(): Array<ReviewModel> {
         this.models = this.createBlankModels();
         return this.models;
     }
-    protected createBlankModels(): Map<number, ReviewModel> {
-        let models = new Map<number, ReviewModel>();
-        for (let modelIndex: number = 1; modelIndex <= this.numberOfModels; modelIndex++) {
-            models.set(
-                modelIndex,
-                new ReviewModel(modelIndex, this)
-            );
+    protected createBlankModels(): Array<ReviewModel> {
+        let models = [];
+        for (let modelNumber: number = 1; modelNumber <= this.numberOfModels; modelNumber++) {
+            models.push(new ReviewModel(`第${modelNumber}款`, this))
         }
         return models;
     }
@@ -96,9 +93,9 @@ export default class ReviewItem implements ReviewItem {
             this.status,
             this.product
         );
-        let newReviewModels
-            = new Map<number, ReviewModel>(this.models)
-                .set(modelIndex, model);
+        let newReviewModels: Array<ReviewModel>
+            = [...this.models];
+        newReviewModels[modelIndex] = model;
         newReviewModels.forEach((model) => {
             model.reviewItem = newReviewItem;
         })
@@ -106,9 +103,9 @@ export default class ReviewItem implements ReviewItem {
         return newReviewItem;
     }
 
-    public setFramedPageImmutably(modelIndex: number, frameIndex: string, framedPage: FramedPage): ReviewItem {
+    public setFramedPageImmutably(modelIndex: number, frameIndex: number, framedPage: FramedPage): ReviewItem {
         let oldModel: ReviewModel | undefined
-            = this.models.get(modelIndex);
+            = this.models[modelIndex];
         if (!oldModel) throw new Error("modelIndex out of index");
         let newModel: ReviewModel = oldModel.setFramedPageImmutably(frameIndex, framedPage);
         return this.setReviewModelImmutably(modelIndex, newModel);
