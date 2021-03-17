@@ -78,12 +78,12 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
         <ImportList
           style={importListStyle}
           files={bufferedReviewItem.status.uploadFileStatuses}
-          selectPage={(fileId: string, pageIndex: number) => {
+          selectPage={(fileIndex: number, pageIndex: number) => {
             let newFramedPage: FramedPage = new FramedPage(
               selectedFramedPage.frameName,
               selectedFramedPage.reviewModel
             );
-            newFramedPage.sourceFileId = fileId;
+            newFramedPage.sourceFileIndex = fileIndex;
             newFramedPage.sourcePageNumber = pageIndex;
             let newReviewItemForBuffering: ReviewItem = bufferedReviewItem.setFramedPageImmutably(
               selectedModelIndex,
@@ -92,9 +92,9 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
             );
             updateBufferedReviewItem(newReviewItemForBuffering);
           }}
-          isSelected={(fileId: string, pageIndex: number) => {
+          isSelected={(fileNumber: number, pageIndex: number) => {
             return (
-              fileId === selectedFramedPage.sourceFileId
+              fileNumber === selectedFramedPage.sourceFileIndex
               && pageIndex === selectedFramedPage.sourcePageNumber
             )
           }}

@@ -13,11 +13,7 @@ export default abstract class Frame {
     public abstract readonly cutOutAreas: Array<CSSClipPath>;    // 鏤空範圍的css clip-paths (單位：%)
     public abstract readonly marks: Array<Mark>;       // 其它記號的SVG strings
 
-
- 
-
     constructor(
-        public readonly frameName : string,  //frameIndex
         readonly maxWidth: number,  // 最大寬度（mm）
         readonly maxHeight: number  // 最大高度（mm）
     ) {

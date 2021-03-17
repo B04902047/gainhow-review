@@ -10,8 +10,8 @@ import FolderIcon from '../Icon/FolderIcon.svg';
 
 export interface ImportListProps {
   files: Array<UploadFileStatus>;
-  selectPage(fileIndex : string, pageIndex : number) : void;
-  isSelected(fileIndex : string, pageIndex : number) : boolean;
+  selectPage(fileIndex : number, pageIndex : number) : void;
+  isSelected(fileIndex : number, pageIndex : number) : boolean;
   style: CSSProperties;
   isHidden: boolean;
   onToggle(): void;
@@ -85,14 +85,14 @@ export function ImportList(props: ImportListProps) {
   let importedFiles: JSX.Element[] = props.files.filter((fileStatus: UploadFileStatus) => {
     if (searchBarValue === '' || fileStatus.fileName.includes(searchBarValue)) return true;
     else return false;
-  }).map((fileStatus: UploadFileStatus) => {
+  }).map((fileStatus: UploadFileStatus, fileIndex: number) => {
     let fileId: string = fileStatus.fileId;
     return (
       <ImportedFile
         key={fileId}
         fileStatus={fileStatus}
-        onPageSelect={(pageIndex : number) => { props.selectPage(fileId, pageIndex); }}
-        isSelected={(pageIndex : number) => { return props.isSelected(fileId, pageIndex); }}
+        onPageSelect={(pageIndex : number) => { props.selectPage(fileIndex, pageIndex); }}
+        isSelected={(pageIndex : number) => { return props.isSelected(fileIndex, pageIndex); }}
       />
     );
   });

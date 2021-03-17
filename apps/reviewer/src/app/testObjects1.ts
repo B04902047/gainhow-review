@@ -79,10 +79,11 @@ const uploadFileStatus2 = new UploadFileStatus(
     [pageInfo1, pageInfo2]
   );
 
-const uploadFileStatuses1 = new Map<string, UploadFileStatus>()
-    .set(uploadFileStatus1.fileId, uploadFileStatus1)
-    .set(uploadFileStatus2.fileId, uploadFileStatus2)
-    .set("wfeads", uploadFileStatus2);
+const uploadFileStatuses1 = [
+    uploadFileStatus1,
+    uploadFileStatus2,
+    uploadFileStatus2
+]
 
 const reviewStatus1 = new ReviewStatus(
     3
@@ -100,30 +101,30 @@ const reviewItem = new ReviewItem(
 );
 
 let frameIndices: string[] = reviewItem.frameDictionary.frameNames;
-const reviewModel1: ReviewModel = reviewItem.models.get(1);
-const page1_1: FramedPage = reviewModel1.framedPages.get(frameIndices[0]);
-page1_1.sourceFileId = fileId1;
+const reviewModel1: ReviewModel = reviewItem.models[0];
+const page1_1: FramedPage = reviewModel1.framedPages[0];
+page1_1.sourceFileIndex = 0;
 page1_1.sourcePageNumber = 0;
 page1_1.positionX = -20;
 page1_1.positionY = 10;
 page1_1.rotationDegree = 30;
-const page1_2: FramedPage = reviewModel1.framedPages.get(frameIndices[1])
-page1_2.sourceFileId = fileId1;
+const page1_2: FramedPage = reviewModel1.framedPages[1]
+page1_2.sourceFileIndex = 0;
 page1_2.sourcePageNumber = 1;
 
-const reviewModel2: ReviewModel = reviewItem.models.get(2);
-const page2_1 = reviewModel2.framedPages.get(frameIndices[0])
-page2_1.sourceFileId = fileId1;
+const reviewModel2: ReviewModel = reviewItem.models[1];
+const page2_1 = reviewModel2.framedPages[0]
+page2_1.sourceFileIndex = 0;
 page2_1.sourcePageNumber = 0;
-const page2_2 = reviewModel2.framedPages.get(frameIndices[1])
-page2_2.sourceFileId = fileId1;
+const page2_2 = reviewModel2.framedPages[1]
+page2_2.sourceFileIndex = 0;
 page2_2.sourcePageNumber = 1;
-const reviewModel3: ReviewModel = reviewItem.models.get(3);
-const page3_1 = reviewModel3.framedPages.get(frameIndices[0])
-page3_1.sourceFileId = fileId1;
+const reviewModel3: ReviewModel = reviewItem.models[2];
+const page3_1 = reviewModel3.framedPages[0]
+page3_1.sourceFileIndex = 0;
 page3_1.sourcePageNumber = 0;
-const page3_2 = reviewModel3.framedPages.get(frameIndices[1])
-page3_2.sourceFileId = fileId1;
+const page3_2 = reviewModel3.framedPages[1]
+page3_2.sourceFileIndex = 0;
 page3_2.sourcePageNumber = 1;
 
 export {

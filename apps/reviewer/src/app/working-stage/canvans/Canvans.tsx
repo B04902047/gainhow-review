@@ -129,7 +129,7 @@ export function Canvans(props: CanvansProps) {
                  props.setIsEditing(true);e.stopPropagation();}}
             />
           </div>
-          <div style={editingFrameNameStyle}>{props.framePage.frameIndex}</div>
+          <div style={editingFrameNameStyle}>{props.framePage.frameName}</div>
         </div>
     </div>
   );
