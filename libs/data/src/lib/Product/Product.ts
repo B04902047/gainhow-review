@@ -3,8 +3,11 @@
 import * as Interface from "@gainhow-review/interfaces";
 import FrameDictionary from "../FrameDictionary/FrameDictionary";
 import { Exclude } from "class-transformer";
+import { Entity, TableInheritance } from "typeorm";
 
 @Exclude()
+@Entity()
+@TableInheritance()
 export default abstract class Product implements Interface.Product {
     readonly abstract __productSubType: Interface.ProductSubtypeName;
     readonly abstract productSubTypeChineseName: string;

@@ -14,7 +14,7 @@ class ReviewReception implements ReviewReceptionInterface {
         let newStatus = new ReviewStatus(reviewRegistrationInfo.numberOfModels);
         let newReviewItem = new ReviewItem(newStatus, reviewRegistrationInfo.product);
         const connection = await createConnection(this.connectionOptions);
-        connection.manager.save(newReviewItem);
+        await connection.manager.save(newReviewItem);
         if (newReviewItem.reviewId !== undefined)
             return newReviewItem.reviewId;
         throw new Error("TypeORM should have set reviewId, but didn't.");

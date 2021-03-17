@@ -26,7 +26,7 @@ export function ExportingModel(props: ExportingModelProps) {
     fontSize: 16,
     fontFamily: "Arial",
     fontWeight: "bold"
-  }
+  };
   let pageIndices: string[] = props.reviewModel.frameIndices;
   let framedPages: Map<string, FramedPage> = props.reviewModel.framedPages;
   return (
