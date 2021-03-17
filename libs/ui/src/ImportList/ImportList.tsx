@@ -9,7 +9,7 @@ import FolderIcon from '../Icon/FolderIcon.svg';
 /* eslint-disable-next-line */
 
 export interface ImportListProps {
-  files: Map<string, UploadFileStatus>;
+  files: Array<UploadFileStatus>;
   selectPage(fileIndex : string, pageIndex : number) : void;
   isSelected(fileIndex : string, pageIndex : number) : boolean;
   style: CSSProperties;
@@ -82,13 +82,11 @@ export function ImportList(props: ImportListProps) {
     padding: '16px 8px',
     userSelect: 'none'
   }
-  let fileIds: string[] = Array.from(props.files.keys());
-  let importedFiles: React.ReactElement[] = fileIds.filter((fileId: string) => {
-    let fileStatus: UploadFileStatus = props.files.get(fileId);
+  let importedFiles: JSX.Element[] = props.files.filter((fileStatus: UploadFileStatus) => {
     if (searchBarValue === '' || fileStatus.fileName.includes(searchBarValue)) return true;
     else return false;
-  }).map((fileId: string) => {
-    let fileStatus: UploadFileStatus = props.files.get(fileId);
+  }).map((fileStatus: UploadFileStatus) => {
+    let fileId: string = fileStatus.fileId;
     return (
       <ImportedFile
         key={fileId}

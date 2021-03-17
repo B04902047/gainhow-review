@@ -12,7 +12,7 @@ export interface ReviewStatus {
     numberOfModels: number;
     modelIds: Array<string>;
     numberOfFiles: number;
-    uploadFileStatuses: Map<string, UploadFileStatus>;
+    uploadFileStatuses: Array<UploadFileStatus>;
     progress: ReviewingProgress;
 }
 // 登記審稿資訊

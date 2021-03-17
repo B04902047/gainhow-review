@@ -5,7 +5,7 @@ import UploadFileStatus from "./UploadFileStatus";
 export default class ReviewStatus implements ReviewStatusInterface {
 
     @Type(() => UploadFileStatus)
-    public uploadFileStatuses = new Map<string, UploadFileStatus>();
+    public uploadFileStatuses: UploadFileStatus[] = [];
 
     // TODO: enum? string literal? serializable?
     public progress: ReviewingProgress;
