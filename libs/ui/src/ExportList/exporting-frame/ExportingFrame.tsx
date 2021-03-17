@@ -68,7 +68,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
         />
       </div>
       <div style={pageIndexStyle}>
-        {props.framedPage.frameIndex}
+        {props.framedPage.frameName}
       </div>
     </div>
   );

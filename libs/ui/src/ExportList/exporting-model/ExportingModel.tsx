@@ -12,8 +12,8 @@ import ExportingFrame from '../exporting-frame/ExportingFrame';
 
 /* eslint-disable-next-line */
 export interface ExportingModelProps {
-  selectedFrameIndex?: string;
-  onFrameSelect(frameIndex: string): void;
+  selectedFrameIndex?: number;
+  onFrameSelect(frameIndex: number): void;
   reviewModel: ReviewModel
 }
 
@@ -26,21 +26,20 @@ export function ExportingModel(props: ExportingModelProps) {
     fontSize: 16,
     fontFamily: "Arial",
     fontWeight: "bold"
-  };
-  let pageIndices: string[] = props.reviewModel.frameIndices;
-  let framedPages: Map<string, FramedPage> = props.reviewModel.framedPages;
+  }
+  let framedPages: FramedPage[] = props.reviewModel.framedPages;
   return (
     <div style={style}>
       <div style={modelIndexStyle}>
-        第 {props.reviewModel.modelIndexInReviewItem} 款
+        {props.reviewModel.modelName}
       </div>
       <div>
-        {pageIndices.map((frameIndex: string) => {
+        {framedPages.map((framedPage: FramedPage, frameIndex: number) => {
           return (
             <ExportingFrame
               key={frameIndex}
               onSelect={() => props.onFrameSelect(frameIndex)}
-              framedPage={framedPages.get(frameIndex)}
+              framedPage={framedPage}
               isSelected={props.selectedFrameIndex === frameIndex}
             />
           )

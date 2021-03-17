@@ -6,7 +6,7 @@ import ReviewModel from "./ReviewModel";
 import { UploadFilePageInfo } from "../Review";
 
 export default class FramedPage implements FramedPageInterface { 
-    sourceFileId?: string;
+    sourceFileIndex?: number;
     sourcePageNumber?: number;
     resultingJpegUrl?: string;
     resultingPdfUrl?: string;
@@ -18,7 +18,7 @@ export default class FramedPage implements FramedPageInterface {
     public reviewModel: ReviewModel;
 
     constructor (
-        public readonly frameIndex: string,
+        public readonly frameName: string,
         reviewModel: ReviewModel,
         public positionX: number = 0,
         public positionY: number = 0,
@@ -31,17 +31,17 @@ export default class FramedPage implements FramedPageInterface {
     }
 
     public getFrame(): Frame | undefined {
-      return this.reviewModel.getFrame(this.frameIndex);
+      return this.reviewModel.getFrame(this.frameName);
     }
 
     public getSourcePageInfo(): UploadFilePageInfo | undefined {
-        if (this.sourceFileId === undefined
+        if (this.sourceFileIndex === undefined
             || this.sourcePageNumber === undefined
         ) {
             return undefined;
         }
         
-        let fileStatus: UploadFileStatus | undefined = this.reviewModel.reviewItem.status.uploadFileStatuses.get(this.sourceFileId);
+        let fileStatus: UploadFileStatus | undefined = this.reviewModel.reviewItem.status.uploadFileStatuses[this.sourceFileIndex];
         if (!fileStatus || !fileStatus.pages) {
             return undefined;
         }
