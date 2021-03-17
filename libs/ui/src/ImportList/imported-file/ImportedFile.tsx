@@ -20,7 +20,7 @@ export function ImportedFile(props: ImportedFileProps) {
 
   let toggleIcon = (isFolded)? closeIcon: openIcon;
 
-  let pages: React.ReactElement[] = props.fileStatus.pages.map((pageInfo, index) => {
+  let pages: React.ReactElement[] = props.fileStatus.pageInfos.map((pageInfo, index) => {
     let style: CSSProperties = {
       margin: '0px 0px 10px 0px',
     };

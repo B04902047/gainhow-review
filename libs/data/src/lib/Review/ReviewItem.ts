@@ -2,34 +2,54 @@
 import FrameDictionary from "../FrameDictionary/FrameDictionary";
 import Product from "../Product/Product";
 import { PRODUCT_TYPE_DISCRIMINATOR } from "../Product"
+import { ReviewItem as ReviewItemInterface } from "@gainhow-review/interfaces"
 import ReviewModel from "./ReviewModel";
 import ReviewStatus from "./ReviewStatus";
-import { deserialize, Exclude, Expose, serialize, Type } from "class-transformer";
+import { deserialize, Exclude, serialize, Type } from "class-transformer";
 import FramedPage from "./FramedPage";
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, AfterLoad, BeforeInsert, BeforeUpdate } from "typeorm";
 
-export default class ReviewItem implements ReviewItem {
+@Entity()
+export default class ReviewItem implements ReviewItemInterface {
     
-    @Exclude()
+    @PrimaryGeneratedColumn()
+    public reviewId?: string; // 資料庫要用的primary key
+
+    @Type(() => ReviewModel)
+    @OneToMany(() => ReviewModel, (model: ReviewModel) => model.reviewItem)
     protected _models: Array<ReviewModel> = [];
 
     @Type(() => ReviewStatus)
+    @Column(() => ReviewStatus)
     public readonly status: ReviewStatus;
 
     @Type(() => Product, {
         discriminator: PRODUCT_TYPE_DISCRIMINATOR
     })
-    public readonly product: Product;
+    private _product: Product;
+    public get product(): Product {
+        return this._product;
+    }
 
-    @PrimaryGeneratedColumn()
-    public reviewId?: string;
+    @Exclude()
+    @Column()
+    private _serializedProduct?: string;
+    @AfterLoad()
+    deserializeProduct(): void {
+        if (this._serializedProduct === undefined) throw new Error("TypeORM should have set '__serializedProduct' but didn't.");
+        this._product = Product.fromJson(this._serializedProduct);
+    }
+    @BeforeInsert()
+    serializeProduct(): void {
+        this._serializedProduct = Product.toJson(this._product);
+    }
     
     constructor(
         status: ReviewStatus,
         product: Product,
     ) {
         this.status = status;
-        this.product = product;
+        this._product = product;
         this.createAndSetBlankModels();
     }
 
@@ -50,8 +70,6 @@ export default class ReviewItem implements ReviewItem {
         this._models = models;
     }
 
-    @Expose()
-    @Type(() => ReviewModel)
     public get models(): Array<ReviewModel> {
         if (this._models.length !== this.numberOfModels) return this.createAndSetBlankModels();
         return this._models;
@@ -70,7 +88,7 @@ export default class ReviewItem implements ReviewItem {
     }
 
     public get frameDictionary(): FrameDictionary {
-        return this.product.frameDictionary;
+        return this._product.frameDictionary;
     }
 
     public static fromJson(text: string): ReviewItem {
@@ -91,7 +109,7 @@ export default class ReviewItem implements ReviewItem {
     public setReviewModelImmutably(modelIndex: number, model: ReviewModel): ReviewItem {
         let newReviewItem = new ReviewItem(
             this.status,
-            this.product
+            this._product
         );
         let newReviewModels: Array<ReviewModel>
             = [...this.models];

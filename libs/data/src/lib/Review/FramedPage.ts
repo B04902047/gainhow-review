@@ -1,32 +1,67 @@
 
 import { Exclude, Expose } from "class-transformer";
 import Frame from "../Frame/Frame";
-import { FramedPage as FramedPageInterface, UploadFileStatus } from "@gainhow-review/interfaces";
+import { FramedPage as FramedPageInterface} from "@gainhow-review/interfaces";
 import ReviewModel from "./ReviewModel";
-import { UploadFilePageInfo } from "../Review";
+import { UploadFilePageInfo, UploadFileStatus } from "../Review";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-export default class FramedPage implements FramedPageInterface { 
+@Entity()
+export default class FramedPage implements FramedPageInterface {
+
+    @PrimaryGeneratedColumn()
+    public id?: string;  // 資料庫要用的primary key
+
+    @Column()
     sourceFileIndex?: number;
+
+    @Column()
     sourcePageNumber?: number;
+
+    @Column()
     resultingJpegUrl?: string;
+
+    @Column()
     resultingPdfUrl?: string;
 
     @Exclude()
+    @Column()
     private _rotationDegree: number;
 
     @Exclude()
+    @ManyToOne(() => ReviewModel, (model: ReviewModel) => model.framedPages)
     public reviewModel: ReviewModel;
 
+    @Column()
+    public readonly frameName: string;
+
+    @Column()
+    public positionX: number;
+
+    @Column()
+    public positionY: number;
+
+    @Column()
+    public scaleX: number;
+
+    @Column()
+    public scaleY: number;
+
     constructor (
-        public readonly frameName: string,
+        frameName: string,
         reviewModel: ReviewModel,
-        public positionX: number = 0,
-        public positionY: number = 0,
-        public scaleX: number = 1,
-        public scaleY: number = 1,
+        positionX: number = 0,
+        positionY: number = 0,
+        scaleX: number = 1,
+        scaleY: number = 1,
         _rotationDegree: number = 0
     ) {
+        this.frameName = frameName;
         this.reviewModel = reviewModel;
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
         this._rotationDegree = _rotationDegree;
     }
 
@@ -42,10 +77,10 @@ export default class FramedPage implements FramedPageInterface {
         }
         
         let fileStatus: UploadFileStatus | undefined = this.reviewModel.reviewItem.status.uploadFileStatuses[this.sourceFileIndex];
-        if (!fileStatus || !fileStatus.pages) {
+        if (!fileStatus || !fileStatus.pageInfos) {
             return undefined;
         }
-        return fileStatus.pages[this.sourcePageNumber];
+        return fileStatus.pageInfos[this.sourcePageNumber];
     }
 
     public reset(): void {

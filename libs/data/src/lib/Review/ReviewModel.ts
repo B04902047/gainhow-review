@@ -5,22 +5,34 @@ import FrameDictionary from "../FrameDictionary/FrameDictionary";
 import { ReviewModel as ReviewModelInterface} from "@gainhow-review/interfaces";
 import FramedPage from "./FramedPage";
 import ReviewItem from "./ReviewItem";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ConnectionOptions } from "tls";
 
+@Entity()
 export default class ReviewModel implements ReviewModelInterface {
 
-    @Exclude()
-    protected _framedPages: Array<FramedPage> = new Array();
+    @PrimaryGeneratedColumn()
+    public id?: string;  // 資料庫要用的primary key
+
+    @Column()
+    public readonly modelName: string;
+
+    @Type(() => FramedPage)
+    @OneToMany(() => FramedPage, (framedPage: FramedPage) => framedPage.reviewModel)
+    protected _framedPages: Array<FramedPage> = [];
 
     @Exclude()
     protected _frameDictionary?: FrameDictionary;
 
     @Exclude()
+    @ManyToOne(() => ReviewItem, (reviewItem: ReviewItem) => reviewItem.models)
     public reviewItem: ReviewItem;
 
     constructor(
-        public readonly modelName: string,
+        modelName: string,
         reviewItem: ReviewItem
     ) {
+        this.modelName = modelName;
         this.reviewItem = reviewItem;
         this.createAndSetBlankFramedPages();
     }
@@ -45,14 +57,11 @@ export default class ReviewModel implements ReviewModelInterface {
         return newReviewModel;
     }
 
-    @Expose()
-    @Type(() => FramedPage)
     public get framedPages(): Array<FramedPage> {
         if (this._framedPages.length !== this.numberOfFramedPages) return this.createAndSetBlankFramedPages();
         return this._framedPages;
     }
 
-    @Expose({toPlainOnly: true})
     public get numberOfFramedPages(): number {
         return this.frameNames.length;
     }

@@ -86,7 +86,7 @@ export function ImportList(props: ImportListProps) {
     if (searchBarValue === '' || fileStatus.fileName.includes(searchBarValue)) return true;
     else return false;
   }).map((fileStatus: UploadFileStatus, fileIndex: number) => {
-    let fileId: string = fileStatus.fileId;
+    let fileId: string = fileStatus.uploadToken;
     return (
       <ImportedFile
         key={fileId}

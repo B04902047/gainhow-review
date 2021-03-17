@@ -1,10 +1,14 @@
 import { BookPagingDirection, BookSubtypeName, Book as BookInterface } from "@gainhow-review/interfaces";
+import { Column, Entity } from "typeorm";
 import Coat from "../Material/Coat";
 import Paper from "../Material/Paper";
 import Product from "./Product";
 
+@Entity()
 export default abstract class Book extends Product implements BookInterface {
-    readonly abstract __productSubType: BookSubtypeName
+
+    @Column()
+    readonly abstract __productSubType: BookSubtypeName;
     constructor(
         public width: number,
         public height: number,

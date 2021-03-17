@@ -5,12 +5,11 @@ import { Product } from './product'
 export interface ReviewItem {
     status: ReviewStatus;
     product: Product;
-    models: Map<number, ReviewModel>;    
+    models: Array<ReviewModel>;    
 }
 // 審稿狀態
 export interface ReviewStatus {
     numberOfModels: number;
-    modelIds: Array<string>;
     numberOfFiles: number;
     uploadFileStatuses: Array<UploadFileStatus>;
     progress: ReviewingProgress;
@@ -70,12 +69,12 @@ export type UploadFileProcessingStage = typeof UPLOAD_FILE_PROCESSING_STAGES[num
 // 上傳檔案的資訊
 export interface UploadFileStatus {
     fileName: string;
-    fileId: string;
+    uploadToken: string;
     currentStage: UploadFileProcessingStage;
     hasError: boolean;
     numberOfPages?: number;
     fileAddress?: string;
-    pages?: Array<UploadFilePageInfo>;
+    pageInfos?: Array<UploadFilePageInfo>;
     errorStage?: UploadFileProcessingStage;   
 }
 
