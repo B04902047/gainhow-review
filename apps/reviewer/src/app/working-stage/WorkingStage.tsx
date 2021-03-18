@@ -106,7 +106,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
           framedPage={bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex)}
         />
         <ModelInfo
-          product={bufferedReviewItem._product}
+          product={bufferedReviewItem.product}
           isHidden={modelInfoIsHidden}
           onToggle={() => setModelInfoIsHidden(!modelInfoIsHidden)}
           style={modelInfoStyle}

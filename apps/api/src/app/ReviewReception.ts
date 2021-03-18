@@ -5,6 +5,12 @@ class ReviewReception implements ReviewReceptionInterface {
     constructor(
         public connectionOptions: ConnectionOptions
     ) {}
+
+    // TODO: move to libs/utils
+    private getRandomString(length: number): string {
+
+    }
+
     /**
      *  根據反序列化後的reviewRegistrationInfo，初始化新的reviewItem
      *  ⇒ 把reviewItem序列化之後，用一個新的reviewId存入自己的database
@@ -12,8 +18,17 @@ class ReviewReception implements ReviewReceptionInterface {
      */
     async register(reviewRegistrationInfo: ReviewRegistrationInfo): Promise<string> {
         let newStatus = new ReviewStatus(reviewRegistrationInfo.numberOfModels);
-        let newReviewItem = new ReviewItem(newStatus, reviewRegistrationInfo.product);
         const connection = await createConnection(this.connectionOptions);
+        const reviewIdLength: number = 36;
+        let reviewId: string = this.getRandomString(reviewIdLength);
+        while (await connection.manager.findOne(ReviewItem, reviewId)) {
+            reviewId = this.getRandomString(reviewIdLength);
+        }
+        let newReviewItem = new ReviewItem(
+            reviewId,
+            newStatus,
+            reviewRegistrationInfo.product
+        );
         await connection.manager.save(newReviewItem);
         if (newReviewItem.reviewId !== undefined)
             return newReviewItem.reviewId;

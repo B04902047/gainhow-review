@@ -5,14 +5,14 @@ import FrameDictionary from "../FrameDictionary/FrameDictionary";
 import { ReviewModel as ReviewModelInterface} from "@gainhow-review/interfaces";
 import FramedPage from "./FramedPage";
 import ReviewItem from "./ReviewItem";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { ConnectionOptions } from "tls";
 
 @Entity()
 export default class ReviewModel implements ReviewModelInterface {
 
-    @PrimaryGeneratedColumn()
-    public id?: string;  // 資料庫要用的primary key
+    @PrimaryColumn()
+    public modelId: string;  // 資料庫要用的primary key
 
     @Column()
     public readonly modelName: string;
@@ -29,9 +29,11 @@ export default class ReviewModel implements ReviewModelInterface {
     public reviewItem: ReviewItem;
 
     constructor(
+        modelId: string,
         modelName: string,
         reviewItem: ReviewItem
     ) {
+        this.modelId = modelId;
         this.modelName = modelName;
         this.reviewItem = reviewItem;
         this.createAndSetBlankFramedPages();
@@ -43,6 +45,7 @@ export default class ReviewModel implements ReviewModelInterface {
 
     public setFramedPageImmutably(index: number, framedPage: FramedPage): ReviewModel {
         let newReviewModel = new ReviewModel(
+            this.modelId,
             this.modelName,
             this.reviewItem
         );

@@ -7,13 +7,15 @@ import ReviewModel from "./ReviewModel";
 import ReviewStatus from "./ReviewStatus";
 import { deserialize, Exclude, serialize, Type } from "class-transformer";
 import FramedPage from "./FramedPage";
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, AfterLoad, BeforeInsert, BeforeUpdate } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, AfterLoad, BeforeInsert, BeforeUpdate, PrimaryColumn } from "typeorm";
+import UploadFileStatus from "./UploadFileStatus";
+import UploadFilePageInfo from "./UploadFilePageInfo";
 
 @Entity()
 export default class ReviewItem implements ReviewItemInterface {
     
-    @PrimaryGeneratedColumn()
-    public reviewId?: string; // 資料庫要用的primary key
+    @PrimaryColumn()
+    readonly reviewId: string; // 資料庫要用的primary key
 
     @Type(() => ReviewModel)
     @OneToMany(() => ReviewModel, (model: ReviewModel) => model.reviewItem)
@@ -45,9 +47,11 @@ export default class ReviewItem implements ReviewItemInterface {
     }
     
     constructor(
+        reviewId: string,
         status: ReviewStatus,
         product: Product,
     ) {
+        this.reviewId = reviewId;
         this.status = status;
         this._product = product;
         this.createAndSetBlankModels();
@@ -82,9 +86,22 @@ export default class ReviewItem implements ReviewItemInterface {
     protected createBlankModels(): Array<ReviewModel> {
         let models = [];
         for (let modelNumber: number = 1; modelNumber <= this.numberOfModels; modelNumber++) {
-            models.push(new ReviewModel(`第${modelNumber}款`, this))
+            models.push(new ReviewModel(
+                generateModelIdFromReviewId(this.reviewId, modelNumber),
+                `第${modelNumber}款`,
+                this
+            ))
         }
         return models;
+
+        function generateModelIdFromReviewId(reviewId: string, modelNumber: number): string {
+            let modelNumberInString: string = modelNumber.toString();
+            let numberOfModelNumberDigits: number = modelNumberInString.length;
+            const modelIdMaximalLength: number = 3;
+            let numberOfZerosToAppend: number = modelIdMaximalLength - numberOfModelNumberDigits;
+            let modelId: string = reviewId + '0'.repeat(numberOfZerosToAppend) + modelNumberInString;
+            return modelId;
+        }
     }
 
     public get frameDictionary(): FrameDictionary {
@@ -99,6 +116,12 @@ export default class ReviewItem implements ReviewItemInterface {
                 framedPage.reviewModel = model;
             });
         });
+        item.status.uploadFileStatuses.forEach((fileStatus: UploadFileStatus) => {
+            fileStatus.reviewStatus = item.status;
+            fileStatus.pageInfos?.forEach((pageInfo: UploadFilePageInfo) => {
+                pageInfo.fileStatus = fileStatus;
+            });
+        });
         return item;
     }
     public static toJson(item: ReviewItem): string {
@@ -108,6 +131,7 @@ export default class ReviewItem implements ReviewItemInterface {
 
     public setReviewModelImmutably(modelIndex: number, model: ReviewModel): ReviewItem {
         let newReviewItem = new ReviewItem(
+            this.reviewId,
             this.status,
             this._product
         );

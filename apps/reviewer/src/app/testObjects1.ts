@@ -32,8 +32,16 @@ const reviewId1: string = "test-review-id";
 const fileName1: string = "test-file-name";
 const fileId1: string = "test-file-id1";
 
+let uploadFileStatus1 = new UploadFileStatus(
+    fileName1,
+    fileId1,
+    "GENERATING_PRINTABLE_PAGES",
+    2,
+    "",
+)
 
 const pageInfo3 = new UploadFilePageInfo(
+    uploadFileStatus1,
     "",
     "https://cdn.vox-cdn.com/thumbor/iAy4n7zv75DQ2t3EFEJUcqkg7c0=/0x0:1024x512/1820x1213/filters:focal(289x75:451x237):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/67654822/halloween2020.0.jpg",
     92,
@@ -41,22 +49,28 @@ const pageInfo3 = new UploadFilePageInfo(
 )
 
 const pageInfo4 = new UploadFilePageInfo(
+    uploadFileStatus1,
     "",
     "https://cdn.vox-cdn.com/thumbor/iAy4n7zv75DQ2t3EFEJUcqkg7c0=/0x0:1024x512/1820x1213/filters:focal(289x75:451x237):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/67654822/halloween2020.0.jpg",
     92,
     61
 )
 
-const uploadFileStatus1 = new UploadFileStatus(
-    fileName1,
-    fileId1,
-    "GENERATING_PRINTABLE_PAGES",
+uploadFileStatus1.pageInfos = [pageInfo3, pageInfo4];
+
+
+
+let uploadFileStatus2 = new UploadFileStatus(
+    'testImage13424324324234324324324324',
+    'file2',
+   'GENERATING_PRINTABLE_PAGES',
     2,
-    "",
-    [pageInfo3, pageInfo4]
-)
+    '',
+    
+  );
 
 const pageInfo1 = new UploadFilePageInfo(
+    uploadFileStatus2,
     "",
     testImage1,
     92,
@@ -64,20 +78,14 @@ const pageInfo1 = new UploadFilePageInfo(
 );
 
 const pageInfo2 = new UploadFilePageInfo(
+    uploadFileStatus2,
     "",
     testImage2,
     92,
     56
 )
+uploadFileStatus2.pageInfos = [pageInfo1, pageInfo2];
 
-const uploadFileStatus2 = new UploadFileStatus(
-    'testImage13424324324234324324324324',
-    'file2',
-   'GENERATING_PRINTABLE_PAGES',
-    2,
-    '',
-    [pageInfo1, pageInfo2]
-  );
 
 const uploadFileStatuses1 = [
     uploadFileStatus1,
