@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { ReviewItem, ReviewRegistrationInfo, ReviewStatus } from '@gainhow-review/data';
+import { FramedPage, ReviewItem, ReviewModel, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data';
 import { RegisterResponseBody } from '@gainhow-review/interfaces';
 import { deserialize } from 'class-transformer';
 import * as express from 'express';
@@ -10,11 +10,48 @@ const app = express();
 
 app.use(express.json());
 
-const connectionPromise: Promise<Connection> = createConnection();
+const connectionPromise: Promise<Connection> = createConnection({
+  "type": "mysql",
+  "host": "192.168.3.180",
+  "port": 3306,
+  "username": "gainhow",
+  "password": "gding1234",
+  "database": "gainghow-test",
+  "synchronize": true,
+  "logging": false,
+  "entities": [
+    ReviewItem,
+    ReviewModel,
+    ReviewStatus,
+    UploadFileStatus,
+    UploadFilePageInfo,
+    FramedPage
+  ],
+  "migrations": [
+     "apps/api/src/migration/**/*.ts"
+  ],
+  "subscribers": [
+     "apps/api/src/subscriber/**/*.ts"
+  ],
+  "cli": {
+     "entitiesDir": "lib/data/src/Review",
+     "migrationsDir": "apps/api/src/migration",
+     "subscribersDir": "apps/api/src/subscriber"
+  }
+});
 
 app.post('/api/register', async (req, res) => {
   let connection: Connection;
-  connection = getConnection();
+  try {
+    connection = await connectionPromise;
+  } catch (error) {
+    res.send({
+      isSuccess: false,
+      error
+    });
+    return;
+  }
+  
   let reviewRegistrationInfo: ReviewRegistrationInfo
     = deserialize(ReviewRegistrationInfo, req.body.reviewRegistrationInfoJson);
   let responseBody: RegisterResponseBody;

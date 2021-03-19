@@ -77,7 +77,7 @@ export default class FramedPage implements FramedPageInterface {
             return undefined;
         }
         
-        let fileStatus: UploadFileStatus | undefined = this.reviewModel.reviewItem.status.uploadFileStatuses[this.sourceFileIndex];
+        let fileStatus: UploadFileStatus | undefined = this.reviewModel.reviewItem.status!.uploadFileStatuses![this.sourceFileIndex];
         if (!fileStatus || !fileStatus.pageInfos) {
             return undefined;
         }

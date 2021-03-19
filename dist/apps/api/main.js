@@ -99,9 +99,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "tslib");
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(tslib__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @gainhow-review/data */ "./libs/data/src/index.ts");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "axios");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
-
 
 
 class ReviewReception {
@@ -110,6 +107,13 @@ class ReviewReception {
     }
     // TODO: move to libs/utils
     getRandomString(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
     /**
      *  根據反序列化後的reviewRegistrationInfo，初始化新的reviewItem
@@ -121,52 +125,57 @@ class ReviewReception {
             let newStatus = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewStatus"](reviewRegistrationInfo.numberOfModels);
             const reviewIdLength = 36;
             let reviewId = this.getRandomString(reviewIdLength);
-            let repo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"]);
-            while (yield repo.findOne(reviewId)) {
+            let itemRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"]);
+            while (yield itemRepo.findOne(reviewId)) {
                 reviewId = this.getRandomString(reviewIdLength);
             }
-            let newReviewItem = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"](reviewId, newStatus, reviewRegistrationInfo.product);
-            yield repo.save(newReviewItem);
+            let newReviewItem = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"](newStatus, reviewId, reviewRegistrationInfo.product);
+            yield itemRepo.save(newReviewItem);
             return newReviewItem.reviewId;
         });
     }
-    // TODO: 確認一下是不是要直接刪掉，還是加一個標記（e.g. item.progress = "DEREGISTERED"; ）
     deregister(reviewId) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             let repo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"]);
             const itemToRemove = yield repo.findOne(reviewId);
-            yield repo.remove(itemToRemove);
+            yield repo.softDelete(itemToRemove);
         });
     }
     uploadFiles(reviewId, files) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             throw new Error('Method not implemented.');
-            let reviewItemRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"]);
-            let uploadFileStatusRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"]);
-            let reviewItem = yield reviewItemRepo.findOne(reviewId, { relations: ["status"] });
-            let promises = files.map((file) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-                let fileStatus = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"](reviewItem.status, file.name);
-                yield uploadFileStatusRepo.save(fileStatus);
-                try {
-                    let uploadToken = yield axios__WEBPACK_IMPORTED_MODULE_2___default.a.post();
-                    fileStatus.uploadToken = uploadToken;
-                    fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
-                    yield uploadFileStatusRepo.save(fileStatus);
-                }
-                catch (_a) {
-                    fileStatus.errorStage = "UPLOADING";
-                    yield uploadFileStatusRepo.save(fileStatus);
-                }
-            }));
-            yield Promise.all(promises);
-            let updatedReviewItem = yield reviewItemRepo.findOne(reviewId, {
-                relations: [
-                    "status",
-                    "status.uploadFileStatuses",
-                    "status.uploadFileStatuses.pageInfos"
-                ]
-            });
-            return updatedReviewItem.status;
+            // let reviewItemRepo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
+            // let uploadFileStatusRepo: Repository<UploadFileStatus> = this.connection.getRepository(UploadFileStatus);
+            // let reviewItem: ReviewItem = await reviewItemRepo.findOne(reviewId, { relations: ["status"] });
+            // let promises: Promise<void>[] = files.map(async (file: File): Promise<void> => {
+            //     let fileStatus = new UploadFileStatus(
+            //         reviewItem.status,
+            //         file.name
+            //     );
+            //     await uploadFileStatusRepo.save(fileStatus);
+            //     try {
+            //         let uploadToken: string = await axios.post();
+            //         fileStatus.uploadToken = uploadToken;
+            //         fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
+            //         await uploadFileStatusRepo.save(fileStatus);
+            //     } catch {
+            //         fileStatus.errorStage = "UPLOADING";
+            //         await uploadFileStatusRepo.save(fileStatus);
+            //     }
+            // });
+            // await Promise.all(promises);
+            // let updatedReviewItem: ReviewItem
+            //     = await reviewItemRepo.findOne(
+            //         reviewId,
+            //         {
+            //             relations: [
+            //                 "status",
+            //                 "status.uploadFileStatuses",
+            //                 "status.uploadFileStatuses.pageInfos"
+            //             ]
+            //         }
+            //     );
+            // return updatedReviewItem.status;
         });
     }
     deleteFile(reviewId, fileId) {
@@ -229,7 +238,12 @@ const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["createCon
     "synchronize": true,
     "logging": false,
     "entities": [
-        "../../../libs/data/src/lib/Review/*.ts"
+        _gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewItem"],
+        _gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewModel"],
+        _gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewStatus"],
+        _gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["UploadFileStatus"],
+        _gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["UploadFilePageInfo"],
+        _gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["FramedPage"]
     ],
     "migrations": [
         "apps/api/src/migration/**/*.ts"
@@ -238,20 +252,22 @@ const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["createCon
         "apps/api/src/subscriber/**/*.ts"
     ],
     "cli": {
-        "entitiesDir": "libs/data/src/lib/Review",
+        "entitiesDir": "lib/data/src/Review",
         "migrationsDir": "apps/api/src/migration",
         "subscribersDir": "apps/api/src/subscriber"
     }
 });
 app.post('/api/register', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+    let connection;
     try {
-        let connection = yield connectionPromise;
+        connection = yield connectionPromise;
     }
     catch (error) {
         res.send({
             isSuccess: false,
             error
         });
+        return;
     }
     let reviewRegistrationInfo = Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["deserialize"])(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewRegistrationInfo"], req.body.reviewRegistrationInfoJson);
     let responseBody;
@@ -1732,12 +1748,10 @@ var ReviewItem_1, _a, _b, _c, _d, _e;
 
 
 let ReviewItem = ReviewItem_1 = class ReviewItem {
-    constructor(reviewId, status, product) {
-        this._models = [];
-        this.reviewId = reviewId;
+    constructor(status, reviewId, product) {
         this.status = status;
+        this.reviewId = reviewId;
         this._product = product;
-        this.createAndSetBlankModels();
     }
     get product() {
         return this._product;
@@ -1766,7 +1780,7 @@ let ReviewItem = ReviewItem_1 = class ReviewItem {
         this._models = models;
     }
     get models() {
-        if (this._models.length !== this.numberOfModels)
+        if (!this._models)
             return this.createAndSetBlankModels();
         return this._models;
     }
@@ -1813,7 +1827,8 @@ let ReviewItem = ReviewItem_1 = class ReviewItem {
         return Object(class_transformer__WEBPACK_IMPORTED_MODULE_4__["serialize"])(item);
     }
     setReviewModelImmutably(modelIndex, model) {
-        let newReviewItem = new ReviewItem_1(this.reviewId, this.status, this._product);
+        let newReviewItem = new ReviewItem_1(this.status, this.reviewId, this._product);
+        newReviewItem.status = this.status;
         let newReviewModels = [...this.models];
         newReviewModels[modelIndex] = model;
         newReviewModels.forEach((model) => {
@@ -1841,7 +1856,10 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
 ], ReviewItem.prototype, "_models", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(class_transformer__WEBPACK_IMPORTED_MODULE_4__["Type"])(() => _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"]),
-    Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["Column"])(() => _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"]),
+    Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["OneToOne"])(() => _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        cascade: true
+    }),
+    Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["JoinColumn"])(),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", typeof (_b = typeof _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"] !== "undefined" && _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"]) === "function" ? _b : Object)
 ], ReviewItem.prototype, "status", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
@@ -1869,7 +1887,7 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
 ], ReviewItem.prototype, "serializeProduct", null);
 ReviewItem = ReviewItem_1 = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["Entity"])(),
-    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:paramtypes", [String, typeof (_d = typeof _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"] !== "undefined" && _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"]) === "function" ? _d : Object, typeof (_e = typeof _Product__WEBPACK_IMPORTED_MODULE_1__["Product"] !== "undefined" && _Product__WEBPACK_IMPORTED_MODULE_1__["Product"]) === "function" ? _e : Object])
+    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:paramtypes", [typeof (_d = typeof _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"] !== "undefined" && _ReviewStatus__WEBPACK_IMPORTED_MODULE_3__["default"]) === "function" ? _d : Object, String, typeof (_e = typeof _Product__WEBPACK_IMPORTED_MODULE_1__["Product"] !== "undefined" && _Product__WEBPACK_IMPORTED_MODULE_1__["Product"]) === "function" ? _e : Object])
 ], ReviewItem);
 /* harmony default export */ __webpack_exports__["default"] = (ReviewItem);
 
@@ -1903,11 +1921,10 @@ var ReviewModel_1, _a, _b, _c, _d;
 
 let ReviewModel = ReviewModel_1 = class ReviewModel {
     constructor(modelId, modelName, reviewItem) {
-        this._framedPages = [];
         this.modelId = modelId;
         this.modelName = modelName;
         this.reviewItem = reviewItem;
-        this.createAndSetBlankFramedPages();
+        // this.createAndSetBlankFramedPages();
     }
     getFrame(name) {
         return this.frameDictionary.getFrame(name);
@@ -1924,7 +1941,7 @@ let ReviewModel = ReviewModel_1 = class ReviewModel {
         return newReviewModel;
     }
     get framedPages() {
-        if (this._framedPages.length !== this.numberOfFramedPages)
+        if (!this._framedPages)
             return this.createAndSetBlankFramedPages();
         return this._framedPages;
     }
@@ -2064,7 +2081,6 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ReviewStatus; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "tslib");
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(tslib__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var class_transformer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! class-transformer */ "class-transformer");
@@ -2073,15 +2089,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UploadFileStatus__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UploadFileStatus */ "./libs/data/src/lib/Review/UploadFileStatus.ts");
 /* harmony import */ var typeorm__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! typeorm */ "typeorm");
 /* harmony import */ var typeorm__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(typeorm__WEBPACK_IMPORTED_MODULE_4__);
-var _a;
+var ReviewStatus_1, _a;
 
 
 
 
 
-class ReviewStatus {
+let ReviewStatus = ReviewStatus_1 = class ReviewStatus {
     constructor(numberOfModels) {
-        this.uploadFileStatuses = [];
         this.numberOfFiles = 0;
         this.numberOfModels = numberOfModels;
         this.progress = "REGISTERED";
@@ -2090,7 +2105,7 @@ class ReviewStatus {
         return Object(class_transformer__WEBPACK_IMPORTED_MODULE_1__["serialize"])(status);
     }
     fromJson(text) {
-        let reviewStatus = Object(class_transformer__WEBPACK_IMPORTED_MODULE_1__["deserialize"])(ReviewStatus, text);
+        let reviewStatus = Object(class_transformer__WEBPACK_IMPORTED_MODULE_1__["deserialize"])(ReviewStatus_1, text);
         reviewStatus.uploadFileStatuses.forEach((fileStatus) => {
             var _a;
             fileStatus.reviewStatus = reviewStatus;
@@ -2100,7 +2115,13 @@ class ReviewStatus {
         });
         return reviewStatus;
     }
-}
+};
+Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
+    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["PrimaryGeneratedColumn"])() // 由typeorm在第一次存到資料庫的時候幫忙生成
+    ,
+    Object(class_transformer__WEBPACK_IMPORTED_MODULE_1__["Exclude"])(),
+    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", Number)
+], ReviewStatus.prototype, "id", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(class_transformer__WEBPACK_IMPORTED_MODULE_1__["Type"])(() => _UploadFileStatus__WEBPACK_IMPORTED_MODULE_3__["default"]),
     Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["OneToMany"])(() => _UploadFileStatus__WEBPACK_IMPORTED_MODULE_3__["default"], (fileStatus) => fileStatus.reviewStatus),
@@ -2121,6 +2142,11 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('int'),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", Number)
 ], ReviewStatus.prototype, "numberOfModels", void 0);
+ReviewStatus = ReviewStatus_1 = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
+    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Entity"])(),
+    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:paramtypes", [Number])
+], ReviewStatus);
+/* harmony default export */ __webpack_exports__["default"] = (ReviewStatus);
 
 
 /***/ }),
@@ -2475,17 +2501,6 @@ var FailureType;
 
 module.exports = __webpack_require__(/*! /Users/vince/gainhow-review/apps/api/src/main.ts */"./apps/api/src/main.ts");
 
-
-/***/ }),
-
-/***/ "axios":
-/*!************************!*\
-  !*** external "axios" ***!
-  \************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("axios");
 
 /***/ }),
 

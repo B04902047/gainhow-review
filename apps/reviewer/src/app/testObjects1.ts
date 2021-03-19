@@ -104,8 +104,8 @@ reviewStatus1.uploadFileStatuses = uploadFileStatuses1;
 reviewStatus1.progress = "REGISTERED";
 
 const reviewItem = new ReviewItem(
-    'reviewIdwedwewqe',
     reviewStatus1,
+    'reviewIdwedwewqe',
     singleSheet1
 );
 

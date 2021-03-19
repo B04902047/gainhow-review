@@ -3,7 +3,7 @@ import { Product } from './product'
 /** ============ 審稿 ============ */
 // 審稿資訊物件
 export interface ReviewItem {
-    status: ReviewStatus;
+    status?: ReviewStatus;
     product: Product;
     models: Array<ReviewModel>;    
 }
@@ -11,7 +11,7 @@ export interface ReviewItem {
 export interface ReviewStatus {
     numberOfModels: number;
     numberOfFiles: number;
-    uploadFileStatuses: Array<UploadFileStatus>;
+    uploadFileStatuses?: Array<UploadFileStatus>;
     progress: ReviewingProgress;
 }
 // 登記審稿資訊

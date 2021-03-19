@@ -19,7 +19,7 @@ export default class ReviewModel implements ReviewModelInterface {
 
     @Type(() => FramedPage)
     @OneToMany(() => FramedPage, (framedPage: FramedPage) => framedPage.reviewModel)
-    protected _framedPages: Array<FramedPage> = [];
+    protected _framedPages?: Array<FramedPage>;
 
     @Exclude()
     protected _frameDictionary?: FrameDictionary;
@@ -36,7 +36,7 @@ export default class ReviewModel implements ReviewModelInterface {
         this.modelId = modelId;
         this.modelName = modelName;
         this.reviewItem = reviewItem;
-        this.createAndSetBlankFramedPages();
+        // this.createAndSetBlankFramedPages();
     }
 
     public getFrame(name: string): Frame | undefined {
@@ -61,7 +61,7 @@ export default class ReviewModel implements ReviewModelInterface {
     }
 
     public get framedPages(): Array<FramedPage> {
-        if (this._framedPages.length !== this.numberOfFramedPages) return this.createAndSetBlankFramedPages();
+        if (!this._framedPages) return this.createAndSetBlankFramedPages();
         return this._framedPages;
     }
 

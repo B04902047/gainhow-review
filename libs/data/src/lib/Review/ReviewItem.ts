@@ -6,7 +6,7 @@ import ReviewModel from "./ReviewModel";
 import ReviewStatus from "./ReviewStatus";
 import { deserialize, Exclude, serialize, Type } from "class-transformer";
 import FramedPage from "./FramedPage";
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, AfterLoad, BeforeInsert, BeforeUpdate, PrimaryColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, AfterLoad, BeforeInsert, BeforeUpdate, PrimaryColumn, JoinColumn } from "typeorm";
 import UploadFileStatus from "./UploadFileStatus";
 import UploadFilePageInfo from "./UploadFilePageInfo";
 
@@ -18,11 +18,14 @@ export default class ReviewItem implements ReviewItemInterface {
 
     @Type(() => ReviewModel)
     @OneToMany(() => ReviewModel, (model: ReviewModel) => model.reviewItem)
-    protected _models: Array<ReviewModel> = [];
+    protected _models?: Array<ReviewModel>;
 
     @Type(() => ReviewStatus)
-    @Column(() => ReviewStatus)
-    public readonly status: ReviewStatus;
+    @OneToOne(() => ReviewStatus, {
+        cascade: true
+    })
+    @JoinColumn()
+    public status: ReviewStatus;
 
     @Type(() => Product, {
         discriminator: PRODUCT_TYPE_DISCRIMINATOR
@@ -46,18 +49,17 @@ export default class ReviewItem implements ReviewItemInterface {
     }
     
     constructor(
-        reviewId: string,
         status: ReviewStatus,
+        reviewId: string,
         product: Product,
     ) {
-        this.reviewId = reviewId;
         this.status = status;
+        this.reviewId = reviewId;
         this._product = product;
-        this.createAndSetBlankModels();
     }
 
     public get numberOfModels(): number {
-        return this.status.numberOfModels;
+        return this.status!.numberOfModels;
     }
 
     public getFramedPage(modelIndex: number, frameIndex: number): FramedPage | undefined {
@@ -74,7 +76,7 @@ export default class ReviewItem implements ReviewItemInterface {
     }
 
     public get models(): Array<ReviewModel> {
-        if (this._models.length !== this.numberOfModels) return this.createAndSetBlankModels();
+        if (!this._models) return this.createAndSetBlankModels();
         return this._models;
     }
 
@@ -115,8 +117,8 @@ export default class ReviewItem implements ReviewItemInterface {
                 framedPage.reviewModel = model;
             });
         });
-        item.status.uploadFileStatuses.forEach((fileStatus: UploadFileStatus) => {
-            fileStatus.reviewStatus = item.status;
+        item.status!.uploadFileStatuses!.forEach((fileStatus: UploadFileStatus) => {
+            fileStatus.reviewStatus = item.status!;
             fileStatus.pageInfos?.forEach((pageInfo: UploadFilePageInfo) => {
                 pageInfo.fileStatus = fileStatus;
             });
@@ -130,10 +132,11 @@ export default class ReviewItem implements ReviewItemInterface {
 
     public setReviewModelImmutably(modelIndex: number, model: ReviewModel): ReviewItem {
         let newReviewItem = new ReviewItem(
-            this.reviewId,
             this.status,
+            this.reviewId,
             this._product
         );
+        newReviewItem.status = this.status;
         let newReviewModels: Array<ReviewModel>
             = [...this.models];
         newReviewModels[modelIndex] = model;
