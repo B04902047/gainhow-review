@@ -1,4 +1,5 @@
 import React from 'react';
+import 'reflect-metadata';
 import { reviewItem } from './testObjects1';
 import WorkingStage from './working-stage/WorkingStage';
 

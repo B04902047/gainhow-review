@@ -15,7 +15,7 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
     readonly fileName: string;
 
     @Column()
-    readonly uploadToken: string;   // 跟轉檔伺服器溝通用的id
+    public uploadToken?: string;   // 跟轉檔伺服器溝通用的id
 
     @Column()
     public currentStage: UploadFileProcessingStage;
@@ -39,22 +39,11 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
 
     constructor (
         reviewStatus: ReviewStatus,
-        fileName: string,
-        fileId: string,
-        currentStage: UploadFileProcessingStage,
-        numberOfPages?: number,
-        fileAddress?: string,
-        pages?: Array<UploadFilePageInfo>,
-        errorStage?: UploadFileProcessingStage
+        fileName: string
     ) {
         this.reviewStatus = reviewStatus;
         this.fileName = fileName;
-        this.uploadToken = fileId;
-        this.currentStage = currentStage;
-        this.numberOfPages = numberOfPages;
-        this.fileAddress = fileAddress;
-        this.pageInfos = pages;
-        this.errorStage = errorStage;
+        this.currentStage = "UPLOAD";
     }
 
     @Expose()

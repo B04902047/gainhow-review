@@ -1,9 +1,10 @@
-import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus } from '@gainhow-review/data'
+import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFileStatus } from '@gainhow-review/data'
+import axios from 'axios';
 import { createConnection, ConnectionOptions, Connection, Repository } from 'typeorm';
 
 class ReviewReception implements ReviewReceptionInterface {
     constructor(
-        public connectionOptions: ConnectionOptions
+        public connection: Connection
     ) {}
 
     // TODO: move to libs/utils
@@ -18,10 +19,10 @@ class ReviewReception implements ReviewReceptionInterface {
      */
     async register(reviewRegistrationInfo: ReviewRegistrationInfo): Promise<string> {
         let newStatus = new ReviewStatus(reviewRegistrationInfo.numberOfModels);
-        const connection = await createConnection(this.connectionOptions);
         const reviewIdLength: number = 36;
         let reviewId: string = this.getRandomString(reviewIdLength);
-        while (await connection.manager.findOne(ReviewItem, reviewId)) {
+        let repo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
+        while (await repo.findOne(reviewId)) {
             reviewId = this.getRandomString(reviewIdLength);
         }
         let newReviewItem = new ReviewItem(
@@ -29,19 +30,49 @@ class ReviewReception implements ReviewReceptionInterface {
             newStatus,
             reviewRegistrationInfo.product
         );
-        await connection.manager.save(newReviewItem);
-        if (newReviewItem.reviewId !== undefined)
-            return newReviewItem.reviewId;
-        throw new Error("TypeORM should have set reviewId, but didn't.");
+        await repo.save(newReviewItem);
+        return newReviewItem.reviewId;
     }
+    // TODO: 確認一下是不是要直接刪掉，還是加一個標記（e.g. item.progress = "DEREGISTERED"; ）
     async deregister(reviewId: string): Promise<void> {
-        const connection: Connection = await createConnection(this.connectionOptions);
-        let repo: Repository<ReviewItem> = connection.getRepository(ReviewItem);
+        let repo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
         const itemToRemove: ReviewItem = await repo.findOne(reviewId);
         await repo.remove(itemToRemove);
     }
-    uploadFiles(reviewId: string, numberOfFiles: number, files: File[]): Promise<ReviewStatus> {
-        throw new Error('Method not implemented.');
+    async uploadFiles(reviewId: string, files: File[]): Promise<ReviewStatus> {
+        // throw new Error('Method not implemented.');
+        let reviewItemRepo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
+        let uploadFileStatusRepo: Repository<UploadFileStatus> = this.connection.getRepository(UploadFileStatus);
+        let reviewItem: ReviewItem = await reviewItemRepo.findOne(reviewId, { relations: ["status"] });
+        let promises: Promise<void>[] = files.map(async (file: File): Promise<void> => {
+            let fileStatus = new UploadFileStatus(
+                reviewItem.status,
+                file.name
+            );
+            await uploadFileStatusRepo.save(fileStatus);
+            try {
+                let uploadToken: string = await axios.post();
+                fileStatus.uploadToken = uploadToken;
+                fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
+                await uploadFileStatusRepo.save(fileStatus);
+            } catch {
+                fileStatus.errorStage = "UPLOAD";
+                await uploadFileStatusRepo.save(fileStatus);
+            }
+        });
+        await Promise.all(promises);
+        let updatedReviewItem: ReviewItem
+            = await reviewItemRepo.findOne(
+                reviewId,
+                {
+                    relations: [
+                        "status",
+                        "status.uploadFileStatuses",
+                        "status.uploadFileStatuses.pageInfos"
+                    ]
+                }
+            );
+        return updatedReviewItem.status;
     }
     deleteFile(reviewId: string, fileId: string): Promise<ReviewStatus> {
         throw new Error('Method not implemented.');

@@ -1,5 +1,5 @@
 import * as express from 'express';
-
+import 'reflect-metadata';
 const app = express();
 
 const greeting: string =  'Welcome to api!' ;

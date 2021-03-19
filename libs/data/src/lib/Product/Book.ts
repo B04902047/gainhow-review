@@ -4,10 +4,8 @@ import Coat from "../Material/Coat";
 import Paper from "../Material/Paper";
 import Product from "./Product";
 
-@Entity()
 export default abstract class Book extends Product implements BookInterface {
 
-    @Column()
     readonly abstract __productSubType: BookSubtypeName;
     constructor(
         public width: number,

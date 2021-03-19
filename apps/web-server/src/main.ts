@@ -18,7 +18,7 @@ const dirUrl = '/Users/lalame888/projects/gainhow-review/dist/apps/';
 app.use('/reviewer',express.static(dirUrl+'reviewer'));
 app.use('/RA',express.static(dirUrl+'RA'));
 //app.use('/',express.static(dirUrl+'reviewer'));
-
+app.use('/SQL', express.static(dirUrl+'phpMyAdmin'));
 
 
 const port = process.env.port || 4300;

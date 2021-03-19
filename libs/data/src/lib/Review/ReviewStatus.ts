@@ -24,7 +24,7 @@ export default class ReviewStatus implements ReviewStatusInterface {
         numberOfModels: number,
     ) {
         this.numberOfModels = numberOfModels;
-        this.progress = "REGISTERING";
+        this.progress = "REGISTERED";
     }
     public toJson(status: ReviewStatus): string {
         return serialize(status);

@@ -1,7 +1,6 @@
 
 import FrameDictionary from "../FrameDictionary/FrameDictionary";
-import Product from "../Product/Product";
-import { PRODUCT_TYPE_DISCRIMINATOR } from "../Product"
+import { PRODUCT_TYPE_DISCRIMINATOR, Product, productToJson, jsonToProduct } from "../Product"
 import { ReviewItem as ReviewItemInterface } from "@gainhow-review/interfaces"
 import ReviewModel from "./ReviewModel";
 import ReviewStatus from "./ReviewStatus";
@@ -39,11 +38,11 @@ export default class ReviewItem implements ReviewItemInterface {
     @AfterLoad()
     deserializeProduct(): void {
         if (this._serializedProduct === undefined) throw new Error("TypeORM should have set '__serializedProduct' but didn't.");
-        this._product = Product.fromJson(this._serializedProduct);
+        this._product = jsonToProduct(this._serializedProduct);
     }
     @BeforeInsert()
     serializeProduct(): void {
-        this._serializedProduct = Product.toJson(this._product);
+        this._serializedProduct = productToJson(this._product);
     }
     
     constructor(

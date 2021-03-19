@@ -9,7 +9,7 @@ export default class UploadFilePageInfo implements UploadFilePageInfoInterface {
     @PrimaryGeneratedColumn()
     readonly id?: string;
 
-    @Column()
+    @Column('varchar', { length: 200 })
     readonly pdfAddress: string;
 
     @Column()

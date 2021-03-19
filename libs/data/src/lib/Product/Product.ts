@@ -3,7 +3,9 @@
 import * as Interface from "@gainhow-review/interfaces";
 import FrameDictionary from "../FrameDictionary/FrameDictionary";
 import { deserialize, Exclude, serialize } from "class-transformer";
-import { PRODUCT_SUBTYPES } from "../Product";
+
+
+
 
 export default abstract class Product implements Interface.Product {
 
@@ -27,17 +29,7 @@ export default abstract class Product implements Interface.Product {
     }
     protected abstract createFrameDictionary(): FrameDictionary;
     public abstract getInfo(): Array<string>;
-
-    public static fromJson(text: string): Product {
-        let plainObject: any = JSON.parse(text);
-        let subTypeName: any = plainObject.__productSubType;
-        for (let {name, value} of PRODUCT_SUBTYPES) {
-            if (subTypeName === name) return deserialize(value, text);
-        }
-        let validSubtypeNames: string[] = PRODUCT_SUBTYPES.map(({name, value}) => name)
-        throw new Error(`'__productSubType' in json object should contain any value in ${validSubtypeNames.toString()}`);
-    }
-    public static toJson(product: Product): string {
-        return serialize(product);
-    }
 }
+
+
+

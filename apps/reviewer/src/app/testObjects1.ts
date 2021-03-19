@@ -32,12 +32,13 @@ const reviewId1: string = "test-review-id";
 const fileName1: string = "test-file-name";
 const fileId1: string = "test-file-id1";
 
+
+const reviewStatus1 = new ReviewStatus(
+    3
+);
 let uploadFileStatus1 = new UploadFileStatus(
-    fileName1,
-    fileId1,
-    "GENERATING_PRINTABLE_PAGES",
-    2,
-    "",
+    reviewStatus1,
+    fileName1
 )
 
 const pageInfo3 = new UploadFilePageInfo(
@@ -61,12 +62,8 @@ uploadFileStatus1.pageInfos = [pageInfo3, pageInfo4];
 
 
 let uploadFileStatus2 = new UploadFileStatus(
-    'testImage13424324324234324324324324',
-    'file2',
-   'GENERATING_PRINTABLE_PAGES',
-    2,
-    '',
-    
+    reviewStatus1,
+    'testFile2~~~~'
   );
 
 const pageInfo1 = new UploadFilePageInfo(
@@ -93,17 +90,16 @@ const uploadFileStatuses1 = [
     uploadFileStatus2
 ]
 
-const reviewStatus1 = new ReviewStatus(
-    3
-);
+
 
 reviewStatus1.numberOfModels = 3;
-reviewStatus1.modelIds = ["test-review-id-01", "test-review-id-02", "test-review-id-03"];
+// reviewStatus1.modelIds = ["test-review-id-01", "test-review-id-02", "test-review-id-03"];
 reviewStatus1.numberOfFiles = 1;
 reviewStatus1.uploadFileStatuses = uploadFileStatuses1;
-reviewStatus1.progress = "WAITING_PRINTABLE_REVIEW";
+reviewStatus1.progress = "REGISTERED";
 
 const reviewItem = new ReviewItem(
+    'reviewIdwedwewqe',
     reviewStatus1,
     singleSheet1
 );
