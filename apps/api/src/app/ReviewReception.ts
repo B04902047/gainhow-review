@@ -2,7 +2,7 @@ import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistra
 import axios from 'axios';
 import { createConnection, ConnectionOptions, Connection, Repository } from 'typeorm';
 
-class ReviewReception implements ReviewReceptionInterface {
+export class ReviewReception implements ReviewReceptionInterface {
     constructor(
         public connection: Connection
     ) {}
@@ -40,7 +40,7 @@ class ReviewReception implements ReviewReceptionInterface {
         await repo.remove(itemToRemove);
     }
     async uploadFiles(reviewId: string, files: File[]): Promise<ReviewStatus> {
-        // throw new Error('Method not implemented.');
+        throw new Error('Method not implemented.');
         let reviewItemRepo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
         let uploadFileStatusRepo: Repository<UploadFileStatus> = this.connection.getRepository(UploadFileStatus);
         let reviewItem: ReviewItem = await reviewItemRepo.findOne(reviewId, { relations: ["status"] });

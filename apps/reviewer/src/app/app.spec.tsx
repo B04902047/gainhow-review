@@ -18,4 +18,5 @@ describe('App', () => {
     const { baseElement } = render(<App />);
     await waitFor(() => getByText(baseElement, 'my message'));
   });
+
 });

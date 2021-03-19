@@ -1,6 +1,6 @@
 
 
-import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo } from '@gainhow-review/data';
+import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo, ReviewRegistrationInfo } from '@gainhow-review/data';
 
 import testImage1 from '../assets/testImages/1.jpg'
 import testImage2 from '../assets/testImages/2.jpg'
@@ -27,6 +27,11 @@ const paper2 = new Paper(
 const singleSheet1 = new SingleSheet(
     90, 54, true, paper1
 );
+
+const reviewRegistrationInfo = new ReviewRegistrationInfo(
+    3,
+    singleSheet1
+)
 
 const reviewId1: string = "test-review-id";
 const fileName1: string = "test-file-name";
@@ -137,5 +142,6 @@ export {
     reviewModel1,
     page1_1,
     uploadFileStatus2,
-    uploadFileStatuses1
+    uploadFileStatuses1,
+    reviewRegistrationInfo
 }

@@ -1,16 +1,12 @@
 import React from 'react';
 import 'reflect-metadata';
+import ApiTester from './api-tester/ApiTester';
 import { reviewItem } from './testObjects1';
 import WorkingStage from './working-stage/WorkingStage';
 
 export const App = () => {
-  // const [m, setMessage] = useState<string>('');
-  // useEffect(() => {
-  //   fetch('/api')
-  //     .then((r) => r.json())
-  //     .then(setMessage);
-  // }, []);
-  return <WorkingStage initialReviewItem={reviewItem}/>
+  return <ApiTester/>;
+  // return <WorkingStage initialReviewItem={reviewItem}/>
 
 };
 
