@@ -22,8 +22,13 @@ export class ReviewReception implements ReviewReceptionInterface {
         const reviewIdLength: number = 36;
         let reviewId: string = this.getRandomString(reviewIdLength);
         let repo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
-        while (await repo.findOne(reviewId)) {
-            reviewId = this.getRandomString(reviewIdLength);
+        while (true) {
+            try {
+                await repo.findOne(reviewId);
+                reviewId = this.getRandomString(reviewIdLength);
+            } catch {
+                break;
+            }
         }
         let newReviewItem = new ReviewItem(
             reviewId,
