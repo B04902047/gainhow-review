@@ -86,10 +86,9 @@ export function ImportList(props: ImportListProps) {
     if (searchBarValue === '' || fileStatus.fileName.includes(searchBarValue)) return true;
     else return false;
   }).map((fileStatus: UploadFileStatus, fileIndex: number) => {
-    let fileId: string = fileStatus.uploadToken;
     return (
       <ImportedFile
-        key={fileId}
+        key={fileIndex}
         fileStatus={fileStatus}
         onPageSelect={(pageIndex : number) => { props.selectPage(fileIndex, pageIndex); }}
         isSelected={(pageIndex : number) => { return props.isSelected(fileIndex, pageIndex); }}

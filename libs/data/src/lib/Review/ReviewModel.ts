@@ -11,10 +11,10 @@ import { ConnectionOptions } from "tls";
 @Entity()
 export default class ReviewModel implements ReviewModelInterface {
 
-    @PrimaryColumn()
+    @PrimaryColumn('varchar', { length: 255 })
     public modelId: string;  // 資料庫要用的primary key
 
-    @Column()
+    @Column('varchar', { length: 16 })
     public readonly modelName: string;
 
     @Type(() => FramedPage)
@@ -78,7 +78,22 @@ export default class ReviewModel implements ReviewModelInterface {
     }
 
     protected createBlankFramedPages(): Array<FramedPage> {
-        return this.frameNames.map((name) => new FramedPage(name, this));
+        return this.frameNames.map((name, frameIndex) => {
+            let frameId: string = generateFrameIdFromModelId(this.modelId, frameIndex + 1);
+            return new FramedPage(
+                frameId,
+                name,
+                this
+            );
+        });
+        function generateFrameIdFromModelId(modelId: string, frameNumber: number): string {
+            let frameNumberInString: string = frameNumber.toString();
+            let numberOfFrameNumberDigits: number = frameNumberInString.length;
+            const frameNumberMaximalLength: number = 4;
+            let numberOfZerosToAppend: number = frameNumberMaximalLength - numberOfFrameNumberDigits;
+            let frameId: string = modelId + '0'.repeat(numberOfZerosToAppend) + frameNumberInString;
+            return frameId;
+        }
     }
     public get frameNames(): Array<string> {
         return this.frameDictionary.frameNames;

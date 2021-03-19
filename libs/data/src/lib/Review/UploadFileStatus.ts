@@ -1,6 +1,6 @@
 
 import { Exclude, Expose, Type } from "class-transformer";
-import { UploadFileProcessingStage, UploadFileStatus as UploadFileStatusInterface } from "@gainhow-review/interfaces";
+import { UploadFileProcessingStage, UploadFileStatus as UploadFileStatusInterface, UPLOAD_FILE_PROCESSING_STAGES } from "@gainhow-review/interfaces";
 import UploadFilePageInfo from "./UploadFilePageInfo";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ReviewStatus } from "../Review";
@@ -10,28 +10,36 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
  
     @PrimaryGeneratedColumn()       // 由typeorm在第一次存到資料庫的時候幫忙生成
     @Exclude()
-    public id?: string;             // 資料庫用的primary key
+    public id?: number;             // 資料庫用的primary key
 
-    @Column()
+    @Column('text')
     readonly fileName: string;
 
-    @Column()
+    @Column('varchar', { length: 255 })
     public uploadToken?: string;   // 跟轉檔伺服器溝通用的id
 
-    @Column()
+    @Column({
+        type: "enum",
+        enum: UPLOAD_FILE_PROCESSING_STAGES,
+        // default: "UPLOADING"
+    })
     public currentStage: UploadFileProcessingStage;
 
-    @Column()
+    @Column('int')
     public numberOfPages?: number;
 
-    @Column()
+    @Column('text')
     public fileAddress?: string;
 
     @Type(() => UploadFilePageInfo)
     @OneToMany(() => UploadFilePageInfo, (pageInfo: UploadFilePageInfo) => pageInfo.fileStatus)
     public pageInfos?: Array<UploadFilePageInfo>;
 
-    @Column()
+    @Column({
+        type: "enum",
+        enum: UPLOAD_FILE_PROCESSING_STAGES,
+        // default: undefined
+    })
     public errorStage?: UploadFileProcessingStage;
 
     @Expose()
@@ -44,7 +52,7 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
     ) {
         this.reviewStatus = reviewStatus;
         this.fileName = fileName;
-        this.currentStage = "UPLOAD";
+        this.currentStage = "UPLOADING";
     }
 
     @Expose()

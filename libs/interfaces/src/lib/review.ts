@@ -60,7 +60,7 @@ export interface FramedPage {
  */
 // 上傳檔案的狀態
 export const UPLOAD_FILE_PROCESSING_STAGES = [
-    "UPLOAD",                     // 已登記上傳檔案，但檔案還沒上傳完
+    "UPLOADING",                     // 已登記上傳檔案，但檔案還沒上傳完
     "GENERATING_PRINTABLE_PAGES",   // 已收到上傳檔，但正在生成每一頁單獨的PDF和JPEG
     "FINISHED"                    // 處理完畢
 ] as const;

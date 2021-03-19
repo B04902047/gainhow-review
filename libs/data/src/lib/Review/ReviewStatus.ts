@@ -1,5 +1,5 @@
 import { deserialize, serialize, Type } from "class-transformer";
-import { ReviewingProgress, ReviewStatus as ReviewStatusInterface } from "@gainhow-review/interfaces";
+import { ReviewingProgress, REVIEWING_PROGRESS, ReviewStatus as ReviewStatusInterface } from "@gainhow-review/interfaces";
 import UploadFileStatus from "./UploadFileStatus";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UploadFilePageInfo } from "../Review";
@@ -11,13 +11,16 @@ export default class ReviewStatus implements ReviewStatusInterface {
     public uploadFileStatuses: UploadFileStatus[] = [];
 
     // TODO: enum? string literal? serializable?
-    @Column()
+    @Column({
+        type: 'enum',
+        enum: REVIEWING_PROGRESS
+    })
     public progress: ReviewingProgress;
 
-    @Column()
+    @Column('int')
     public numberOfFiles: number = 0;
 
-    @Column()
+    @Column('int')
     public numberOfModels: number;
 
     constructor (

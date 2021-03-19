@@ -7,18 +7,18 @@ import { UploadFileStatus } from '../Review';
 export default class UploadFilePageInfo implements UploadFilePageInfoInterface {
 
     @PrimaryGeneratedColumn()
-    readonly id?: string;
+    readonly id?: number;
 
-    @Column('varchar', { length: 200 })
+    @Column('text')
     readonly pdfAddress: string;
 
-    @Column()
+    @Column('text')
     readonly jpegAddress: string;
 
-    @Column()
+    @Column('int')
     readonly widthInMm: number;
 
-    @Column()
+    @Column('int')
     readonly heightInMm: number;
 
     @Exclude()

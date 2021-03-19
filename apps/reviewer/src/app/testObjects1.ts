@@ -87,7 +87,7 @@ uploadFileStatus2.pageInfos = [pageInfo1, pageInfo2];
 const uploadFileStatuses1 = [
     uploadFileStatus1,
     uploadFileStatus2,
-    uploadFileStatus2
+    //uploadFileStatus2
 ]
 
 

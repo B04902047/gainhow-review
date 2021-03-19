@@ -13,7 +13,7 @@ import UploadFilePageInfo from "./UploadFilePageInfo";
 @Entity()
 export default class ReviewItem implements ReviewItemInterface {
     
-    @PrimaryColumn()
+    @PrimaryColumn('varchar', { length: 255 })
     readonly reviewId: string; // 資料庫要用的primary key
 
     @Type(() => ReviewModel)
@@ -33,7 +33,7 @@ export default class ReviewItem implements ReviewItemInterface {
     }
 
     @Exclude()
-    @Column()
+    @Column('text')
     private _serializedProduct?: string;
     @AfterLoad()
     deserializeProduct(): void {

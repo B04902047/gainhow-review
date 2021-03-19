@@ -4,50 +4,50 @@ import Frame from "../Frame/Frame";
 import { FramedPage as FramedPageInterface} from "@gainhow-review/interfaces";
 import ReviewModel from "./ReviewModel";
 import { UploadFilePageInfo, UploadFileStatus } from "../Review";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export default class FramedPage implements FramedPageInterface {
 
-    @PrimaryGeneratedColumn()
-    public id?: string;  // 資料庫要用的primary key
+    @PrimaryColumn('varchar', { length: 255 })
+    public frameId: string;  // 資料庫要用的primary key
 
-    @Column()
+    @Column('int')
     sourceFileIndex?: number;
 
-    @Column()
+    @Column('int')
     sourcePageNumber?: number;
 
-    @Column()
+    @Column('text')
     resultingJpegUrl?: string;
 
-    @Column()
+    @Column('text')
     resultingPdfUrl?: string;
 
-    @Exclude()
-    @Column()
+    @Column('int')
     private _rotationDegree: number;
 
     @Exclude()
     @ManyToOne(() => ReviewModel, (model: ReviewModel) => model.framedPages)
     public reviewModel: ReviewModel;
 
-    @Column()
+    @Column('varchar', { length: 16 })
     public readonly frameName: string;
 
-    @Column()
+    @Column('int')
     public positionX: number;
 
-    @Column()
+    @Column('int')
     public positionY: number;
 
-    @Column()
+    @Column('int')
     public scaleX: number;
 
-    @Column()
+    @Column('int')
     public scaleY: number;
 
     constructor (
+        frameId: string,
         frameName: string,
         reviewModel: ReviewModel,
         positionX: number = 0,
@@ -56,6 +56,7 @@ export default class FramedPage implements FramedPageInterface {
         scaleY: number = 1,
         _rotationDegree: number = 0
     ) {
+        this.frameId = frameId;
         this.frameName = frameName;
         this.reviewModel = reviewModel;
         this.positionX = positionX;
@@ -94,7 +95,6 @@ export default class FramedPage implements FramedPageInterface {
         this.rotationDegree = degree;
     }
 
-    @Expose()
     public get rotationDegree(): number {
         return this._rotationDegree;
     }

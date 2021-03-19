@@ -80,6 +80,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
           files={bufferedReviewItem.status.uploadFileStatuses}
           selectPage={(fileIndex: number, pageIndex: number) => {
             let newFramedPage: FramedPage = new FramedPage(
+              selectedFramedPage.frameId,
               selectedFramedPage.frameName,
               selectedFramedPage.reviewModel
             );
