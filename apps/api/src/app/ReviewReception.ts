@@ -56,7 +56,7 @@ class ReviewReception implements ReviewReceptionInterface {
                 fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
                 await uploadFileStatusRepo.save(fileStatus);
             } catch {
-                fileStatus.errorStage = "UPLOAD";
+                fileStatus.errorStage = "UPLOADING";
                 await uploadFileStatusRepo.save(fileStatus);
             }
         });
