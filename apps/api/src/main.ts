@@ -1,10 +1,13 @@
 import "reflect-metadata";
 import { FramedPage, ReviewItem, ReviewModel, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data';
-import { RegisterResponseBody } from '@gainhow-review/interfaces';
-import { deserialize } from 'class-transformer';
+import { RegisterResponseBody, UploadResponseBody } from '@gainhow-review/interfaces';
+import { deserialize, serialize } from 'class-transformer';
 import * as express from 'express';
+import * as expressFileUpload from 'express-fileupload';
+import { UploadedFile } from 'express-fileupload';
 import { Connection, createConnection, getConnection } from 'typeorm';
 import { ReviewReception } from './app/ReviewReception';
+// import { File, Fields, Files, IncomingForm } from "formidable";
 
 const app = express();
 console.log(process.env);
@@ -68,6 +71,35 @@ app.post('/api/register', async (req, res) => {
   }
   res.send(responseBody);
 })
+
+app.use(expressFileUpload());
+app.post('/api/upload', async (req, res) => {
+  let file: UploadedFile = req.files!.file as UploadedFile;
+  let reviewId: string = req.body.reviewId;
+  let responseBody: UploadResponseBody;
+  try {
+    let reviewReception = new ReviewReception(getConnection());
+    let reviewStatus: ReviewStatus
+      = await reviewReception.uploadFile(
+        reviewId,
+        {
+          name: file.name,
+          path: file.tempFilePath
+        }
+      );
+    responseBody = {
+      isSuccess: true,
+      reviewStatusInJson: serialize(reviewStatus)
+    }
+  } catch (error) {
+    responseBody = {
+      isSuccess: false,
+      error
+    }
+  }
+})
+
+
 
 const port = process.env.port || 3333;
 const server = app.listen(port, () => {

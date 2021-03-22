@@ -1,6 +1,9 @@
 import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFileStatus } from '@gainhow-review/data'
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { createConnection, ConnectionOptions, Connection, Repository } from 'typeorm';
+import * as fs from 'fs'
+import * as FormData from 'form-data';
+import { File } from 'formidable';
 
 export class ReviewReception implements ReviewReceptionInterface {
     constructor(
@@ -46,40 +49,58 @@ export class ReviewReception implements ReviewReceptionInterface {
         const itemToRemove: ReviewItem = await repo.findOne(reviewId);
         await repo.softDelete(itemToRemove);
     }
-    async uploadFiles(reviewId: string, files: File[]): Promise<ReviewStatus> {
-        throw new Error('Method not implemented.');
-        // let reviewItemRepo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
-        // let uploadFileStatusRepo: Repository<UploadFileStatus> = this.connection.getRepository(UploadFileStatus);
-        // let reviewItem: ReviewItem = await reviewItemRepo.findOne(reviewId, { relations: ["status"] });
-        // let promises: Promise<void>[] = files.map(async (file: File): Promise<void> => {
-        //     let fileStatus = new UploadFileStatus(
-        //         reviewItem.status,
-        //         file.name
-        //     );
-        //     await uploadFileStatusRepo.save(fileStatus);
-        //     try {
-        //         let uploadToken: string = await axios.post();
-        //         fileStatus.uploadToken = uploadToken;
-        //         fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
-        //         await uploadFileStatusRepo.save(fileStatus);
-        //     } catch {
-        //         fileStatus.errorStage = "UPLOADING";
-        //         await uploadFileStatusRepo.save(fileStatus);
-        //     }
-        // });
-        // await Promise.all(promises);
-        // let updatedReviewItem: ReviewItem
-        //     = await reviewItemRepo.findOne(
-        //         reviewId,
-        //         {
-        //             relations: [
-        //                 "status",
-        //                 "status.uploadFileStatuses",
-        //                 "status.uploadFileStatuses.pageInfos"
-        //             ]
-        //         }
-        //     );
-        // return updatedReviewItem.status;
+    
+    async uploadFile(reviewId: string, file: { name: string, path: string; }): Promise<ReviewStatus> {
+        // throw new Error('Method not implemented.');
+        let reviewItemRepo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
+        let uploadFileStatusRepo: Repository<UploadFileStatus> = this.connection.getRepository(UploadFileStatus);
+        let reviewItem: ReviewItem = await reviewItemRepo.findOne(reviewId, { relations: ["status"] });
+        let fileStatus = new UploadFileStatus(
+            reviewItem.status,
+            file.name
+        );
+        await uploadFileStatusRepo.save(fileStatus);
+        try {
+            let uploadToken: string = await upload(file.path);
+            fileStatus.uploadToken = uploadToken;
+            fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
+            await uploadFileStatusRepo.save(fileStatus);
+        } catch (error) {
+            fileStatus.errorStage = "UPLOADING";
+            await uploadFileStatusRepo.save(fileStatus);
+        }
+        let updatedReviewItem: ReviewItem
+            = await reviewItemRepo.findOne(
+                reviewId,
+                {
+                    relations: [
+                        "status",
+                        "status.uploadFileStatuses",
+                        "status.uploadFileStatuses.pageInfos"
+                    ]
+                }
+            );
+        return updatedReviewItem.status;
+        
+        // TODO: 把呼叫轉檔server的程式包到一個不管地帶
+        async function upload(filePath: string): Promise<string> {
+            let readStream: fs.ReadStream = fs.createReadStream(filePath);
+            let form = new FormData();
+            form.append("secret_key", process.env.FILE_CONVERT_SERVER_UPLOAD_KEY);
+            form.append("Filedata", readStream);
+            let response: AxiosResponse<UploadToFileConvertingServerResponseBody> = await axios.post(
+                'http://ex.gding.com.tw/test/Upload_test8/server/php/api/uploadFile.php',
+                form,
+                { headers: form.getHeaders() }
+            );
+            if (response.data.msg === 'success') return response.data.token;
+            else throw response.data.msg;
+
+            interface UploadToFileConvertingServerResponseBody {
+                msg: "success" | "Input Errors!" | "DB Error!";
+                token: string;
+            }
+        }
     }
     deleteFile(reviewId: string, fileId: string): Promise<ReviewStatus> {
         throw new Error('Method not implemented.');
@@ -97,3 +118,4 @@ export class ReviewReception implements ReviewReceptionInterface {
         throw new Error('Method not implemented.');
     }
 }
+

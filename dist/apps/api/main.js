@@ -99,6 +99,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "tslib");
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(tslib__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @gainhow-review/data */ "./libs/data/src/index.ts");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! fs */ "fs");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 class ReviewReception {
@@ -107,10 +110,10 @@ class ReviewReception {
     }
     // TODO: move to libs/utils
     getRandomString(length) {
-        var result = '';
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) {
+        let result = '';
+        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
         return result;
@@ -143,39 +146,38 @@ class ReviewReception {
     }
     uploadFiles(reviewId, files) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            throw new Error('Method not implemented.');
-            // let reviewItemRepo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
-            // let uploadFileStatusRepo: Repository<UploadFileStatus> = this.connection.getRepository(UploadFileStatus);
-            // let reviewItem: ReviewItem = await reviewItemRepo.findOne(reviewId, { relations: ["status"] });
-            // let promises: Promise<void>[] = files.map(async (file: File): Promise<void> => {
-            //     let fileStatus = new UploadFileStatus(
-            //         reviewItem.status,
-            //         file.name
-            //     );
-            //     await uploadFileStatusRepo.save(fileStatus);
-            //     try {
-            //         let uploadToken: string = await axios.post();
-            //         fileStatus.uploadToken = uploadToken;
-            //         fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
-            //         await uploadFileStatusRepo.save(fileStatus);
-            //     } catch {
-            //         fileStatus.errorStage = "UPLOADING";
-            //         await uploadFileStatusRepo.save(fileStatus);
-            //     }
-            // });
-            // await Promise.all(promises);
-            // let updatedReviewItem: ReviewItem
-            //     = await reviewItemRepo.findOne(
-            //         reviewId,
-            //         {
-            //             relations: [
-            //                 "status",
-            //                 "status.uploadFileStatuses",
-            //                 "status.uploadFileStatuses.pageInfos"
-            //             ]
-            //         }
-            //     );
-            // return updatedReviewItem.status;
+            // throw new Error('Method not implemented.');
+            let reviewItemRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"]);
+            let uploadFileStatusRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"]);
+            let reviewItem = yield reviewItemRepo.findOne(reviewId, { relations: ["status"] });
+            let promises = files.map((file) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                let fileStatus = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"](reviewItem.status, file.name);
+                yield uploadFileStatusRepo.save(fileStatus);
+                try {
+                    let uploadToken = yield upload(file);
+                    fileStatus.uploadToken = uploadToken;
+                    fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
+                    yield uploadFileStatusRepo.save(fileStatus);
+                }
+                catch (_a) {
+                    fileStatus.errorStage = "UPLOADING";
+                    yield uploadFileStatusRepo.save(fileStatus);
+                }
+            }));
+            yield Promise.all(promises);
+            let updatedReviewItem = yield reviewItemRepo.findOne(reviewId, {
+                relations: [
+                    "status",
+                    "status.uploadFileStatuses",
+                    "status.uploadFileStatuses.pageInfos"
+                ]
+            });
+            return updatedReviewItem.status;
+            function upload(file) {
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                    let readStream = fs__WEBPACK_IMPORTED_MODULE_2__["createReadStream"](file.path);
+                });
+            }
         });
     }
     deleteFile(reviewId, fileId) {
@@ -227,14 +229,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const app = express__WEBPACK_IMPORTED_MODULE_4__();
+console.log(process.env);
 app.use(express__WEBPACK_IMPORTED_MODULE_4__["json"]());
 const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["createConnection"])({
     "type": "mysql",
-    "host": "192.168.3.180",
-    "port": 3306,
-    "username": "gainhow",
-    "password": "gding1234",
-    "database": "gainghow-test",
+    "host": process.env.DATABASE_HOST,
+    "port": parseInt(process.env.DATABASE_PORT, 10),
+    "username": process.env.DATABASE_USERNAME,
+    "password": process.env.DATABASE_PASSWORD,
+    "database": process.env.DATABASE_NAME,
     "synchronize": true,
     "logging": false,
     "entities": [
@@ -245,12 +248,8 @@ const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["createCon
         _gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["UploadFilePageInfo"],
         _gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["FramedPage"]
     ],
-    "migrations": [
-        "apps/api/src/migration/**/*.ts"
-    ],
-    "subscribers": [
-        "apps/api/src/subscriber/**/*.ts"
-    ],
+    "migrations": [],
+    "subscribers": [],
     "cli": {
         "entitiesDir": "lib/data/src/Review",
         "migrationsDir": "apps/api/src/migration",
@@ -2523,6 +2522,17 @@ module.exports = require("class-transformer");
 /***/ (function(module, exports) {
 
 module.exports = require("express");
+
+/***/ }),
+
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
 
 /***/ }),
 
