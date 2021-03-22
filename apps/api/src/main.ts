@@ -7,16 +7,17 @@ import { Connection, createConnection, getConnection } from 'typeorm';
 import { ReviewReception } from './app/ReviewReception';
 
 const app = express();
+console.log(process.env);
 
 app.use(express.json());
 
 const connectionPromise: Promise<Connection> = createConnection({
   "type": "mysql",
-  "host": "192.168.3.180",
-  "port": 3306,
-  "username": "gainhow",
-  "password": "gding1234",
-  "database": "gainghow-test",
+  "host": process.env.DATABASE_HOST,
+  "port": parseInt(process.env.DATABASE_PORT, 10),
+  "username": process.env.DATABASE_USERNAME,
+  "password": process.env.DATABASE_PASSWORD,
+  "database": process.env.DATABASE_NAME,
   "synchronize": true,
   "logging": false,
   "entities": [
@@ -28,10 +29,8 @@ const connectionPromise: Promise<Connection> = createConnection({
     FramedPage
   ],
   "migrations": [
-     "apps/api/src/migration/**/*.ts"
   ],
   "subscribers": [
-     "apps/api/src/subscriber/**/*.ts"
   ],
   "cli": {
      "entitiesDir": "lib/data/src/Review",
