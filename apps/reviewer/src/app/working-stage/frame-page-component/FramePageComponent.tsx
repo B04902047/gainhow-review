@@ -28,7 +28,7 @@ export function FramePageComponent(props: FramePageComponentProps) {
 
   let sourcePageInfo: UploadFilePageInfo = props.framePage.getSourcePageInfo();
   let imageScale = props.mmToPxScale;
-  let imageAddress: string = sourcePageInfo.jpegAddress;
+  let imageAddress: string = sourcePageInfo.jpegUrl;
   let imageWidthInPx: string = `calc(${imageScale} * ${sourcePageInfo.widthInMm})`;
   let imageHeightInPx: string = `calc(${imageScale} * ${sourcePageInfo.heightInMm})`;
   let imagePostionXInPx: string = `calc(${imageScale} * calc(${props.framePage.positionX} ))`;

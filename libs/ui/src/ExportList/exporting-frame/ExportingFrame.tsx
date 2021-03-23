@@ -63,7 +63,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
     >
       <div style={cropStyle}>
         <img
-          src={sourcePage.jpegAddress}
+          src={sourcePage.jpegUrl}
           style={imageStyle}
         />
       </div>

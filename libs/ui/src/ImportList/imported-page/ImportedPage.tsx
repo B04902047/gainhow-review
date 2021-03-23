@@ -21,7 +21,7 @@ export function ImportedPage(props: ImportedPageProps) {
   return (
     <img 
       style={style} 
-      src={props.info.jpegAddress} 
+      src={props.info.jpegUrl} 
       onClick={props.onClick}
     />
   );
