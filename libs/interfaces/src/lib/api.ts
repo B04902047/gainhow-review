@@ -26,3 +26,19 @@ export interface UploadErrorResponseBody {
 }
 
 export type UploadResponseBody = UploadSuccessResponseBody | UploadErrorResponseBody
+
+export interface UpdateReviewModelRequestBody {
+    reviewModelInJson: string;
+}
+  
+interface UpdateReviewModelSuccessResponseBody {
+    isSuccess: true;
+}
+interface UpdateReviewModelErrorResponseBody {
+    isSuccess: false;
+    error?: any;
+}
+
+export type UpdateReviewModelResponseBody
+    = UpdateReviewModelSuccessResponseBody
+    | UpdateReviewModelErrorResponseBody;

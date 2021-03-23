@@ -1,4 +1,4 @@
-import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data'
+import { ReviewItem, ReviewModel, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data'
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { createConnection, ConnectionOptions, Connection, Repository } from 'typeorm';
 import * as fs from 'fs'
@@ -283,14 +283,29 @@ export class ReviewReception implements ReviewReceptionInterface {
     deleteFile(reviewId: string, fileId: string): Promise<ReviewStatus> {
         throw new Error('Method not implemented.');
     }
-    loadReviewStatus(reviewId: string): Promise<ReviewStatus> {
-        throw new Error('Method not implemented.');
+    async loadReviewStatus(reviewId: string): Promise<ReviewStatus> {
+        return (await this.loadReviewItem(reviewId)).status;
     }
-    loadReviewItem(reviewId: string): Promise<ReviewItem> {
-        throw new Error('Method not implemented.');
+    async loadReviewItem(reviewId: string): Promise<ReviewItem> {
+        let reviewItem: ReviewItem
+            = await this.connection.manager.findOne(
+                ReviewItem,
+                reviewId,
+                {
+                    relations: [
+                        "status",
+                        "status.uploadFileStatuses",
+                        "status.uploadFileStatuses.pageInfos"
+                    ]
+                }
+            );
+        return reviewItem;
     }
-    saveReviewItem(reviewItem: ReviewItem): Promise<ReviewItem> {
-        throw new Error('Method not implemented.');
+    public async updateReviewModel(reviewModel: ReviewModel): Promise<void> {
+        let repo: Repository<ReviewModel>
+            = this.connection.getRepository(ReviewModel);
+        if (!repo.findOne(reviewModel.modelId)) throw "attempt to insert new review model calling 'updateReviewModel'";
+        await repo.save(reviewModel);
     }
     generateFinalResults(reviewItem: ReviewItem): Promise<void> {
         throw new Error('Method not implemented.');

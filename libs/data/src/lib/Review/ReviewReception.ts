@@ -1,4 +1,5 @@
 import ReviewItem from "./ReviewItem";
+import ReviewModel from "./ReviewModel";
 import ReviewRegistrationInfo from "./ReviewRegistrationInfo";
 import ReviewStatus from "./ReviewStatus";
 import UploadFileStatus from "./UploadFileStatus";
@@ -11,6 +12,6 @@ export default interface ReviewReception {
     deleteFile(reviewId: string, fileId: string): Promise<ReviewStatus>;
     loadReviewStatus(reviewId: string): Promise<ReviewStatus>;
     loadReviewItem(reviewId: string): Promise<ReviewItem>;
-    saveReviewItem(reviewItem: ReviewItem): Promise<ReviewItem>;
+    updateReviewModel(reviewModel: ReviewModel): Promise<void>;
     generateFinalResults(reviewItem: ReviewItem): Promise<void>;
 }
