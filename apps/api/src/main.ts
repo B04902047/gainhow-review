@@ -97,6 +97,8 @@ app.post('/api/upload', async (req, res) => {
       error
     }
   }
+  res.send(responseBody);
+  // TODO: busy check 轉檔狀態
 })
 
 

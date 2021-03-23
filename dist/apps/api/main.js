@@ -99,8 +99,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "tslib");
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(tslib__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @gainhow-review/data */ "./libs/data/src/index.ts");
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! fs */ "fs");
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "axios");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! fs */ "fs");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var form_data__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! form-data */ "form-data");
+/* harmony import */ var form_data__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(form_data__WEBPACK_IMPORTED_MODULE_4__);
+
+
 
 
 
@@ -144,27 +150,25 @@ class ReviewReception {
             yield repo.softDelete(itemToRemove);
         });
     }
-    uploadFiles(reviewId, files) {
+    uploadFile(reviewId, file) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             // throw new Error('Method not implemented.');
             let reviewItemRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"]);
             let uploadFileStatusRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"]);
             let reviewItem = yield reviewItemRepo.findOne(reviewId, { relations: ["status"] });
-            let promises = files.map((file) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-                let fileStatus = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"](reviewItem.status, file.name);
+            let fileStatus = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"](reviewItem.status, file.name);
+            yield uploadFileStatusRepo.save(fileStatus);
+            try {
+                let uploadToken = yield upload(file.path);
+                fileStatus.uploadToken = uploadToken;
+                fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
                 yield uploadFileStatusRepo.save(fileStatus);
-                try {
-                    let uploadToken = yield upload(file);
-                    fileStatus.uploadToken = uploadToken;
-                    fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
-                    yield uploadFileStatusRepo.save(fileStatus);
-                }
-                catch (_a) {
-                    fileStatus.errorStage = "UPLOADING";
-                    yield uploadFileStatusRepo.save(fileStatus);
-                }
-            }));
-            yield Promise.all(promises);
+            }
+            catch (error) {
+                fileStatus.errorStage = "UPLOADING";
+                yield uploadFileStatusRepo.save(fileStatus);
+                console.log(error);
+            }
             let updatedReviewItem = yield reviewItemRepo.findOne(reviewId, {
                 relations: [
                     "status",
@@ -173,9 +177,23 @@ class ReviewReception {
                 ]
             });
             return updatedReviewItem.status;
-            function upload(file) {
+            // TODO: 把呼叫轉檔server的程式包到一個不管地帶
+            function upload(filePath) {
                 return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-                    let readStream = fs__WEBPACK_IMPORTED_MODULE_2__["createReadStream"](file.path);
+                    let readStream = fs__WEBPACK_IMPORTED_MODULE_3__["createReadStream"](filePath);
+                    let form = new form_data__WEBPACK_IMPORTED_MODULE_4__();
+                    form.append("secret_key", process.env.FILE_CONVERT_SERVER_UPLOAD_KEY);
+                    form.append("Filedata", readStream);
+                    try {
+                        let response = yield axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://ex.gding.com.tw/test/Upload_test8/server/php/api/uploadFile.php', form, { headers: form.getHeaders() });
+                        if (response.data.msg === 'success')
+                            return response.data.token;
+                        else
+                            throw response.data.msg;
+                    }
+                    catch (error) {
+                        console.log(error.config);
+                    }
                 });
             }
         });
@@ -218,9 +236,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var class_transformer__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(class_transformer__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var express__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! express */ "express");
 /* harmony import */ var express__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var typeorm__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! typeorm */ "typeorm");
-/* harmony import */ var typeorm__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(typeorm__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _app_ReviewReception__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./app/ReviewReception */ "./apps/api/src/app/ReviewReception.ts");
+/* harmony import */ var express_fileupload__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! express-fileupload */ "express-fileupload");
+/* harmony import */ var express_fileupload__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(express_fileupload__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var typeorm__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! typeorm */ "typeorm");
+/* harmony import */ var typeorm__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(typeorm__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _app_ReviewReception__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./app/ReviewReception */ "./apps/api/src/app/ReviewReception.ts");
 
 
 
@@ -228,10 +248,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+// import { File, Fields, Files, IncomingForm } from "formidable";
 const app = express__WEBPACK_IMPORTED_MODULE_4__();
 console.log(process.env);
 app.use(express__WEBPACK_IMPORTED_MODULE_4__["json"]());
-const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_5__["createConnection"])({
+const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_6__["createConnection"])({
     "type": "mysql",
     "host": process.env.DATABASE_HOST,
     "port": parseInt(process.env.DATABASE_PORT, 10),
@@ -271,10 +293,34 @@ app.post('/api/register', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0_
     let reviewRegistrationInfo = Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["deserialize"])(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewRegistrationInfo"], req.body.reviewRegistrationInfoJson);
     let responseBody;
     try {
-        let reviewId = yield new _app_ReviewReception__WEBPACK_IMPORTED_MODULE_6__["ReviewReception"](connection).register(reviewRegistrationInfo);
+        let reviewId = yield new _app_ReviewReception__WEBPACK_IMPORTED_MODULE_7__["ReviewReception"](connection).register(reviewRegistrationInfo);
         responseBody = {
             isSuccess: true,
             reviewId
+        };
+    }
+    catch (error) {
+        responseBody = {
+            isSuccess: false,
+            error
+        };
+    }
+    res.send(responseBody);
+}));
+app.use(express_fileupload__WEBPACK_IMPORTED_MODULE_5__());
+app.post('/api/upload', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+    let file = req.files.file;
+    let reviewId = req.body.reviewId;
+    let responseBody;
+    try {
+        let reviewReception = new _app_ReviewReception__WEBPACK_IMPORTED_MODULE_7__["ReviewReception"](Object(typeorm__WEBPACK_IMPORTED_MODULE_6__["getConnection"])());
+        let reviewStatus = yield reviewReception.uploadFile(reviewId, {
+            name: file.name,
+            path: file.tempFilePath
+        });
+        responseBody = {
+            isSuccess: true,
+            reviewStatusInJson: Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["serialize"])(reviewStatus)
         };
     }
     catch (error) {
@@ -2262,7 +2308,10 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", String)
 ], UploadFileStatus.prototype, "fileName", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
-    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('varchar', { length: 255 }),
+    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('varchar', {
+        length: 255,
+        nullable: true
+    }),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", String)
 ], UploadFileStatus.prototype, "uploadToken", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
@@ -2273,11 +2322,15 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", typeof (_a = typeof _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UploadFileProcessingStage"] !== "undefined" && _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UploadFileProcessingStage"]) === "function" ? _a : Object)
 ], UploadFileStatus.prototype, "currentStage", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
-    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('int'),
+    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('int', {
+        nullable: true
+    }),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", Number)
 ], UploadFileStatus.prototype, "numberOfPages", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
-    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('text'),
+    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('text', {
+        default: null
+    }),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", String)
 ], UploadFileStatus.prototype, "fileAddress", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
@@ -2289,6 +2342,7 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])({
         type: "enum",
         enum: _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UPLOAD_FILE_PROCESSING_STAGES"],
+        default: undefined
     }),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", typeof (_c = typeof _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UploadFileProcessingStage"] !== "undefined" && _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UploadFileProcessingStage"]) === "function" ? _c : Object)
 ], UploadFileStatus.prototype, "errorStage", void 0);
@@ -2503,6 +2557,17 @@ module.exports = __webpack_require__(/*! /Users/vince/gainhow-review/apps/api/sr
 
 /***/ }),
 
+/***/ "axios":
+/*!************************!*\
+  !*** external "axios" ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("axios");
+
+/***/ }),
+
 /***/ "class-transformer":
 /*!************************************!*\
   !*** external "class-transformer" ***!
@@ -2522,6 +2587,28 @@ module.exports = require("class-transformer");
 /***/ (function(module, exports) {
 
 module.exports = require("express");
+
+/***/ }),
+
+/***/ "express-fileupload":
+/*!*************************************!*\
+  !*** external "express-fileupload" ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("express-fileupload");
+
+/***/ }),
+
+/***/ "form-data":
+/*!****************************!*\
+  !*** external "form-data" ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("form-data");
 
 /***/ }),
 

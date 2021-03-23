@@ -15,7 +15,10 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
     @Column('text')
     readonly fileName: string;
 
-    @Column('varchar', { length: 255 })
+    @Column('varchar', {
+        length: 255,
+        nullable: true
+    })
     public uploadToken?: string;   // 跟轉檔伺服器溝通用的id
 
     @Column({
@@ -25,10 +28,14 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
     })
     public currentStage: UploadFileProcessingStage;
 
-    @Column('int')
+    @Column('int', {
+        nullable: true
+    })
     public numberOfPages?: number;
 
-    @Column('text')
+    @Column('text', {
+        default: null
+    })
     public fileAddress?: string;
 
     @Type(() => UploadFilePageInfo)
@@ -38,7 +45,7 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
     @Column({
         type: "enum",
         enum: UPLOAD_FILE_PROCESSING_STAGES,
-        // default: undefined
+        default: undefined
     })
     public errorStage?: UploadFileProcessingStage;
 

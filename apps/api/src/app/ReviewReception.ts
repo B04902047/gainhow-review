@@ -1,5 +1,5 @@
 import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFileStatus } from '@gainhow-review/data'
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { createConnection, ConnectionOptions, Connection, Repository } from 'typeorm';
 import * as fs from 'fs'
 import * as FormData from 'form-data';
@@ -68,6 +68,7 @@ export class ReviewReception implements ReviewReceptionInterface {
         } catch (error) {
             fileStatus.errorStage = "UPLOADING";
             await uploadFileStatusRepo.save(fileStatus);
+            console.log(error);
         }
         let updatedReviewItem: ReviewItem
             = await reviewItemRepo.findOne(
@@ -88,13 +89,17 @@ export class ReviewReception implements ReviewReceptionInterface {
             let form = new FormData();
             form.append("secret_key", process.env.FILE_CONVERT_SERVER_UPLOAD_KEY);
             form.append("Filedata", readStream);
-            let response: AxiosResponse<UploadToFileConvertingServerResponseBody> = await axios.post(
-                'http://ex.gding.com.tw/test/Upload_test8/server/php/api/uploadFile.php',
-                form,
-                { headers: form.getHeaders() }
-            );
-            if (response.data.msg === 'success') return response.data.token;
-            else throw response.data.msg;
+            try {
+                let response: AxiosResponse<UploadToFileConvertingServerResponseBody> = await axios.post(
+                    'http://ex.gding.com.tw/test/Upload_test8/server/php/api/uploadFile.php',
+                    form,
+                    { headers: form.getHeaders() }
+                );
+                if (response.data.msg === 'success') return response.data.token;
+                else throw response.data.msg;
+            } catch (error) {
+                console.log(error.config);
+            }
 
             interface UploadToFileConvertingServerResponseBody {
                 msg: "success" | "Input Errors!" | "DB Error!";
