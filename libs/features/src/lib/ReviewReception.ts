@@ -1,14 +1,26 @@
 
-import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFileStatus } from '@gainhow-review/data'
-import { RegisterRequestBody, RegisterResponseBody, UploadResponseBody, UploadSuccessResponseBody } from '@gainhow-review/interfaces';
+import { ReviewItem, ReviewModel, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFileStatus } from '@gainhow-review/data'
+import { LoadReviewItemRequestBody, LoadReviewItemResponseBody, LoadReviewStatusRequestBody, LoadReviewStatusResponseBody, RegisterRequestBody, RegisterResponseBody, UpdateReviewModelRequestBody, UpdateReviewModelResponseBody, UploadResponseBody, UploadSuccessResponseBody } from '@gainhow-review/interfaces';
 import axios from 'axios';
 import { deserialize, serialize } from 'class-transformer';
+import { response } from 'express';
 import Resumable from 'resumablejs';
 
 export class ReviewReception implements ReviewReceptionInterface {
     constructor(
         readonly requestUrl: string
     ) {}
+    async updateReviewModel(reviewModel: ReviewModel): Promise<void> {
+        let requestBody: UpdateReviewModelRequestBody = {
+            reviewModelInJson: serialize(reviewModel)
+        };
+        let responseBody: UpdateReviewModelResponseBody = (await axios.post(
+            this.requestUrl + '/updateReviewModel',
+            requestBody
+        )).data;
+        if (responseBody.isSuccess === true) return;
+        else throw responseBody.error;
+    }
     async register(reviewRegistrationInfo: ReviewRegistrationInfo): Promise<string> {
         let requestBody: RegisterRequestBody = {
             reviewRegistrationInfoJson: serialize(reviewRegistrationInfo)
@@ -57,14 +69,29 @@ export class ReviewReception implements ReviewReceptionInterface {
     deleteFile(reviewId: string, fileId: string): Promise<ReviewStatus> {
         throw new Error('Method not implemented.');
     }
-    loadReviewStatus(reviewId: string): Promise<ReviewStatus> {
-        throw new Error('Method not implemented.');
+    async loadReviewStatus(reviewId: string): Promise<ReviewStatus> {
+        let requestBody: LoadReviewStatusRequestBody = {
+            reviewId
+        };
+        let responseBody: LoadReviewStatusResponseBody = (await axios.post(
+            this.requestUrl + '/loadReviewStatus',
+            requestBody
+        )).data;
+        if (responseBody.isSuccess === true) {
+            return deserialize(ReviewStatus, responseBody.reviewStatusInJson);
+        } else throw responseBody.error;
     }
-    loadReviewItem(reviewId: string): Promise<ReviewItem> {
-        throw new Error('Method not implemented.');
-    }
-    saveReviewItem(reviewItem: ReviewItem): Promise<ReviewItem> {
-        throw new Error('Method not implemented.');
+    async loadReviewItem(reviewId: string): Promise<ReviewItem> {
+        let requestBody: LoadReviewItemRequestBody = {
+            reviewId
+        };
+        let responseBody: LoadReviewItemResponseBody = (await axios.post(
+            this.requestUrl + '/loadReviewItem',
+            requestBody
+        )).data;
+        if (responseBody.isSuccess === true) {
+            return deserialize(ReviewItem, responseBody.reviewItemInJson);
+        } else throw responseBody.error;
     }
     generateFinalResults(reviewItem: ReviewItem): Promise<void> {
         throw new Error('Method not implemented.');

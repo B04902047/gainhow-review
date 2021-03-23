@@ -105,11 +105,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var form_data__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! form-data */ "form-data");
 /* harmony import */ var form_data__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(form_data__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var os__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! os */ "os");
+/* harmony import */ var os__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(os__WEBPACK_IMPORTED_MODULE_5__);
 
 
 
 
 
+
+function paramsToFormData(data) {
+    let formData = new form_data__WEBPACK_IMPORTED_MODULE_4__();
+    Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+    });
+    return formData;
+}
 class ReviewReception {
     constructor(connection) {
         this.connection = connection;
@@ -150,25 +160,21 @@ class ReviewReception {
             yield repo.softDelete(itemToRemove);
         });
     }
-    uploadFile(reviewId, file) {
+    uploadFile(reviewId, fileName, filePath) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             // throw new Error('Method not implemented.');
             let reviewItemRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"]);
             let uploadFileStatusRepo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"]);
             let reviewItem = yield reviewItemRepo.findOne(reviewId, { relations: ["status"] });
-            let fileStatus = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"](reviewItem.status, file.name);
+            let fileStatus = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"](reviewItem.status, fileName);
             yield uploadFileStatusRepo.save(fileStatus);
             try {
-                console.log("uploading...");
-                let uploadToken = yield upload(file.path, file.name);
-                console.log("uploaded...");
+                let uploadToken = yield upload(filePath, fileName);
                 fileStatus.uploadToken = uploadToken;
                 fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
                 yield uploadFileStatusRepo.save(fileStatus);
             }
             catch (error) {
-                console.log("upload failed...");
-                console.log(error);
                 fileStatus.errorStage = "UPLOADING";
                 yield uploadFileStatusRepo.save(fileStatus);
             }
@@ -179,44 +185,156 @@ class ReviewReception {
                     "status.uploadFileStatuses.pageInfos"
                 ]
             });
-            return updatedReviewItem.status;
+            return [updatedReviewItem.status, fileStatus];
             // TODO: 把呼叫轉檔server的程式包到一個不管地帶
             function upload(filePath, fileName) {
                 return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-                    console.log('filePath: ' + filePath);
                     let readStream = fs__WEBPACK_IMPORTED_MODULE_3__["createReadStream"](filePath);
                     let form = new form_data__WEBPACK_IMPORTED_MODULE_4__();
                     form.append("secret_key", process.env.FILE_CONVERT_SERVER_UPLOAD_KEY);
                     form.append("Filedata", readStream, fileName);
-                    console.log("fileName: " + fileName);
                     try {
-                        console.log("upload start");
                         let response = yield axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://ex.gding.com.tw/test/Upload_test8/server/php/api/uploadFile.php', form, { headers: form.getHeaders() });
-                        console.log("response start");
                         if (response.data.msg === 'success')
                             return (response.data.token);
                         else
                             throw (response.data.msg);
                     }
                     catch (error) {
-                        console.log(error);
                         throw (error);
                     }
                 });
             }
         });
     }
+    /**
+     *
+     * @param uploadFileStatus
+     */
+    busyCheckFileConversion(uploadFileStatus) {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            console.log("1");
+            uploadFileStatus.pageInfos = yield this.keepTryingTo(this.checkFileConversion, uploadFileStatus);
+            // save pageInfos into uploadFileStatus
+            console.log("10");
+            yield Promise.all(uploadFileStatus.pageInfos.map((pageInfo) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                yield this.connection.manager.save(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFilePageInfo"], pageInfo);
+            })));
+            console.log("100");
+            uploadFileStatus.currentStage = "FINISHED";
+            this.connection.manager.save(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"], uploadFileStatus);
+        });
+    }
+    checkFileConversion(uploadFileStatus) {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            console.log(2);
+            let uploadToken = uploadFileStatus.uploadToken;
+            if (uploadToken === undefined)
+                throw "checkFileConversion() should be called after uploadtoken is set, but before.";
+            let requestBody = {
+                function: 'getjobStatus',
+                token: uploadToken
+            };
+            let formData = paramsToFormData(requestBody);
+            let responseBody = (yield axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://ex.gding.com.tw/test/Upload_test8/server/rd/api/fileconverter.php', formData, { headers: formData.getHeaders() })).data;
+            console.log(responseBody);
+            if (responseBody.msg === "wait") {
+                return "NOT_FINISHED_YET";
+            }
+            else if (responseBody.msg === "success") {
+                const jpegLocalDir = __dirname + '/uploadFilePageImages';
+                yield fs__WEBPACK_IMPORTED_MODULE_3__["promises"].mkdir(`${jpegLocalDir}/${uploadToken}`, { recursive: true });
+                /**
+                 * 從轉檔伺服器得到遠端的pdf檔和jpeg檔的url之後：
+                 *  1. 把pdf的url存起來當作後續跟轉檔伺服器之間溝通用的token，直接存入pageInfo
+                 *  2. 透過jpeg的url將圖檔下載並存在本地，然後把本地的url存入pageInfo
+                 */
+                let pageTokensAndImageUrls = yield Promise.all(responseBody.data.map(({ pageNum: pageNumber, //頁次
+                imageUrl: jpegRemoteUrl, //JPG圖檔位置	
+                pdfUrl: pdfRemoteUrl, }) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                    let response = yield axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(jpegRemoteUrl, {
+                        responseType: 'stream'
+                    });
+                    let jpegLocalPath = `${jpegLocalDir}/${uploadToken}/${pageNumber}.jpeg`;
+                    let writeStream = fs__WEBPACK_IMPORTED_MODULE_3__["createWriteStream"](jpegLocalPath);
+                    let jpegLocalUrl = `${os__WEBPACK_IMPORTED_MODULE_5__["hostname"]()}/${jpegLocalPath}`;
+                    response.data.pipe(writeStream);
+                    return {
+                        pdfTokenInFileConvertingServer: pdfRemoteUrl,
+                        jpegUrl: jpegLocalUrl
+                    };
+                })));
+                let pageSizes = yield this.keepTryingTo(checkFilePageSizes, uploadToken);
+                let pageInfos = pageTokensAndImageUrls.map(({ pdfTokenInFileConvertingServer, jpegUrl }, pageIndex) => {
+                    let widthInMm = pageSizes[pageIndex].widthInMm;
+                    let heightInMm = pageSizes[pageIndex].heightInMm;
+                    return new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFilePageInfo"](uploadFileStatus, pdfTokenInFileConvertingServer, jpegUrl, widthInMm, heightInMm);
+                });
+                return pageInfos;
+            }
+            else
+                throw responseBody.msg;
+            function checkFilePageSizes(uploadToken) {
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                    let requestBody = {
+                        function: 'getStatus',
+                        token: uploadToken
+                    };
+                    let formData = paramsToFormData(requestBody);
+                    let responseBody = (yield axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://ex.gding.com.tw/test/Upload_test8/server/php/api/fileconverter.php', formData, { headers: formData.getHeaders() })).data;
+                    if (responseBody.msg === "wait") {
+                        return "NOT_FINISHED_YET";
+                    }
+                    else if (responseBody.msg === "success") {
+                        return responseBody.data.map(({ wi_mm: widthInMm, hi_mm: heightInMm }) => ({
+                            widthInMm,
+                            heightInMm
+                        }));
+                    }
+                    else
+                        throw responseBody.msg;
+                });
+            }
+        });
+    }
+    keepTryingTo(doSomething, input, timeout = 2000) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                let doSomethingResult = yield doSomething(input);
+                if (doSomethingResult === "NOT_FINISHED_YET")
+                    resolve(this.keepTryingTo(doSomething, input, timeout));
+                else
+                    resolve(doSomethingResult);
+            }), timeout);
+        });
+    }
     deleteFile(reviewId, fileId) {
         throw new Error('Method not implemented.');
     }
     loadReviewStatus(reviewId) {
-        throw new Error('Method not implemented.');
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            return (yield this.loadReviewItem(reviewId)).status;
+        });
     }
     loadReviewItem(reviewId) {
-        throw new Error('Method not implemented.');
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            let reviewItem = yield this.connection.manager.findOne(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewItem"], reviewId, {
+                relations: [
+                    "status",
+                    "status.uploadFileStatuses",
+                    "status.uploadFileStatuses.pageInfos"
+                ]
+            });
+            return reviewItem;
+        });
     }
-    saveReviewItem(reviewItem) {
-        throw new Error('Method not implemented.');
+    updateReviewModel(reviewModel) {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            let repo = this.connection.getRepository(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["ReviewModel"]);
+            if (!repo.findOne(reviewModel.modelId))
+                throw "attempt to insert new review model calling 'updateReviewModel'";
+            yield repo.save(reviewModel);
+        });
     }
     generateFinalResults(reviewItem) {
         throw new Error('Method not implemented.');
@@ -286,22 +404,12 @@ const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_6__["createCon
         "subscribersDir": "apps/api/src/subscriber"
     }
 });
+const reviewReception = new _app_ReviewReception__WEBPACK_IMPORTED_MODULE_7__["ReviewReception"](Object(typeorm__WEBPACK_IMPORTED_MODULE_6__["getConnection"])());
 app.post('/api/register', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
-    let connection;
-    try {
-        connection = yield connectionPromise;
-    }
-    catch (error) {
-        res.send({
-            isSuccess: false,
-            error
-        });
-        return;
-    }
     let reviewRegistrationInfo = Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["deserialize"])(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewRegistrationInfo"], req.body.reviewRegistrationInfoJson);
     let responseBody;
     try {
-        let reviewId = yield new _app_ReviewReception__WEBPACK_IMPORTED_MODULE_7__["ReviewReception"](connection).register(reviewRegistrationInfo);
+        let reviewId = yield reviewReception.register(reviewRegistrationInfo);
         responseBody = {
             isSuccess: true,
             reviewId
@@ -323,12 +431,11 @@ app.post('/api/upload', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__[
     let file = req.files.file;
     let reviewId = req.body.reviewId;
     let responseBody;
+    let reviewStatus;
+    let uploadFileStatus;
     try {
-        let reviewReception = new _app_ReviewReception__WEBPACK_IMPORTED_MODULE_7__["ReviewReception"](Object(typeorm__WEBPACK_IMPORTED_MODULE_6__["getConnection"])());
-        let reviewStatus = yield reviewReception.uploadFile(reviewId, {
-            name: file.name,
-            path: file.tempFilePath
-        });
+        [reviewStatus, uploadFileStatus]
+            = yield reviewReception.uploadFile(reviewId, file.name, file.tempFilePath);
         responseBody = {
             isSuccess: true,
             reviewStatusInJson: Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["serialize"])(reviewStatus)
@@ -341,7 +448,66 @@ app.post('/api/upload', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__[
         };
     }
     res.send(responseBody);
-    // TODO: busy check 轉檔狀態
+    // busy check 轉檔狀態
+    try {
+        yield reviewReception.busyCheckFileConversion(uploadFileStatus);
+    }
+    catch (error) {
+        console.log("busy check error: " + error);
+    }
+}));
+app.post('/api/loadReviewStatus', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+    let requestBody = req.body;
+    let reviewId = requestBody.reviewId;
+    let responseBody;
+    try {
+        let reviewStatus = yield reviewReception.loadReviewStatus(reviewId);
+        responseBody = {
+            isSuccess: true,
+            reviewStatusInJson: Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["serialize"])(reviewStatus)
+        };
+    }
+    catch (error) {
+        responseBody = {
+            isSuccess: false,
+            error
+        };
+    }
+    res.send(responseBody);
+}));
+app.post('/api/loadReviewItem', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+    let reviewId = req.body.reviewId;
+    let responseBody;
+    try {
+        let reviewItem = yield reviewReception.loadReviewItem(reviewId);
+        responseBody = {
+            isSuccess: true,
+            reviewItemInJson: Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["serialize"])(reviewItem)
+        };
+    }
+    catch (error) {
+        responseBody = {
+            isSuccess: false,
+            error
+        };
+    }
+    res.send(responseBody);
+}));
+app.post('/api/updateReviewModel', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+    let requestBody = req.body;
+    let reviewModel = Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["deserialize"])(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewModel"], requestBody.reviewModelInJson);
+    let responseBody;
+    try {
+        yield reviewReception.updateReviewModel(reviewModel);
+        responseBody = { isSuccess: true };
+    }
+    catch (error) {
+        responseBody = {
+            isSuccess: false,
+            error
+        };
+    }
+    res.send(responseBody);
 }));
 const port = process.env.port || 3333;
 const server = app.listen(port, () => {
@@ -2232,8 +2398,8 @@ var _a, _b;
 let UploadFilePageInfo = class UploadFilePageInfo {
     constructor(fileStatus, pdfAddress, jpegAddress, widthInMm, heightInMm) {
         this.fileStatus = fileStatus;
-        this.pdfAddress = pdfAddress;
-        this.jpegAddress = jpegAddress;
+        this.pdfTokenInFileConvertingServer = pdfAddress;
+        this.jpegUrl = jpegAddress;
         this.widthInMm = widthInMm;
         this.heightInMm = heightInMm;
     }
@@ -2245,11 +2411,11 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(typeorm__WEBPACK_IMPORTED_MODULE_2__["Column"])('text'),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", String)
-], UploadFilePageInfo.prototype, "pdfAddress", void 0);
+], UploadFilePageInfo.prototype, "pdfTokenInFileConvertingServer", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(typeorm__WEBPACK_IMPORTED_MODULE_2__["Column"])('text'),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", String)
-], UploadFilePageInfo.prototype, "jpegAddress", void 0);
+], UploadFilePageInfo.prototype, "jpegUrl", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(typeorm__WEBPACK_IMPORTED_MODULE_2__["Column"])('int'),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", Number)
@@ -2303,6 +2469,11 @@ let UploadFileStatus = class UploadFileStatus {
         this.fileName = fileName;
         this.currentStage = "UPLOADING";
     }
+    get numberOfPages() {
+        var _a;
+        return (_a = this.pageInfos) === null || _a === void 0 ? void 0 : _a.length;
+    }
+    ;
     get hasError() {
         if (this.errorStage)
             return true;
@@ -2333,12 +2504,6 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     }),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", typeof (_a = typeof _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UploadFileProcessingStage"] !== "undefined" && _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UploadFileProcessingStage"]) === "function" ? _a : Object)
 ], UploadFileStatus.prototype, "currentStage", void 0);
-Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
-    Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('int', {
-        nullable: true
-    }),
-    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", Number)
-], UploadFileStatus.prototype, "numberOfPages", void 0);
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])('text', {
         default: null
@@ -2632,6 +2797,17 @@ module.exports = require("form-data");
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ "os":
+/*!*********************!*\
+  !*** external "os" ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("os");
 
 /***/ }),
 

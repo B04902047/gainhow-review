@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { FramedPage, ReviewItem, ReviewModel, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data';
-import { RegisterResponseBody, UpdateReviewModelRequestBody, UpdateReviewModelResponseBody, UploadResponseBody } from '@gainhow-review/interfaces';
+import { LoadReviewStatusRequestBody, LoadReviewStatusResponseBody, RegisterResponseBody, UpdateReviewModelRequestBody, UpdateReviewModelResponseBody, UploadResponseBody } from '@gainhow-review/interfaces';
 import { deserialize, serialize } from 'class-transformer';
 import * as express from 'express';
 import * as expressFileUpload from 'express-fileupload';
@@ -93,16 +93,18 @@ app.post('/api/upload', async (req, res) => {
   }
   res.send(responseBody);
   // busy check 轉檔狀態
-  await reviewReception.busyCheckFileConversion(uploadFileStatus);
+  try {
+    await reviewReception.busyCheckFileConversion(uploadFileStatus);
+  } catch (error) {
+    console.log("busy check error: " + error);
+  }
 })
 
+
 app.post('/api/loadReviewStatus', async (req, res) => {
-  let reviewId: string = req.body.reviewId;
-  let responseBody: {
-    isSuccess: boolean;
-    error?: any;
-    reviewStatusInJson?: string;
-  };
+  let requestBody: LoadReviewStatusRequestBody = req.body;
+  let reviewId: string = requestBody.reviewId;
+  let responseBody: LoadReviewStatusResponseBody;
   try {
     let reviewStatus: ReviewStatus
       = await reviewReception.loadReviewStatus(reviewId);

@@ -28,10 +28,9 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
     })
     public currentStage: UploadFileProcessingStage;
 
-    @Column('int', {
-        nullable: true
-    })
-    public numberOfPages?: number;
+    public get numberOfPages(): number | undefined {
+        return this.pageInfos?.length;
+    };
 
     @Column('text', {
         default: null

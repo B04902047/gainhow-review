@@ -1,9 +1,17 @@
 import { ReviewItem, ReviewModel, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data'
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { createConnection, ConnectionOptions, Connection, Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import * as fs from 'fs'
 import * as FormData from 'form-data';
 import * as os from 'os';
+
+function paramsToFormData(data: {[key: string]: string}): FormData {
+    let formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+    })
+    return formData;
+}
 
 export class ReviewReception implements ReviewReceptionInterface {
     constructor(
@@ -61,15 +69,11 @@ export class ReviewReception implements ReviewReceptionInterface {
         );
         await uploadFileStatusRepo.save(fileStatus);
         try {
-            console.log("uploading...");
             let uploadToken: string = await upload(filePath, fileName);
-            console.log("uploaded...");
             fileStatus.uploadToken = uploadToken;
             fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
             await uploadFileStatusRepo.save(fileStatus);
         } catch (error) {
-            console.log("upload failed...");
-            console.log(error);
             fileStatus.errorStage = "UPLOADING";
             await uploadFileStatusRepo.save(fileStatus);
         }
@@ -88,25 +92,19 @@ export class ReviewReception implements ReviewReceptionInterface {
         
         // TODO: 把呼叫轉檔server的程式包到一個不管地帶
         async function upload(filePath: string, fileName: string): Promise<string> {
-            
-            console.log('filePath: '+ filePath);
             let readStream: fs.ReadStream = fs.createReadStream(filePath);
             let form = new FormData();
             form.append("secret_key", process.env.FILE_CONVERT_SERVER_UPLOAD_KEY);
             form.append("Filedata", readStream, fileName);
-            console.log("fileName: " + fileName);
             try {
-                console.log("upload start");
                 let response: AxiosResponse<UploadToFileConvertingServerResponseBody> = await axios.post(
                     'http://ex.gding.com.tw/test/Upload_test8/server/php/api/uploadFile.php',
                     form,
                     { headers: form.getHeaders() }
                 );
-                console.log("response start");
                 if (response.data.msg === 'success') return (response.data.token);
                 else throw (response.data.msg);
             } catch (error) {
-                console.log(error);
                 throw (error);
             }
 
@@ -122,30 +120,39 @@ export class ReviewReception implements ReviewReceptionInterface {
      * @param uploadFileStatus 
      */
     async busyCheckFileConversion(uploadFileStatus: UploadFileStatus): Promise<void> {
+        console.log("1");
         uploadFileStatus.pageInfos = await this.keepTryingTo(this.checkFileConversion, uploadFileStatus);
         // save pageInfos into uploadFileStatus
+        console.log("10");
         await Promise.all(
             uploadFileStatus.pageInfos.map(async (pageInfo: UploadFilePageInfo): Promise<void> => {
                 await this.connection.manager.save(UploadFilePageInfo, pageInfo);
             })
         );
+        console.log("100");
+        uploadFileStatus.currentStage = "FINISHED";
+        this.connection.manager.save(UploadFileStatus, uploadFileStatus);
     }
     async checkFileConversion(uploadFileStatus: UploadFileStatus): Promise<Array<UploadFilePageInfo> | "NOT_FINISHED_YET"> {
+        console.log(2);
         let uploadToken: string | undefined = uploadFileStatus.uploadToken;
         if (uploadToken === undefined) throw "checkFileConversion() should be called after uploadtoken is set, but before."
+        let requestBody = {
+            function: 'getjobStatus',
+            token: uploadToken
+        };
+        let formData: FormData = paramsToFormData(requestBody);
         let responseBody: CheckFileConversionFromFileConvertingServerResponseBody
             = (await axios.post(
-                'http://ex.gding.com.tw/test/Upload_test8/server/php/api/fileconverter.php',
-                {
-                    function: "getjobStatus",
-                    token: uploadToken
-                }
+                'http://ex.gding.com.tw/test/Upload_test8/server/rd/api/fileconverter.php',
+                formData,
+                { headers: formData.getHeaders() }
             )).data;
+        console.log(responseBody);
         if (responseBody.msg === "wait") {
             return "NOT_FINISHED_YET";
         } else if (responseBody.msg === "success") {
-
-            const jpegLocalDir: string = '';
+            const jpegLocalDir: string = __dirname + '/uploadFilePageImages';
             await fs.promises.mkdir(`${jpegLocalDir}/${uploadToken}`, { recursive: true });
 
             /**
@@ -204,13 +211,16 @@ export class ReviewReception implements ReviewReceptionInterface {
         }
 
         async function checkFilePageSizes(uploadToken: string): Promise<Array<PageSizeInMm> | "NOT_FINISHED_YET"> {
+            let requestBody = {
+                function: 'getStatus',
+                token: uploadToken
+            };
+            let formData: FormData = paramsToFormData(requestBody);
             let responseBody: CheckFilePageSizeFromFileConvertingServerResponseBody
                 = (await axios.post(
                     'http://ex.gding.com.tw/test/Upload_test8/server/php/api/fileconverter.php',
-                    {
-                        function: 'getStatus',
-                        token: uploadToken
-                    }
+                    formData,
+                    { headers: formData.getHeaders()}
                 )).data;
             if (responseBody.msg === "wait") {
                 return "NOT_FINISHED_YET";
