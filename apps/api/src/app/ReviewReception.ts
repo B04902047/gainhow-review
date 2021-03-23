@@ -119,17 +119,82 @@ export class ReviewReception implements ReviewReceptionInterface {
 
     async busyCheckFileConversion(uploadFileStatus: UploadFileStatus): Promise<void> {
         let uploadToken: string | undefined = uploadFileStatus.uploadToken;
-        let pageInfos: Array<UploadFilePageInfo> = await this.keepTryingToGetSomething(this.checkFileConversion, uploadToken);
+        uploadFileStatus.pageInfos = await this.keepTryingTo(this.checkFileConversion, uploadToken);
         // TODO: save pageInfos into uploadFileStatus
+        await Promise.all(
+            uploadFileStatus.pageInfos.map(async (pageInfo: UploadFilePageInfo): Promise<void> => {
+                await this.connection.manager.save(UploadFilePageInfo, pageInfo);
+            })
+        );
     }
-    async checkFileConversion(uploadToken: string): Promise<Array<UploadFilePageInfo> | "not finished yet"> {
+    async checkFileConversion(uploadToken: string): Promise<Array<UploadFilePageInfo> | "NOT_FINISHED_YET"> {
         // TODO: call file converting server
+        let responseBody: CheckFileConversionFromFileConvertingServerResponseBody
+            = (await axios.post(
+                'http://ex.gding.com.tw/test/Upload_test8/server/php/api/fileconverter.php',
+                {
+                    function: "getjobStatus",
+                    token: uploadToken
+                }
+            )).data;
+
+        // TODO: 拿到address之後要再去問轉檔主機圖檔size
+        // TODO: 等拿到address還要記得把jpg複製一份到local
+        // 以上完成之後合併資訊回UploadFilePageInfo
+
+
+        interface CheckFilePageSizeFromFileConvertingServerResponseBody {
+            code: "200" | "404"				//執行狀態：成功｜失敗
+            message: "wait" | "success" | "fail" |"Input Errors!" | "DB Error!" 
+            pageCount: number   			//總頁數
+            data: Array<
+                {
+                    pageNum: number,		//頁次
+                    imageUrl: string,	//JPG圖檔位置	
+                    pdfUrl: string,		//PFD圖檔位置
+                }
+            >
+        }
+        // TODO: 「分成成功／失敗／還要等」等三種
+        type CheckFileConversionFromFileConvertingServerResponseBody
+            = CheckFileConversionFromFileConvertingServerNotFinishedYetResponseBody
+            | CheckFileConversionFromFileConvertingServerFinishedResponseBody;
+        interface CheckFileConversionFromFileConvertingServerNotFinishedYetResponseBody {
+            code: "200" | "404"				//執行狀態：成功｜失敗
+            message: "wait" | "success" | "fail" | "Input Errors!" | "DB Error!" 
+            pageCount: number   			//總頁數
+        }
+        interface CheckFileConversionFromFileConvertingServerFinishedResponseBody {
+            code: "200"				//執行狀態：成功｜失敗
+            message: "success" 
+            pageCount: number   			//總頁數
+            data: Array<
+                {
+                    pageNum: number,		//頁次
+                    imageUrl: string,	//JPG圖檔位置	
+                    pdfUrl: string,		//PFD圖檔位置
+                }
+            >
+        }
     }
-    private keepTryingToGetSomething<X, Y>(
-        tryToDo: (input: X) => Promise<Y | "not finished yet">,
+    private keepTryingTo<X, Y>(
+        doSomething: (input: X) => Promise<Y | "NOT_FINISHED_YET">,
         input: X,
         timeout: number = 2000
     ): Promise<Y> {
+        return new Promise((resolve, reject) => {
+            setTimeout(async () => {
+                let doSomethingResult = await doSomething(input);
+                if (doSomethingResult === "NOT_FINISHED_YET") resolve(
+                    this.keepTryingTo(
+                        doSomething,
+                        input,
+                        timeout
+                    )
+                );
+                else resolve(doSomethingResult);
+            }, timeout)
+        })
 
     }
 
