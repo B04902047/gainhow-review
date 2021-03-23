@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { FramedPage, ReviewItem, ReviewModel, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data';
-import { RegisterResponseBody, UploadResponseBody } from '@gainhow-review/interfaces';
+import { RegisterResponseBody, UpdateReviewModelRequestBody, UpdateReviewModelResponseBody, UploadResponseBody } from '@gainhow-review/interfaces';
 import { deserialize, serialize } from 'class-transformer';
 import * as express from 'express';
 import * as expressFileUpload from 'express-fileupload';
@@ -42,23 +42,15 @@ const connectionPromise: Promise<Connection> = createConnection({
   }
 });
 
+const reviewReception = new ReviewReception(getConnection());
+
 app.post('/api/register', async (req, res) => {
-  let connection: Connection;
-  try {
-    connection = await connectionPromise;
-  } catch (error) {
-    res.send({
-      isSuccess: false,
-      error
-    });
-    return;
-  }
-  
+
   let reviewRegistrationInfo: ReviewRegistrationInfo
     = deserialize(ReviewRegistrationInfo, req.body.reviewRegistrationInfoJson);
   let responseBody: RegisterResponseBody;
   try {
-    let reviewId: string = await new ReviewReception(connection).register(reviewRegistrationInfo);
+    let reviewId: string = await reviewReception.register(reviewRegistrationInfo);
     responseBody = {
       isSuccess: true,
       reviewId
@@ -80,8 +72,6 @@ app.post('/api/upload', async (req, res) => {
   let file: UploadedFile = req.files!.file as UploadedFile;
   let reviewId: string = req.body.reviewId;
   let responseBody: UploadResponseBody;
-  
-  let reviewReception = new ReviewReception(getConnection());
   let reviewStatus: ReviewStatus;
   let uploadFileStatus: UploadFileStatus;
   try {
@@ -104,11 +94,73 @@ app.post('/api/upload', async (req, res) => {
     }
   }
   res.send(responseBody);
-  // TODO: busy check 轉檔狀態
+  // busy check 轉檔狀態
   await reviewReception.busyCheckFileConversion(uploadFileStatus);
 })
 
+app.post('/api/loadReviewStatus', async (req, res) => {
+  let reviewId: string = req.body.reviewId;
+  let responseBody: {
+    isSuccess: boolean;
+    error?: any;
+    reviewStatusInJson?: string;
+  };
+  try {
+    let reviewStatus: ReviewStatus
+      = await reviewReception.loadReviewStatus(reviewId);
+    responseBody = {
+      isSuccess: true,
+      reviewStatusInJson: serialize(reviewStatus)
+    };
+  } catch (error) {
+    responseBody = {
+      isSuccess: false,
+      error
+    };
+  }
+  res.send(responseBody);
+})
 
+
+app.post('/api/loadReviewItem', async (req, res) => {
+  let reviewId: string = req.body.reviewId;
+  let responseBody: {
+    isSuccess: boolean;
+    error?: any;
+    reviewItemInJson?: string;
+  };
+  try {
+    let reviewItem: ReviewItem
+      = await reviewReception.loadReviewItem(reviewId);
+    responseBody = {
+      isSuccess: true,
+      reviewItemInJson: serialize(reviewItem)
+    };
+  } catch (error) {
+    responseBody = {
+      isSuccess: false,
+      error
+    };
+  }
+  res.send(responseBody);
+});
+
+app.post('/api/updateReviewModel', async (req, res) => {
+  let requestBody: UpdateReviewModelRequestBody = req.body;
+  let reviewModel: ReviewModel
+    = deserialize(ReviewModel, requestBody.reviewModelInJson);
+  let responseBody: UpdateReviewModelResponseBody;
+  try {
+    await reviewReception.updateReviewModel(reviewModel);
+    responseBody = { isSuccess: true };
+  } catch (error) {
+    responseBody = {
+      isSuccess: false,
+      error
+    };
+  }
+  res.send(responseBody);
+})
 
 const port = process.env.port || 3333;
 const server = app.listen(port, () => {
