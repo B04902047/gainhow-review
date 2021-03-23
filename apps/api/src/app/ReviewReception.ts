@@ -50,19 +50,19 @@ export class ReviewReception implements ReviewReceptionInterface {
         await repo.softDelete(itemToRemove);
     }
     
-    async uploadFile(reviewId: string, file: { name: string, path: string; }): Promise<[ReviewStatus, UploadFileStatus]> {
+    async uploadFile(reviewId: string, fileName: string, filePath: string): Promise<[ReviewStatus, UploadFileStatus]> {
         // throw new Error('Method not implemented.');
         let reviewItemRepo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
         let uploadFileStatusRepo: Repository<UploadFileStatus> = this.connection.getRepository(UploadFileStatus);
         let reviewItem: ReviewItem = await reviewItemRepo.findOne(reviewId, { relations: ["status"] });
         let fileStatus = new UploadFileStatus(
             reviewItem.status,
-            file.name
+            fileName
         );
         await uploadFileStatusRepo.save(fileStatus);
         try {
             console.log("uploading...");
-            let uploadToken: string = await upload(file.path, file.name);
+            let uploadToken: string = await upload(filePath, fileName);
             console.log("uploaded...");
             fileStatus.uploadToken = uploadToken;
             fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";

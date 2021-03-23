@@ -78,10 +78,8 @@ app.post('/api/upload', async (req, res) => {
     [reviewStatus, uploadFileStatus]
       = await reviewReception.uploadFile(
         reviewId,
-        {
-          name: file.name,
-          path: file.tempFilePath
-        }
+        file.name,
+        file.tempFilePath
       );
     responseBody = {
       isSuccess: true,
