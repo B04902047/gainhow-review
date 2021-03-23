@@ -10,10 +10,10 @@ export default class UploadFilePageInfo implements UploadFilePageInfoInterface {
     readonly id?: number;
 
     @Column('text')
-    readonly pdfAddress: string;
+    readonly pdfTokenInFileConvertingServer: string;
 
     @Column('text')
-    readonly jpegAddress: string;
+    readonly jpegUrl: string;
 
     @Column('int')
     readonly widthInMm: number;
@@ -33,8 +33,8 @@ export default class UploadFilePageInfo implements UploadFilePageInfoInterface {
         heightInMm: number
     ) {
         this.fileStatus = fileStatus;
-        this.pdfAddress = pdfAddress;
-        this.jpegAddress = jpegAddress;
+        this.pdfTokenInFileConvertingServer = pdfAddress;
+        this.jpegUrl = jpegAddress;
         this.widthInMm = widthInMm;
         this.heightInMm = heightInMm;
     }

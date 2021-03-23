@@ -79,8 +79,8 @@ export interface UploadFileStatus {
 }
 
 export interface UploadFilePageInfo {
-    pdfAddress: string;
-    jpegAddress: string;
+    pdfTokenInFileConvertingServer: string;
+    jpegUrl: string;
     heightInMm: number;
     widthInMm: number;
 }

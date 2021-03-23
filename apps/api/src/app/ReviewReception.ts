@@ -3,7 +3,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { createConnection, ConnectionOptions, Connection, Repository } from 'typeorm';
 import * as fs from 'fs'
 import * as FormData from 'form-data';
-import { File } from 'formidable';
+import * as os from 'os';
 
 export class ReviewReception implements ReviewReceptionInterface {
     constructor(
@@ -117,18 +117,22 @@ export class ReviewReception implements ReviewReceptionInterface {
         }
     }
 
+    /**
+     * 
+     * @param uploadFileStatus 
+     */
     async busyCheckFileConversion(uploadFileStatus: UploadFileStatus): Promise<void> {
-        let uploadToken: string | undefined = uploadFileStatus.uploadToken;
-        uploadFileStatus.pageInfos = await this.keepTryingTo(this.checkFileConversion, uploadToken);
-        // TODO: save pageInfos into uploadFileStatus
+        uploadFileStatus.pageInfos = await this.keepTryingTo(this.checkFileConversion, uploadFileStatus);
+        // save pageInfos into uploadFileStatus
         await Promise.all(
             uploadFileStatus.pageInfos.map(async (pageInfo: UploadFilePageInfo): Promise<void> => {
                 await this.connection.manager.save(UploadFilePageInfo, pageInfo);
             })
         );
     }
-    async checkFileConversion(uploadToken: string): Promise<Array<UploadFilePageInfo> | "NOT_FINISHED_YET"> {
-        // TODO: call file converting server
+    async checkFileConversion(uploadFileStatus: UploadFileStatus): Promise<Array<UploadFilePageInfo> | "NOT_FINISHED_YET"> {
+        let uploadToken: string | undefined = uploadFileStatus.uploadToken;
+        if (uploadToken === undefined) throw "checkFileConversion() should be called after uploadtoken is set, but before."
         let responseBody: CheckFileConversionFromFileConvertingServerResponseBody
             = (await axios.post(
                 'http://ex.gding.com.tw/test/Upload_test8/server/php/api/fileconverter.php',
@@ -137,44 +141,123 @@ export class ReviewReception implements ReviewReceptionInterface {
                     token: uploadToken
                 }
             )).data;
+        if (responseBody.msg === "wait") {
+            return "NOT_FINISHED_YET";
+        } else if (responseBody.msg === "success") {
 
-        // TODO: 拿到address之後要再去問轉檔主機圖檔size
-        // TODO: 等拿到address還要記得把jpg複製一份到local
-        // 以上完成之後合併資訊回UploadFilePageInfo
+            const jpegLocalDir: string = '';
+            await fs.promises.mkdir(`${jpegLocalDir}/${uploadToken}`, { recursive: true });
 
+            /**
+             * 從轉檔伺服器得到遠端的pdf檔和jpeg檔的url之後：
+             *  1. 把pdf的url存起來當作後續跟轉檔伺服器之間溝通用的token，直接存入pageInfo
+             *  2. 透過jpeg的url將圖檔下載並存在本地，然後把本地的url存入pageInfo
+             */
+            let pageTokensAndImageUrls: Array<{
+                pdfTokenInFileConvertingServer: string;
+                jpegUrl: string
+            }> = await Promise.all(
+                responseBody.data.map(async ({
+                    pageNum: pageNumber,        //頁次
+                    imageUrl: jpegRemoteUrl,    //JPG圖檔位置	
+                    pdfUrl: pdfRemoteUrl,       //PFD圖檔位置
+                }) => {
+                    let response: AxiosResponse = await axios.get(
+                        jpegRemoteUrl, {
+                        responseType: 'stream'
+                    });
+                    let jpegLocalPath: string = `${jpegLocalDir}/${uploadToken}/${pageNumber}.jpeg`
+                    let writeStream = fs.createWriteStream(jpegLocalPath);
+                    let jpegLocalUrl: string = `${os.hostname()}/${jpegLocalPath}`;
+                    response.data.pipe(writeStream);
+                    return {
+                        pdfTokenInFileConvertingServer: pdfRemoteUrl,
+                        jpegUrl: jpegLocalUrl
+                    };
+                })
+            )
+            let pageSizes: Array<PageSizeInMm>
+                = await this.keepTryingTo(
+                    checkFilePageSizes,
+                    uploadToken
+                );
+            let pageInfos: Array<UploadFilePageInfo> = pageTokensAndImageUrls.map(({
+                pdfTokenInFileConvertingServer,
+                jpegUrl
+            }, pageIndex: number) => {
+                let widthInMm: number = pageSizes[pageIndex].widthInMm;
+                let heightInMm: number = pageSizes[pageIndex].heightInMm;
+                return new UploadFilePageInfo(
+                    uploadFileStatus,
+                    pdfTokenInFileConvertingServer,
+                    jpegUrl,
+                    widthInMm,
+                    heightInMm
+                );
+            })
+            return pageInfos;
+        } else throw responseBody.msg;
 
-        interface CheckFilePageSizeFromFileConvertingServerResponseBody {
-            code: "200" | "404"				//執行狀態：成功｜失敗
-            message: "wait" | "success" | "fail" |"Input Errors!" | "DB Error!" 
-            pageCount: number   			//總頁數
-            data: Array<
-                {
-                    pageNum: number,		//頁次
-                    imageUrl: string,	//JPG圖檔位置	
-                    pdfUrl: string,		//PFD圖檔位置
-                }
-            >
+        interface PageSizeInMm {
+            widthInMm: number;
+            heightInMm: number;
         }
-        // TODO: 「分成成功／失敗／還要等」等三種
+
+        async function checkFilePageSizes(uploadToken: string): Promise<Array<PageSizeInMm> | "NOT_FINISHED_YET"> {
+            let responseBody: CheckFilePageSizeFromFileConvertingServerResponseBody
+                = (await axios.post(
+                    'http://ex.gding.com.tw/test/Upload_test8/server/php/api/fileconverter.php',
+                    {
+                        function: 'getStatus',
+                        token: uploadToken
+                    }
+                )).data;
+            if (responseBody.msg === "wait") {
+                return "NOT_FINISHED_YET";
+            } else if (responseBody.msg === "success") {
+                return responseBody.data.map(({
+                    wi_mm: widthInMm,
+                    hi_mm: heightInMm
+                }): PageSizeInMm => ({
+                    widthInMm,
+                    heightInMm 
+                }))
+            } else throw responseBody.msg;
+
+            interface CheckFilePageSizeFromFileConvertingServerResponseBody {                
+                code: "200" | "404";
+                msg: "wait" | "success" | "fail" | "Input Errors!" | "DB Error!";
+                pagecount: number;
+                processtime: number;
+                data: Array<{
+                    hi_mm: number;
+                    hi_px: number;
+                    imgprv: string;
+                    page_dpi: number;
+                    pagenum: number;
+                    wi_mm: number;
+                    wi_px: number;
+                }>;
+            }
+        }
+
         type CheckFileConversionFromFileConvertingServerResponseBody
             = CheckFileConversionFromFileConvertingServerNotFinishedYetResponseBody
             | CheckFileConversionFromFileConvertingServerFinishedResponseBody;
         interface CheckFileConversionFromFileConvertingServerNotFinishedYetResponseBody {
             code: "200" | "404"				//執行狀態：成功｜失敗
-            message: "wait" | "success" | "fail" | "Input Errors!" | "DB Error!" 
+            msg: "wait" | "fail" | "Input Errors!" | "DB Error!" 
             pageCount: number   			//總頁數
         }
         interface CheckFileConversionFromFileConvertingServerFinishedResponseBody {
             code: "200"				//執行狀態：成功｜失敗
-            message: "success" 
+            msg: "success" 
             pageCount: number   			//總頁數
-            data: Array<
-                {
-                    pageNum: number,		//頁次
-                    imageUrl: string,	//JPG圖檔位置	
-                    pdfUrl: string,		//PFD圖檔位置
-                }
-            >
+            data: Array<{
+                pageNum: number,		//頁次
+                imageUrl: string,	//JPG圖檔位置	
+                pdfUrl: string,		//PFD圖檔位置
+            }>
         }
     }
     private keepTryingTo<X, Y>(
@@ -197,82 +280,6 @@ export class ReviewReception implements ReviewReceptionInterface {
         })
 
     }
-
-	// private timerCount: number = 0;
-	// private getTimeoutTime(): number {
-	// 	this.timerCount += 1;
-	// 	return this.timerCount * 300;
-	// }
-	// private clearTimer(): void {
-	// 	this.timerCount -= 1;
-	// }
-
-	// async getResultingPages(uploadFileToken: string)
-	// 	: Promise<Array<{
-	// 		resultingPdfUrl: string;
-	// 		resultingJpegUrl: string
-	// 	}>> {
-	// 		const result = await this.keepTryingToGetSomething(
-	// 			tryGetResultingPages,
-	// 			uploadFileToken,
-	// 			this.getTimeoutTime()
-	// 		);
-	// 		this.clearTimer();
-	// 		return result;
-
-	// 	function tryGetResultingPages(uploadFileToken: string)
-	// 		: Promise<null | Array<{
-	// 			resultingPdfUrl: string;
-	// 			resultingJpegUrl: string
-	// 		}>> {
-	// 		return (
-	// 			axios.post('php/getResultingPages.php', {
-	// 				token: uploadFileToken
-	// 			})
-	// 				.catch((error: AxiosError<any>) => {
-	// 					throw ErrorType.CONNECTION_FAILURE;
-	// 				})
-	// 				.then((response: AxiosResponse<any>) => {
-	// 					let result: any = response.data;
-	// 					if (!result.isSuccess) throw ErrorType.POSTCONDITION_FAILURE;
-	// 					if (!result.isFinished) return null;
-	// 					let pageDatas: any[] = result.data;
-	// 					let output = pageDatas
-	// 						.sort(function (a: any, b: any) {
-	// 							return (a.pagenum > b.pagenum) ? 1 : -1;
-	// 						})
-	// 						.map(function (pageData: any) {
-	// 							return {
-	// 								resultingPdfUrl: pageData.pdfurl,
-	// 								resultingJpegUrl: pageData.imgurl
-	// 							};
-	// 						});
-	// 					return output;
-	// 				})
-	// 		);
-	// 	}
-	// }
-	
-	// keepTryingToGetSomething<X, Y>(
-	// 	tryToGetSomething: (input: X) => Promise<Y | null>,
-	// 	input: X,
-	// 	timeout: number = 2000
-	// ): Promise<Y> {
-	// 	return new Promise((resolve, reject) => {
-	// 		setTimeout(async () => {
-	// 			try {
-	// 				let output: Y | null = await tryToGetSomething(input);
-	// 				if (output) resolve(output);
-	// 				else {
-	// 					let output: Y = await this.keepTryingToGetSomething(tryToGetSomething, input, timeout);
-	// 					resolve(output);
-	// 				}
-	// 			} catch (error) {
-	// 				reject(error);
-	// 			}
-	// 		}, timeout);
-	// 	});
-	// }
     deleteFile(reviewId: string, fileId: string): Promise<ReviewStatus> {
         throw new Error('Method not implemented.');
     }
