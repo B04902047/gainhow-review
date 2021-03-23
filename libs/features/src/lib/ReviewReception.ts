@@ -33,6 +33,8 @@ export class ReviewReception implements ReviewReceptionInterface {
                 query: { reviewId },
                 method: 'multipart',
                 testChunks: false,
+                chunkSize: 2 * 1024 * 1024 * 1024,
+                maxFileSize: 2 * 1024 * 1024 * 1024 as any
             });
             uploader.on('fileAdded', () => {
                 uploader.upload();

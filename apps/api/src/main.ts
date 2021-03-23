@@ -72,14 +72,18 @@ app.post('/api/register', async (req, res) => {
   res.send(responseBody);
 })
 
-app.use(expressFileUpload());
+app.use(expressFileUpload({
+  useTempFiles : true,
+  tempFileDir : '/tmp/'
+}));
 app.post('/api/upload', async (req, res) => {
   let file: UploadedFile = req.files!.file as UploadedFile;
   let reviewId: string = req.body.reviewId;
   let responseBody: UploadResponseBody;
+  
   try {
     let reviewReception = new ReviewReception(getConnection());
-    let reviewStatus: ReviewStatus
+    let [reviewStatus, uploadFileStatus]: [ReviewStatus, UploadFileStatus]
       = await reviewReception.uploadFile(
         reviewId,
         {
@@ -99,6 +103,7 @@ app.post('/api/upload', async (req, res) => {
   }
   res.send(responseBody);
   // TODO: busy check 轉檔狀態
+
 })
 
 

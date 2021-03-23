@@ -1,4 +1,4 @@
-import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFileStatus } from '@gainhow-review/data'
+import { ReviewItem, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data'
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { createConnection, ConnectionOptions, Connection, Repository } from 'typeorm';
 import * as fs from 'fs'
@@ -50,7 +50,7 @@ export class ReviewReception implements ReviewReceptionInterface {
         await repo.softDelete(itemToRemove);
     }
     
-    async uploadFile(reviewId: string, file: { name: string, path: string; }): Promise<ReviewStatus> {
+    async uploadFile(reviewId: string, file: { name: string, path: string; }): Promise<[ReviewStatus, UploadFileStatus]> {
         // throw new Error('Method not implemented.');
         let reviewItemRepo: Repository<ReviewItem> = this.connection.getRepository(ReviewItem);
         let uploadFileStatusRepo: Repository<UploadFileStatus> = this.connection.getRepository(UploadFileStatus);
@@ -61,14 +61,17 @@ export class ReviewReception implements ReviewReceptionInterface {
         );
         await uploadFileStatusRepo.save(fileStatus);
         try {
-            let uploadToken: string = await upload(file.path);
+            console.log("uploading...");
+            let uploadToken: string = await upload(file.path, file.name);
+            console.log("uploaded...");
             fileStatus.uploadToken = uploadToken;
             fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
             await uploadFileStatusRepo.save(fileStatus);
         } catch (error) {
+            console.log("upload failed...");
+            console.log(error);
             fileStatus.errorStage = "UPLOADING";
             await uploadFileStatusRepo.save(fileStatus);
-            console.log(error);
         }
         let updatedReviewItem: ReviewItem
             = await reviewItemRepo.findOne(
@@ -81,24 +84,30 @@ export class ReviewReception implements ReviewReceptionInterface {
                     ]
                 }
             );
-        return updatedReviewItem.status;
+        return [updatedReviewItem.status, fileStatus];
         
         // TODO: 把呼叫轉檔server的程式包到一個不管地帶
-        async function upload(filePath: string): Promise<string> {
+        async function upload(filePath: string, fileName: string): Promise<string> {
+            
+            console.log('filePath: '+ filePath);
             let readStream: fs.ReadStream = fs.createReadStream(filePath);
             let form = new FormData();
             form.append("secret_key", process.env.FILE_CONVERT_SERVER_UPLOAD_KEY);
-            form.append("Filedata", readStream);
+            form.append("Filedata", readStream, fileName);
+            console.log("fileName: " + fileName);
             try {
+                console.log("upload start");
                 let response: AxiosResponse<UploadToFileConvertingServerResponseBody> = await axios.post(
                     'http://ex.gding.com.tw/test/Upload_test8/server/php/api/uploadFile.php',
                     form,
                     { headers: form.getHeaders() }
                 );
-                if (response.data.msg === 'success') return response.data.token;
-                else throw response.data.msg;
+                console.log("response start");
+                if (response.data.msg === 'success') return (response.data.token);
+                else throw (response.data.msg);
             } catch (error) {
-                console.log(error.config);
+                console.log(error);
+                throw (error);
             }
 
             interface UploadToFileConvertingServerResponseBody {
@@ -107,6 +116,98 @@ export class ReviewReception implements ReviewReceptionInterface {
             }
         }
     }
+
+    async busyCheckFileConversion(uploadFileStatus: UploadFileStatus): Promise<void> {
+        let uploadToken: string | undefined = uploadFileStatus.uploadToken;
+        let pageInfos: Array<UploadFilePageInfo> = await this.keepTryingToGetSomething(this.checkFileConversion, uploadToken);
+        // TODO: save pageInfos into uploadFileStatus
+    }
+    async checkFileConversion(uploadToken: string): Promise<Array<UploadFilePageInfo> | "not finished yet"> {
+        // TODO: call file converting server
+    }
+    private keepTryingToGetSomething<X, Y>(
+        tryToDo: (input: X) => Promise<Y | "not finished yet">,
+        input: X,
+        timeout: number = 2000
+    ): Promise<Y> {
+
+    }
+
+	// private timerCount: number = 0;
+	// private getTimeoutTime(): number {
+	// 	this.timerCount += 1;
+	// 	return this.timerCount * 300;
+	// }
+	// private clearTimer(): void {
+	// 	this.timerCount -= 1;
+	// }
+
+	// async getResultingPages(uploadFileToken: string)
+	// 	: Promise<Array<{
+	// 		resultingPdfUrl: string;
+	// 		resultingJpegUrl: string
+	// 	}>> {
+	// 		const result = await this.keepTryingToGetSomething(
+	// 			tryGetResultingPages,
+	// 			uploadFileToken,
+	// 			this.getTimeoutTime()
+	// 		);
+	// 		this.clearTimer();
+	// 		return result;
+
+	// 	function tryGetResultingPages(uploadFileToken: string)
+	// 		: Promise<null | Array<{
+	// 			resultingPdfUrl: string;
+	// 			resultingJpegUrl: string
+	// 		}>> {
+	// 		return (
+	// 			axios.post('php/getResultingPages.php', {
+	// 				token: uploadFileToken
+	// 			})
+	// 				.catch((error: AxiosError<any>) => {
+	// 					throw ErrorType.CONNECTION_FAILURE;
+	// 				})
+	// 				.then((response: AxiosResponse<any>) => {
+	// 					let result: any = response.data;
+	// 					if (!result.isSuccess) throw ErrorType.POSTCONDITION_FAILURE;
+	// 					if (!result.isFinished) return null;
+	// 					let pageDatas: any[] = result.data;
+	// 					let output = pageDatas
+	// 						.sort(function (a: any, b: any) {
+	// 							return (a.pagenum > b.pagenum) ? 1 : -1;
+	// 						})
+	// 						.map(function (pageData: any) {
+	// 							return {
+	// 								resultingPdfUrl: pageData.pdfurl,
+	// 								resultingJpegUrl: pageData.imgurl
+	// 							};
+	// 						});
+	// 					return output;
+	// 				})
+	// 		);
+	// 	}
+	// }
+	
+	// keepTryingToGetSomething<X, Y>(
+	// 	tryToGetSomething: (input: X) => Promise<Y | null>,
+	// 	input: X,
+	// 	timeout: number = 2000
+	// ): Promise<Y> {
+	// 	return new Promise((resolve, reject) => {
+	// 		setTimeout(async () => {
+	// 			try {
+	// 				let output: Y | null = await tryToGetSomething(input);
+	// 				if (output) resolve(output);
+	// 				else {
+	// 					let output: Y = await this.keepTryingToGetSomething(tryToGetSomething, input, timeout);
+	// 					resolve(output);
+	// 				}
+	// 			} catch (error) {
+	// 				reject(error);
+	// 			}
+	// 		}, timeout);
+	// 	});
+	// }
     deleteFile(reviewId: string, fileId: string): Promise<ReviewStatus> {
         throw new Error('Method not implemented.');
     }

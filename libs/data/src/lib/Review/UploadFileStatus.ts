@@ -45,7 +45,7 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
     @Column({
         type: "enum",
         enum: UPLOAD_FILE_PROCESSING_STAGES,
-        default: undefined
+        nullable: true
     })
     public errorStage?: UploadFileProcessingStage;
 

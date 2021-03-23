@@ -159,15 +159,18 @@ class ReviewReception {
             let fileStatus = new _gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"](reviewItem.status, file.name);
             yield uploadFileStatusRepo.save(fileStatus);
             try {
-                let uploadToken = yield upload(file.path);
+                console.log("uploading...");
+                let uploadToken = yield upload(file.path, file.name);
+                console.log("uploaded...");
                 fileStatus.uploadToken = uploadToken;
                 fileStatus.currentStage = "GENERATING_PRINTABLE_PAGES";
                 yield uploadFileStatusRepo.save(fileStatus);
             }
             catch (error) {
+                console.log("upload failed...");
+                console.log(error);
                 fileStatus.errorStage = "UPLOADING";
                 yield uploadFileStatusRepo.save(fileStatus);
-                console.log(error);
             }
             let updatedReviewItem = yield reviewItemRepo.findOne(reviewId, {
                 relations: [
@@ -178,21 +181,26 @@ class ReviewReception {
             });
             return updatedReviewItem.status;
             // TODO: 把呼叫轉檔server的程式包到一個不管地帶
-            function upload(filePath) {
+            function upload(filePath, fileName) {
                 return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                    console.log('filePath: ' + filePath);
                     let readStream = fs__WEBPACK_IMPORTED_MODULE_3__["createReadStream"](filePath);
                     let form = new form_data__WEBPACK_IMPORTED_MODULE_4__();
                     form.append("secret_key", process.env.FILE_CONVERT_SERVER_UPLOAD_KEY);
-                    form.append("Filedata", readStream);
+                    form.append("Filedata", readStream, fileName);
+                    console.log("fileName: " + fileName);
                     try {
+                        console.log("upload start");
                         let response = yield axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('http://ex.gding.com.tw/test/Upload_test8/server/php/api/uploadFile.php', form, { headers: form.getHeaders() });
+                        console.log("response start");
                         if (response.data.msg === 'success')
-                            return response.data.token;
+                            return (response.data.token);
                         else
-                            throw response.data.msg;
+                            throw (response.data.msg);
                     }
                     catch (error) {
-                        console.log(error.config);
+                        console.log(error);
+                        throw (error);
                     }
                 });
             }
@@ -307,7 +315,10 @@ app.post('/api/register', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0_
     }
     res.send(responseBody);
 }));
-app.use(express_fileupload__WEBPACK_IMPORTED_MODULE_5__());
+app.use(express_fileupload__WEBPACK_IMPORTED_MODULE_5__({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+}));
 app.post('/api/upload', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
     let file = req.files.file;
     let reviewId = req.body.reviewId;
@@ -330,6 +341,7 @@ app.post('/api/upload', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__[
         };
     }
     res.send(responseBody);
+    // TODO: busy check 轉檔狀態
 }));
 const port = process.env.port || 3333;
 const server = app.listen(port, () => {
@@ -2342,7 +2354,7 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(typeorm__WEBPACK_IMPORTED_MODULE_4__["Column"])({
         type: "enum",
         enum: _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UPLOAD_FILE_PROCESSING_STAGES"],
-        default: undefined
+        nullable: true
     }),
     Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:type", typeof (_c = typeof _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UploadFileProcessingStage"] !== "undefined" && _gainhow_review_interfaces__WEBPACK_IMPORTED_MODULE_2__["UploadFileProcessingStage"]) === "function" ? _c : Object)
 ], UploadFileStatus.prototype, "errorStage", void 0);
