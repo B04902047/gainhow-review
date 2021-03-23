@@ -81,9 +81,11 @@ app.post('/api/upload', async (req, res) => {
   let reviewId: string = req.body.reviewId;
   let responseBody: UploadResponseBody;
   
+  let reviewReception = new ReviewReception(getConnection());
+  let reviewStatus: ReviewStatus;
+  let uploadFileStatus: UploadFileStatus;
   try {
-    let reviewReception = new ReviewReception(getConnection());
-    let [reviewStatus, uploadFileStatus]: [ReviewStatus, UploadFileStatus]
+    [reviewStatus, uploadFileStatus]
       = await reviewReception.uploadFile(
         reviewId,
         {
@@ -103,7 +105,7 @@ app.post('/api/upload', async (req, res) => {
   }
   res.send(responseBody);
   // TODO: busy check 轉檔狀態
-
+  await reviewReception.busyCheckFileConversion(uploadFileStatus);
 })
 
 
