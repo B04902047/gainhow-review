@@ -10,7 +10,7 @@ import { ReviewReception } from './app/ReviewReception';
 // import { File, Fields, Files, IncomingForm } from "formidable";
 
 const app = express();
-console.log(process.env);
+//console.log(process.env);
 
 app.use(express.json());
 

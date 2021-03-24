@@ -12,6 +12,26 @@ function paramsToFormData(data: {[key: string]: string}): FormData {
     })
     return formData;
 }
+function keepTryingTo<X, Y>(
+    doSomething: (input: X) => Promise<Y | "NOT_FINISHED_YET">,
+    input: X,
+    timeout: number = 2000
+): Promise<Y> {
+    return new Promise((resolve, reject) => {
+        setTimeout(async () => {
+            let doSomethingResult = await doSomething(input);
+            if (doSomethingResult === "NOT_FINISHED_YET") resolve(
+                keepTryingTo(
+                    doSomething,
+                    input,
+                    timeout
+                )
+            );
+            else resolve(doSomethingResult);
+        }, timeout)
+    })
+
+}
 
 export class ReviewReception implements ReviewReceptionInterface {
     constructor(
@@ -121,7 +141,7 @@ export class ReviewReception implements ReviewReceptionInterface {
      */
     async busyCheckFileConversion(uploadFileStatus: UploadFileStatus): Promise<void> {
         console.log("1");
-        uploadFileStatus.pageInfos = await this.keepTryingTo(this.checkFileConversion, uploadFileStatus);
+        uploadFileStatus.pageInfos = await keepTryingTo(this.checkFileConversion, uploadFileStatus);
         // save pageInfos into uploadFileStatus
         console.log("10");
         await Promise.all(
@@ -132,6 +152,7 @@ export class ReviewReception implements ReviewReceptionInterface {
         console.log("100");
         uploadFileStatus.currentStage = "FINISHED";
         this.connection.manager.save(UploadFileStatus, uploadFileStatus);
+        console.log('Finsh!');
     }
     async checkFileConversion(uploadFileStatus: UploadFileStatus): Promise<Array<UploadFilePageInfo> | "NOT_FINISHED_YET"> {
         console.log(2);
@@ -153,8 +174,10 @@ export class ReviewReception implements ReviewReceptionInterface {
             return "NOT_FINISHED_YET";
         } else if (responseBody.msg === "success") {
             const jpegLocalDir: string = __dirname + '/uploadFilePageImages';
+            
             await fs.promises.mkdir(`${jpegLocalDir}/${uploadToken}`, { recursive: true });
-
+            console.log('mkdir = '+ `${jpegLocalDir}/${uploadToken}`);
+            
             /**
              * 從轉檔伺服器得到遠端的pdf檔和jpeg檔的url之後：
              *  1. 把pdf的url存起來當作後續跟轉檔伺服器之間溝通用的token，直接存入pageInfo
@@ -165,15 +188,15 @@ export class ReviewReception implements ReviewReceptionInterface {
                 jpegUrl: string
             }> = await Promise.all(
                 responseBody.data.map(async ({
-                    pageNum: pageNumber,        //頁次
-                    imageUrl: jpegRemoteUrl,    //JPG圖檔位置	
-                    pdfUrl: pdfRemoteUrl,       //PFD圖檔位置
+                    pagenum: pageNumber,        //頁次
+                    imgurl: jpegRemoteUrl,    //JPG圖檔位置	
+                    pdfurl: pdfRemoteUrl,       //PFD圖檔位置
                 }) => {
                     let response: AxiosResponse = await axios.get(
                         jpegRemoteUrl, {
                         responseType: 'stream'
                     });
-                    let jpegLocalPath: string = `${jpegLocalDir}/${uploadToken}/${pageNumber}.jpeg`
+                    let jpegLocalPath: string = `${jpegLocalDir}/${uploadToken}/${pageNumber}.jpeg`;
                     let writeStream = fs.createWriteStream(jpegLocalPath);
                     let jpegLocalUrl: string = `${os.hostname()}/${jpegLocalPath}`;
                     response.data.pipe(writeStream);
@@ -183,11 +206,14 @@ export class ReviewReception implements ReviewReceptionInterface {
                     };
                 })
             )
+            console.log(5);
             let pageSizes: Array<PageSizeInMm>
-                = await this.keepTryingTo(
+                = await keepTryingTo(
                     checkFilePageSizes,
                     uploadToken
                 );
+            console.log('pageSizes = ' + pageSizes);
+            console.log(9);
             let pageInfos: Array<UploadFilePageInfo> = pageTokensAndImageUrls.map(({
                 pdfTokenInFileConvertingServer,
                 jpegUrl
@@ -211,6 +237,7 @@ export class ReviewReception implements ReviewReceptionInterface {
         }
 
         async function checkFilePageSizes(uploadToken: string): Promise<Array<PageSizeInMm> | "NOT_FINISHED_YET"> {
+            console.log('checkFilePageSizes start!');
             let requestBody = {
                 function: 'getStatus',
                 token: uploadToken
@@ -264,32 +291,13 @@ export class ReviewReception implements ReviewReceptionInterface {
             msg: "success" 
             pageCount: number   			//總頁數
             data: Array<{
-                pageNum: number,		//頁次
-                imageUrl: string,	//JPG圖檔位置	
-                pdfUrl: string,		//PFD圖檔位置
+                pagenum: number,		//頁次
+                imgurl: string,	//JPG圖檔位置	
+                pdfurl: string,		//PFD圖檔位置
             }>
         }
     }
-    private keepTryingTo<X, Y>(
-        doSomething: (input: X) => Promise<Y | "NOT_FINISHED_YET">,
-        input: X,
-        timeout: number = 2000
-    ): Promise<Y> {
-        return new Promise((resolve, reject) => {
-            setTimeout(async () => {
-                let doSomethingResult = await doSomething(input);
-                if (doSomethingResult === "NOT_FINISHED_YET") resolve(
-                    this.keepTryingTo(
-                        doSomething,
-                        input,
-                        timeout
-                    )
-                );
-                else resolve(doSomethingResult);
-            }, timeout)
-        })
-
-    }
+    
     deleteFile(reviewId: string, fileId: string): Promise<ReviewStatus> {
         throw new Error('Method not implemented.');
     }
