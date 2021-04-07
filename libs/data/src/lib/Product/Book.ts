@@ -1,5 +1,5 @@
 import { BookPagingDirection, BookSubtypeName, Book as BookInterface } from "@gainhow-review/interfaces";
-import { Column, Entity } from "typeorm";
+import { Type } from "class-transformer";
 import Coat from "../Material/Coat";
 import Paper from "../Material/Paper";
 import Product from "./Product";
@@ -7,17 +7,33 @@ import Product from "./Product";
 export default abstract class Book extends Product implements BookInterface {
 
     readonly abstract __productSubType: BookSubtypeName;
+
+    @Type(() => Paper)
+    public coverPaper: Paper;
+
+    @Type(() => Paper)
+    public innerPagesPaper: Paper;
+
+    @Type(() => Coat)
+    public coverCoating?: Coat;
+
+    @Type(() => Coat)
+    public innerPageCoating?: Coat;
     constructor(
         public width: number,
         public height: number,
         public numberOfPages: number,
         public pagingDirection: BookPagingDirection,
-        public coverPaper: Paper,
-        public innerPagesPaper: Paper,
-        public coverCoating?: Coat,
-        public innerPageCoating?: Coat,
+        coverPaper: Paper,
+        innerPagesPaper: Paper,
+        coverCoating?: Coat,
+        innerPageCoating?: Coat,
         ) {
         super();
+        this.coverPaper = coverPaper;
+        this.innerPagesPaper = innerPagesPaper;
+        this.coverCoating = coverCoating;
+        this.innerPageCoating = innerPageCoating;
     }
 
     /**

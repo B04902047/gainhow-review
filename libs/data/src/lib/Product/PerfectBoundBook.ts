@@ -2,18 +2,18 @@ import Book from "./Book";
 import { BookPagingDirection, PerfectBoundBook as PerfectBoundBookInterface } from "@gainhow-review/interfaces";
 import Paper from "../Material/Paper";
 import Coat from "../Material/Coat";
-import { Type } from "class-transformer";
+import { serialize, Type } from "class-transformer";
 import FrameDictionary from "../FrameDictionary/FrameDictionary";
 import PerfectBoundBookFrameDictionary from "../FrameDictionary/PerfectBoundBookFrameDictionary";
 
-export default abstract class PerfectBoundBook extends Book implements PerfectBoundBookInterface {
+export default class PerfectBoundBook extends Book implements PerfectBoundBookInterface {
     readonly __productSubType = "PerfectBoundBook";
 
-    @Type(() => Paper)
-    public coverPaper!: Paper;
+    // @Type(() => Paper)
+    // public coverPaper!: Paper;
 
-    @Type(() => Paper)
-    public innerPagesPaper!: Paper;
+    // @Type(() => Paper)
+    // public innerPagesPaper: Paper;
 
     @Type(() => Coat)
     public coverCoating?: Coat;
@@ -25,8 +25,8 @@ export default abstract class PerfectBoundBook extends Book implements PerfectBo
         public height: number,
         public numberOfPages: number,
         public pagingDirection: BookPagingDirection,
-        coverPaperTexture: Paper,
-        innerPagesPaperTexture: Paper,
+        coverPaper: Paper,
+        innerPagesPaper: Paper,
         coverCoating?: Coat,
         innerPageCoating?: Coat,
         public hardCovered: boolean = false,
@@ -38,16 +38,18 @@ export default abstract class PerfectBoundBook extends Book implements PerfectBo
             height,
             numberOfPages,
             pagingDirection,
-            coverPaperTexture,
-            innerPagesPaperTexture,
+            coverPaper,
+            innerPagesPaper,
             coverCoating,
             innerPageCoating
         );
-
     }
 
     protected _frameDictionary?: FrameDictionary;
-    protected createFrameDictionary(): FrameDictionary {
-        return new PerfectBoundBookFrameDictionary(this);
+    public get frameDictionary(): FrameDictionary {
+        if (!this._frameDictionary) {
+            this._frameDictionary = new PerfectBoundBookFrameDictionary(this);
+        }
+        return this._frameDictionary;
     }
 }

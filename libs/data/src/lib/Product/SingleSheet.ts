@@ -22,8 +22,9 @@ export default class SingleSheet extends Product implements SingleSheetInterface
     @Exclude()
     protected _frameDictionary?: SingleSheetFrameDictionary;
 
-    protected createFrameDictionary(): SingleSheetFrameDictionary {
-        return new SingleSheetFrameDictionary(this);
+    public get frameDictionary(): SingleSheetFrameDictionary {
+        if (!this._frameDictionary) this._frameDictionary = new SingleSheetFrameDictionary(this);
+        return this._frameDictionary;
     }
 
     @Type(() => Paper)

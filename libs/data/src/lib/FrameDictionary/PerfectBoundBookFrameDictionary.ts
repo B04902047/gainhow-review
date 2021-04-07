@@ -9,8 +9,8 @@ import { Frame } from "../Frame";
 import { Mark } from "../Frame/Frame";
 
 export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary {
-    protected coverFrame: BookCoverFrame;
-    protected innerPageFrames: Map<string, BleededRectangleFrame>;
+    public coverFrame: BookCoverFrame;
+    public innerPageFrames: Map<string, BleededRectangleFrame>;
     private static readonly BOUND_SIDE_SAFE_DISTANCE: number = 5;
     constructor(
         readonly product: PerfectBoundBook
