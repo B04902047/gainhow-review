@@ -9,8 +9,6 @@ import BookCoverFrame from "../Frame/BookCoverFrame";
 export default class SaddleStitchedBookFrameDictionary extends BookFrameDictionary {
     protected coverFrame: BookCoverFrame;
     protected innerPageFrames: Map<string, BleededRectangleFrame>;
-    private static readonly INNER_PAGE_CUT_ERROR = 3;
-    private static readonly COVER_CUT_ERROR = 3;
     constructor(
         readonly product: SaddleStichedBook
     ) {

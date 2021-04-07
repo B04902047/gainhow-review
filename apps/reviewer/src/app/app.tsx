@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import ApiTester from './api-tester/ApiTester';
 import { reviewItem } from './testObjects1';
 import WorkingStage from './working-stage/WorkingStage';
-import * as log4js from 'log4js';
+import { ExportOverview } from './book-reviewer/BookReviewer';
 
 // import * as webpack from 'webpack';
 // const plugins = []
@@ -14,13 +14,9 @@ import * as log4js from 'log4js';
 
 export const App = () => {
 
-  return (
-    <WorkingStage
-    initialReviewItem={reviewItem}
-    />
-  )
   // return <ApiTester/>;
   // return <WorkingStage initialReviewItem={reviewItem}/>
+  return <ExportOverview reviewItem={reviewItem}/>
 
 };
 

@@ -11,6 +11,8 @@ export default abstract class BookFrameDictionary extends FrameDictionary {
     protected frontCoverFrame: BookFrontCoverFrame;
     protected backCoverFrame: BookBackCoverFrame;
     protected abstract innerPageFrames: Map<string, BleededRectangleFrame>;
+    protected static readonly INNER_PAGE_CUT_ERROR = 3;
+    protected static readonly COVER_CUT_ERROR = 3;
     
     constructor(
         readonly product: Book
@@ -19,11 +21,19 @@ export default abstract class BookFrameDictionary extends FrameDictionary {
         this.frontCoverFrame = this.createFrontCoverFrame();
         this.backCoverFrame = this.createBackCoverFrame();
     }
-    createBackCoverFrame(): any {
-        throw new Error("Method not implemented.");
+    createBackCoverFrame(): BookBackCoverFrame {
+        return new BookBackCoverFrame(
+            this.product.width,
+            this.product.height,
+            BookFrameDictionary.COVER_CUT_ERROR
+        );
     }
-    createFrontCoverFrame(): any {
-        throw new Error("Method not implemented.");
+    createFrontCoverFrame(): BookFrontCoverFrame {
+        return new BookFrontCoverFrame(
+            this.product.width,
+            this.product.height,
+            BookFrameDictionary.COVER_CUT_ERROR
+        );
     }
 
     private _frames?: Map<string, RectangleFrame>;
