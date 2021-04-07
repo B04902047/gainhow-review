@@ -4,6 +4,7 @@ export * from './ImportList/ImportList';
 
 export * from './ExportList/ExportList';
 
+export * from './ExportList/exporting-frame/ExportingFrame';
 
 export * from './lib/ui';
 
