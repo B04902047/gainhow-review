@@ -112,6 +112,8 @@ for (let i=1; i<=6; i++) {
     reviewModel.framedPages[i].sourceFileIndex = 1;
     reviewModel.framedPages[i].sourcePageNumber = i-1;
 }
+reviewModel.framedPages[7].sourceFileIndex = 0;
+reviewModel.framedPages[7].sourcePageNumber = 0;
 
 export {
     reviewItem,

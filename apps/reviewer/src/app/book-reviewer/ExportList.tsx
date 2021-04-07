@@ -11,7 +11,7 @@ export interface ExportListProps {
     selectedFrameIndex: number;
     reviewItem: ReviewItem;
     style: CSSProperties;
-    onFrameSelect(modelIndex: number, frameIndex: number): void;
+    onFrameSelect(modelIndex: number, frameName: string): void;
   }
   
   export function ExportList(props: ExportListProps) {
@@ -50,12 +50,14 @@ export interface ExportListProps {
                 >
                     {   
                         groupPages.map((groupPage: GroupFramedPage,index: number) => {
-                            <ExportingGroupFrame
-                                key={index}
-                                groupPage={groupPage}
-                                direct={product.pagingDirection}
-                                onSelect={(frameId: number)=>{props.onFrameSelect(modelIndex,frameId)}}
-                            />
+                            return(
+                                <ExportingGroupFrame
+                                    key={index}
+                                    groupPage={groupPage}
+                                    direct={product.pagingDirection}
+                                    onSelect={(frameName: string)=>{props.onFrameSelect(modelIndex,frameName)}}
+                                />
+                            )
                         })
                     }
                 </div>
@@ -77,7 +79,7 @@ export type GroupFramedPage  =  HorizontalGroupFramedPage | StraightGroupFramedP
     '上頁' : FramedPage,
     '下頁' : FramedPage,
   }
-  function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDirection) : Array<GroupFramedPage> {
+export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDirection) : Array<GroupFramedPage> {
     let groupArray: Array<GroupFramedPage> = [];
 
     if ( direct === 'RIGHT_TO_LEFT' ) {
@@ -117,7 +119,7 @@ export type GroupFramedPage  =  HorizontalGroupFramedPage | StraightGroupFramedP
         let lastGroup: GroupFramedPage = groupArray[lastGroupIndex];
         let isNeedUseOldGroup: boolean = false;
         if (lastGroup) {
-            if(lastGroup['右頁'].frameName !== '空白頁') isNeedUseOldGroup = true;
+            if(lastGroup['右頁'].frameName === '空白頁') isNeedUseOldGroup = true;
         }
         if (framedPage.frameName === '封面') { 
             inputGroup['右頁'] = framedPage;
@@ -164,52 +166,62 @@ export type GroupFramedPage  =  HorizontalGroupFramedPage | StraightGroupFramedP
   interface ExportingFrameProps {
     groupPage: GroupFramedPage,
     direct: BookPagingDirection,
-    onSelect(frameId: number): void; 
+    onSelect(frameId: string): void; 
   }
   function ExportingGroupFrame (props:ExportingFrameProps) :JSX.Element {
     
+    let blankFramePage: JSX.Element = (
+        <div
+            style={{
+                backgroundColor: 'white',
+                border:'solid 1px #707070'
+            }}    
+        />
+    );
+    let style: CSSProperties;
+    let pageKeyArray: Array<string>; 
+    let pages:JSX.Element[];
     if (props.direct === 'BOTTOM_TO_TOP') {
-        let style: CSSProperties = {
+        style = {
         
         }
-        let topPageKey = '上頁';
-        let bottomPageKey = '下頁';
-        return (
-            <div style={style}>
-                <ExportingFrame
-                    framedPage={props.groupPage[topPageKey]}
-                    isSelected={false}
-                    onSelect={()=>{ props.onSelect(props.groupPage[topPageKey].frameId)}}
-                />
-                <ExportingFrame
-                    framedPage={props.groupPage[bottomPageKey]}
-                    isSelected={false}
-                    onSelect={()=>{ props.onSelect(props.groupPage[bottomPageKey].frameId)}}
-                />
-            </div>
-        )
+        pageKeyArray = ['上頁','下頁']
     } else {
-        let style: CSSProperties = {
-        margin: 30
+        style = {
+            margin: 30
         }
-        let leftPageKey = '左頁';
-        let rightPageKey = '右頁';
-        return (
-            <div style={style}>
-                <ExportingFrame
-                    framedPage={props.groupPage[leftPageKey]}
-                    isSelected={false}
-                    onSelect={()=>{ props.onSelect(props.groupPage[leftPageKey].frameId)}}
-                />
-                <ExportingFrame
-                    framedPage={props.groupPage[rightPageKey]}
-                    isSelected={false}
-                    onSelect={()=>{ props.onSelect(props.groupPage[rightPageKey].frameId)}}
-                />
-            </div>
-        )
+        pageKeyArray = ['左頁','右頁']
     }
+
+        pages = pageKeyArray.map((pageKey, index)=>{
+
+            let framedPage: FramedPage = props.groupPage[pageKey];
+            if(framedPage.frameName === '空白頁' ) {
+                return (blankFramePage)
+            }
+            else if (framedPage.frameName === '封面裏' || framedPage.frameName === '封底裏' ) {
+                return blankFramePage
+            }
+            else {
+                return (
+                    <ExportingFrame
+                    key={index}
+                    framedPage={framedPage}
+                    isSelected={false}
+                    onSelect={()=>{ props.onSelect(framedPage.frameName)}}
+                />)
+            }
+        });
+        
+        
     
+   
+   
+    return (
+        <div style={style}>
+            {pages}
+        </div>
+    )
   }
 
   export default ExportList;
