@@ -67,15 +67,6 @@ export interface ExportListProps {
     );
   };
 
-  // 單頁位置: 上下左右
-export const PAGE_ROW_DIRECT = [
-    "右頁",    
-    "左頁",  
-]
-export const PAGE_COL_DIRECT = [
-    "上頁",
-    "下頁"     
-]
 
 export type GroupFramedPage  =  HorizontalGroupFramedPage | StraightGroupFramedPage ;
   type HorizontalGroupFramedPage = {

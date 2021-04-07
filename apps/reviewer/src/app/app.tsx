@@ -18,9 +18,9 @@ export const App = () => {
   // return <WorkingStage initialReviewItem={reviewItem}/>
   // return <ExportOverview reviewItem={reviewItem}/>
   return <ExportList
-  selectedModelIndex={1}
-  selectedFrameIndex={1}
-  reviewItem={BookreviewItem}
+  selectedModelIndex={0}
+  selectedFrameIndex={0}
+  reviewItem={reviewItem}
   style={{}}
   onFrameSelect={()=>{}}
   />
