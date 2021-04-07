@@ -7,8 +7,8 @@ import { Frame } from "../Frame";
 import BookCoverFrame from "../Frame/BookCoverFrame";
 
 export default class SaddleStitchedBookFrameDictionary extends BookFrameDictionary {
-    protected coverFrame: BookCoverFrame;
-    protected innerPageFrames: Map<string, BleededRectangleFrame>;
+    public coverFrame: BookCoverFrame;
+    public innerPageFrames: Map<string, BleededRectangleFrame>;
     constructor(
         readonly product: SaddleStichedBook
     ) {

@@ -7,10 +7,10 @@ import BookFrontCoverFrame from "../Frame/BookFrontCoverFrame";
 import BookBackCoverFrame from "../Frame/BookBackCoverFrame";
 
 export default abstract class BookFrameDictionary extends FrameDictionary {
-    protected abstract coverFrame: BookCoverFrame;
-    protected frontCoverFrame: BookFrontCoverFrame;
-    protected backCoverFrame: BookBackCoverFrame;
-    protected abstract innerPageFrames: Map<string, BleededRectangleFrame>;
+    public abstract coverFrame: BookCoverFrame;
+    public frontCoverFrame: BookFrontCoverFrame;
+    public backCoverFrame: BookBackCoverFrame;
+    public abstract innerPageFrames: Map<string, BleededRectangleFrame>;
     protected static readonly INNER_PAGE_CUT_ERROR = 3;
     protected static readonly COVER_CUT_ERROR = 3;
     
@@ -38,12 +38,20 @@ export default abstract class BookFrameDictionary extends FrameDictionary {
 
     private _frames?: Map<string, RectangleFrame>;
     protected get frames(): Map<string, RectangleFrame> {
-        if (this._frames) return this._frames;
-        let frames = new Map<string, RectangleFrame>();
-        // frames.set('cover', this.coverFrame);
-        frames.set('封面', this.frontCoverFrame);
-        frames = Object.assign(frames, this.innerPageFrames);
-        frames.set('封底', this.backCoverFrame);
-        return frames;
+        if (!this._frames) {
+            let newFrames = new Map<string, RectangleFrame>();
+            // frames.set('cover', this.coverFrame);
+            newFrames.set('封面', this.frontCoverFrame);
+            //this._frames = Object.assign(this._frames, this.innerPageFrames);
+            this.innerPageFrames.forEach((frame, key) => {
+                newFrames.set(key, frame);
+            });
+            newFrames.set('封底', this.backCoverFrame);
+            this._frames = newFrames;
+        }
+        return this._frames;
+    }
+    protected set frames(newFrames: Map<string, RectangleFrame>) {
+        this._frames = newFrames;
     }
 }

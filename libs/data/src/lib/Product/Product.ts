@@ -13,21 +13,8 @@ export default abstract class Product implements Interface.Product {
 
     readonly abstract productSubTypeChineseName: string;
     
-    @Exclude()
-    protected abstract _frameDictionary?: FrameDictionary;
+    public abstract get frameDictionary(): FrameDictionary;
 
-    public get frameDictionary(): FrameDictionary {
-        return this.getOrCreateFrameDictionary();
-    }
-    protected getOrCreateFrameDictionary(): FrameDictionary {
-        if(!this._frameDictionary) return this.createAndSetFrameDictionary();
-        return this._frameDictionary;
-    }
-    private createAndSetFrameDictionary(): FrameDictionary {
-        this._frameDictionary = this.createFrameDictionary();
-        return this._frameDictionary;
-    }
-    protected abstract createFrameDictionary(): FrameDictionary;
     public abstract getInfo(): Array<string>;
 }
 

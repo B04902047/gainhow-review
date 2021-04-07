@@ -30,7 +30,10 @@ export default class SaddleStichedBook extends Book implements SaddleStichedBook
         );
         this.productSubTypeChineseName = '騎馬釘書';
     }
-    protected createFrameDictionary(): FrameDictionary {
-        return new SaddleStitchedBookFrameDictionary(this);
+    public get frameDictionary(): FrameDictionary {
+        if (!this._frameDictionary) {
+            this._frameDictionary = new SaddleStitchedBookFrameDictionary(this);
+        }
+        return this._frameDictionary;
     }
 }

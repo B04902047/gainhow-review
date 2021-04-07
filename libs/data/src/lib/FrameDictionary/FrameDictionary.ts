@@ -9,7 +9,7 @@ export default abstract class FrameDictionary {
     public get frameNames(): Array<string> {
         return Array.from(this.frames.keys());
     }
-    public getFrame(frameIndex: string): Frame | undefined {
-        return this.frames.get(frameIndex);
+    public getFrame(frameName: string): Frame | undefined {
+        return this.frames.get(frameName);
     }
 }
