@@ -75,3 +75,43 @@ interface LoadReviewItemErrorResponseBody {
 export type LoadReviewItemResponseBody
     = LoadReviewItemSuccessResponseBody
     | LoadReviewItemErrorResponseBody;
+
+interface EditPdfRequestBody {
+    tasks: Array<{
+        maxWidth: number;
+        maxHeight: number;
+        sourceFiles: Array<{
+            originalFileUploadToken: string;        // 上傳的時候是哪個檔案
+            originalPageNumberWhenUpload: number;   // 上傳的時候是第幾頁
+            transformation: {
+                positionX: number;
+                positionY: number;
+                scaleX: number;
+                scaleY: number;
+                rotationDegree: number;
+            };
+        }>;
+    }>;
+}
+
+export interface EditPdfNotFinishedYetResponseBody {
+    isFinished: false;
+    hasError: false;
+    resultingTokens: Array<string>;
+}
+
+export interface EditPdfFinishedResponseBody {
+    isFinished: true;
+    hasError: false;
+}
+
+export interface EditPdfErrorResponseBody {
+    isFinished: false;
+    hasError: true;
+    error: any;
+}
+
+export type EditPdfResponseBody
+    = EditPdfFinishedResponseBody
+    | EditPdfNotFinishedYetResponseBody
+    | EditPdfErrorResponseBody;

@@ -9,8 +9,7 @@ export interface Product {
 
 /**
 * 書籍
-* @enum  
-* 
+* @enum
 */
 // 總共有的所有書籍類別: 騎馬釘、蝴蝶書、膠裝書
 export const BOOK_SUBTYPE_NAMES = [
@@ -96,7 +95,6 @@ export interface Coat {
 // 裝訂方式
 export const BINDING_OPTIONS = [
     "SaddleStichBinding",
-    "ButterflyBinding",
     "PerfectBinding"
 ] as const;
 export type BindingOption = typeof BINDING_OPTIONS[number];
@@ -109,6 +107,7 @@ export interface BookProductionOptions {
     readonly validCoatingStylesForInnerPages: Array<Coat>;
     readonly validCoatingStylesorCover: Array<Coat>;
 }
+
 // 單張可用選項:可用的紙質以及上膜
 export interface SingleSheetProductionOptions {
     readonly validPaperTextures: Array<Paper>;

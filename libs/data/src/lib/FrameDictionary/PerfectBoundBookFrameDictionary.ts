@@ -9,7 +9,8 @@ import { Frame } from "../Frame";
 import { Mark } from "../Frame/Frame";
 
 export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary {
-    protected frames: Map<string, Frame>;
+    protected coverFrame: BookCoverFrame;
+    protected innerPageFrames: Map<string, BleededRectangleFrame>;
     private static readonly INNER_PAGE_CUT_ERROR = 3;
     private static readonly COVER_CUT_ERROR = 3;
     private static readonly BOUND_SIDE_SAFE_DISTANCE: number = 5;
@@ -17,7 +18,8 @@ export default class PerfectBoundBookFrameDictionary extends BookFrameDictionary
         readonly product: PerfectBoundBook
     ) {
         super(product);
-        this.frames = this.createFrames();    
+        this.innerPageFrames = this.createInnerPageFrames();
+        this.coverFrame = this.createBookCoverFrame();
     }
     protected createInnerPageFrames(): Map<string, BleededRectangleFrame> {
         let innerPageFrames = new Map<string, BleededRectangleFrame>();
