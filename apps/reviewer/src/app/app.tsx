@@ -4,9 +4,12 @@ import ApiTester from './api-tester/ApiTester';
 import { reviewItem} from './testObjects1';
 import {reviewItem as BookReviewItem} from './testObjects2';
 
-import WorkingStage from './working-stage/WorkingStage';
-import { ExportOverview } from './book-reviewer/BookReviewer';
 import {ExportList} from './book-reviewer/ExportList'
+import { reviewItem as singleSheetReviewItem } from './testObjects1';
+import { reviewItem as bookReviewItem } from './testObjects2';
+import WorkingStage from './working-stage/WorkingStage';
+import { BookReviewer, ExportOverview } from './book-reviewer/BookReviewer';
+
 // import * as webpack from 'webpack';
 // const plugins = []
 // plugins.push(new webpack.IgnorePlugin(/log4js/))
@@ -18,6 +21,7 @@ export const App = () => {
   // return <ApiTester/>;
   // return <WorkingStage initialReviewItem={reviewItem}/>
   // return <ExportOverview reviewItem={reviewItem}/>
+
   return <ExportList
   selectedModelIndex={0}
   selectedFrameIndex={0}
@@ -25,6 +29,9 @@ export const App = () => {
   style={{}}
   onFrameSelect={()=>{}}
   />
+
+  // return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
+  // return <BookReviewer reviewItem={bookReviewItem}/>;
 };
 
 export default App;

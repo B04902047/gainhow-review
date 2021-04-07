@@ -102,6 +102,7 @@ const reviewItem = new ReviewItem(
 );
 
 const reviewModel: ReviewModel = reviewItem.models[0];
+
 const frontCover: FramedPage = reviewModel.framedPages[0];
 frontCover.sourceFileIndex = 0;
 frontCover.sourcePageNumber = 0;

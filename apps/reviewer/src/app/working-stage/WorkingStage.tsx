@@ -1,6 +1,6 @@
 
 import { FramedPage, ReviewItem } from '@gainhow-review/data';
-import { ImportList, ModelInfo, ExportList } from '@gainhow-review/ui';
+import { ImportList, ModelInfo, ExportList, Button } from '@gainhow-review/ui';
 import React, { CSSProperties, useState } from 'react';
 import WorkSpace from './work-space/WorkSpace';
 
@@ -108,6 +108,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
         />
         <ModelInfo
           product={bufferedReviewItem.product}
+          hidable
           isHidden={modelInfoIsHidden}
           onToggle={() => setModelInfoIsHidden(!modelInfoIsHidden)}
           style={modelInfoStyle}
@@ -139,29 +140,3 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
 
 export default WorkingStage;
 
-
-interface ButtonProps {
-  children: string;
-  isPrimary?: boolean;
-  style?: CSSProperties;
-}
-function Button(props: ButtonProps): JSX.Element {
-  const blue: string = '#1581ff';
-  let style: CSSProperties = {
-    backgroundColor: (props.isPrimary)? blue: 'none',
-    border: `solid 2px ${blue}`,
-    width: 184,
-    height: 40,
-    borderRadius: 20,
-    fontSize: 18,
-    color: (props.isPrimary)? 'white': blue,
-    ...props.style,
-  };
-  return (
-    <button
-      style={style}
-    >
-      {props.children}
-    </button>
-  )
-}

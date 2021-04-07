@@ -11,6 +11,8 @@ export interface ExportingPageProps {
   framedPage: FramedPage;
   isSelected: boolean;
   onSelect(): void;
+  horizontalPadding?: number;
+  height?: number;
 }
 
 export function ExportingFrame(props: ExportingPageProps): JSX.Element {
@@ -18,22 +20,26 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
   let frameHeightInMm: number = frame.maxHeight;
   let frameWidthInMm: number = frame.maxWidth;
   let ratio: number = frameWidthInMm / frameHeightInMm;
-  let frameHeightInPx = 96;
-  let frameWidthInPx: number = frameWidthInMm * ratio;
+  let frameHeightInPx = props.height || 96;
+  let frameWidthInPx: number = frameHeightInPx * ratio;
+  let horizontalPadding: number = 9;
+  if (props.horizontalPadding !== undefined) horizontalPadding = props.horizontalPadding;
+  if (props.isSelected) horizontalPadding = horizontalPadding - 2;
   let style: CSSProperties = {
-    paddingLeft: (props.isSelected)? 7: 9,
-    paddingRight: (props.isSelected)? 7: 9,
+    paddingLeft: horizontalPadding,
+    paddingRight: horizontalPadding,
     paddingTop: (props.isSelected)? 5: 9,
     paddingBottom: 0,
     display: "inline-block",
-    backgroundColor: "white"
+    backgroundColor: "inherit"
   };
   
   let cropStyle: CSSProperties = {
     overflow: "hidden",
     height: frameHeightInPx,
     width: frameWidthInPx,
-    border: (props.isSelected)? "solid 3px #1581ff": "solid 1px #707070"
+    border: (props.isSelected)? "solid 3px #1581ff": "solid 1px #707070",
+    backgroundColor: "white"
   };
 
   let positionXInMm: number = props.framedPage.positionX;
@@ -53,7 +59,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
     color: (props.isSelected)? "#1581ff" : "black",
     fontSize: 14,
     fontFamily: "arial",
-    textAlign: "center"
+    textAlign: "center",
   };
 
   return (
