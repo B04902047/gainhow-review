@@ -1,26 +1,41 @@
 
 import axios from 'axios';
-import { serialize } from 'class-transformer';
+import { serialize ,deserialize} from 'class-transformer';
 import React, { useState } from 'react';
 import { reviewRegistrationInfo } from '../testObjects1'
 import { ReviewReception } from '@gainhow-review/features'
 
 
 
-
-
   import './ApiTester.module.css';
-import { ReviewStatus } from '@gainhow-review/data';
+import { ReviewStatus,UploadFilePageInfo,UploadFileStatus } from '@gainhow-review/data';
   
 
 /* eslint-disable-next-line */
 export interface ApiTesterProps {
+}
+function imageUrlFromReviewStatus(uploadFileStatuses: UploadFileStatus[]): React.ReactNodeArray {
+  return uploadFileStatuses.map((fileState: UploadFileStatus) => {
+    return fileState.pageInfos.map((pageInfo: UploadFilePageInfo)=>{
+      return (
+        <img 
+          key={1}
+          src={'//'+pageInfo.jpegUrl} 
+          style={{width:150}}
+        />
+        )
+    });
+  });
 }
 
 function LoadReviewStatusTester(props: {}) {
 
   let [reviewId, setReviewId] = useState<string>("");
   let [reviewStatusInJson, setReviewStatusInJson] = useState<string>("");
+
+  let reviewStatus = reviewStatusInJson? (deserialize(ReviewStatus,reviewStatusInJson)): undefined;
+  
+  
   return (
 
     <div>
@@ -36,8 +51,18 @@ function LoadReviewStatusTester(props: {}) {
         }}>
           load
         </button>
-      reviewStatus: {reviewStatusInJson}
+      reviewStatus: {reviewStatusInJson} <br/>
+      
+      image:<br/>
+      {
+        (reviewStatus)?  
+          imageUrlFromReviewStatus(reviewStatus.uploadFileStatuses)
+          : ''
+      }
     </div>
+
+
+   
   )
 }
 

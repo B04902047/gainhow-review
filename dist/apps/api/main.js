@@ -120,6 +120,17 @@ function paramsToFormData(data) {
     });
     return formData;
 }
+function keepTryingTo(doSomething, input, timeout = 2000) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            let doSomethingResult = yield doSomething(input);
+            if (doSomethingResult === "NOT_FINISHED_YET")
+                resolve(keepTryingTo(doSomething, input, timeout));
+            else
+                resolve(doSomethingResult);
+        }), timeout);
+    });
+}
 class ReviewReception {
     constructor(connection) {
         this.connection = connection;
@@ -214,7 +225,7 @@ class ReviewReception {
     busyCheckFileConversion(uploadFileStatus) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             console.log("1");
-            uploadFileStatus.pageInfos = yield this.keepTryingTo(this.checkFileConversion, uploadFileStatus);
+            uploadFileStatus.pageInfos = yield keepTryingTo(this.checkFileConversion, uploadFileStatus);
             // save pageInfos into uploadFileStatus
             console.log("10");
             yield Promise.all(uploadFileStatus.pageInfos.map((pageInfo) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
@@ -223,6 +234,7 @@ class ReviewReception {
             console.log("100");
             uploadFileStatus.currentStage = "FINISHED";
             this.connection.manager.save(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_1__["UploadFileStatus"], uploadFileStatus);
+            console.log('Finsh!');
         });
     }
     checkFileConversion(uploadFileStatus) {
@@ -244,27 +256,32 @@ class ReviewReception {
             else if (responseBody.msg === "success") {
                 const jpegLocalDir = __dirname + '/uploadFilePageImages';
                 yield fs__WEBPACK_IMPORTED_MODULE_3__["promises"].mkdir(`${jpegLocalDir}/${uploadToken}`, { recursive: true });
+                console.log('mkdir = ' + `${jpegLocalDir}/${uploadToken}`);
                 /**
                  * 從轉檔伺服器得到遠端的pdf檔和jpeg檔的url之後：
                  *  1. 把pdf的url存起來當作後續跟轉檔伺服器之間溝通用的token，直接存入pageInfo
                  *  2. 透過jpeg的url將圖檔下載並存在本地，然後把本地的url存入pageInfo
                  */
-                let pageTokensAndImageUrls = yield Promise.all(responseBody.data.map(({ pageNum: pageNumber, //頁次
-                imageUrl: jpegRemoteUrl, //JPG圖檔位置	
-                pdfUrl: pdfRemoteUrl, }) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                let pageTokensAndImageUrls = yield Promise.all(responseBody.data.map(({ pagenum: pageNumber, //頁次
+                imgurl: jpegRemoteUrl, //JPG圖檔位置	
+                pdfurl: pdfRemoteUrl, }) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                     let response = yield axios__WEBPACK_IMPORTED_MODULE_2___default.a.get(jpegRemoteUrl, {
                         responseType: 'stream'
                     });
-                    let jpegLocalPath = `${jpegLocalDir}/${uploadToken}/${pageNumber}.jpeg`;
+                    let jpegLocalPath = `uploadFilePageImages/${uploadToken}/${pageNumber}.jpeg`;
                     let writeStream = fs__WEBPACK_IMPORTED_MODULE_3__["createWriteStream"](jpegLocalPath);
-                    let jpegLocalUrl = `${os__WEBPACK_IMPORTED_MODULE_5__["hostname"]()}/${jpegLocalPath}`;
+                    let jpegLocalUrl = `${os__WEBPACK_IMPORTED_MODULE_5__["networkInterfaces"]().en0[1].address}:3333/${jpegLocalPath}`;
+                    //  ${os.hostname()}/${jpegLocalPath}
                     response.data.pipe(writeStream);
                     return {
                         pdfTokenInFileConvertingServer: pdfRemoteUrl,
                         jpegUrl: jpegLocalUrl
                     };
                 })));
-                let pageSizes = yield this.keepTryingTo(checkFilePageSizes, uploadToken);
+                console.log(5);
+                let pageSizes = yield keepTryingTo(checkFilePageSizes, uploadToken);
+                console.log('pageSizes = ' + pageSizes);
+                console.log(9);
                 let pageInfos = pageTokensAndImageUrls.map(({ pdfTokenInFileConvertingServer, jpegUrl }, pageIndex) => {
                     let widthInMm = pageSizes[pageIndex].widthInMm;
                     let heightInMm = pageSizes[pageIndex].heightInMm;
@@ -276,6 +293,7 @@ class ReviewReception {
                 throw responseBody.msg;
             function checkFilePageSizes(uploadToken) {
                 return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                    console.log('checkFilePageSizes start!');
                     let requestBody = {
                         function: 'getStatus',
                         token: uploadToken
@@ -295,17 +313,6 @@ class ReviewReception {
                         throw responseBody.msg;
                 });
             }
-        });
-    }
-    keepTryingTo(doSomething, input, timeout = 2000) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-                let doSomethingResult = yield doSomething(input);
-                if (doSomethingResult === "NOT_FINISHED_YET")
-                    resolve(this.keepTryingTo(doSomething, input, timeout));
-                else
-                    resolve(doSomethingResult);
-            }), timeout);
         });
     }
     deleteFile(reviewId, fileId) {
@@ -367,6 +374,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var typeorm__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! typeorm */ "typeorm");
 /* harmony import */ var typeorm__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(typeorm__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _app_ReviewReception__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./app/ReviewReception */ "./apps/api/src/app/ReviewReception.ts");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! fs */ "fs");
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(fs__WEBPACK_IMPORTED_MODULE_8__);
+
 
 
 
@@ -377,7 +387,8 @@ __webpack_require__.r(__webpack_exports__);
 
 // import { File, Fields, Files, IncomingForm } from "formidable";
 const app = express__WEBPACK_IMPORTED_MODULE_4__();
-console.log(process.env);
+const apiUrl = '/api';
+//console.log(process.env);
 app.use(express__WEBPACK_IMPORTED_MODULE_4__["json"]());
 const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_6__["createConnection"])({
     "type": "mysql",
@@ -405,7 +416,7 @@ const connectionPromise = Object(typeorm__WEBPACK_IMPORTED_MODULE_6__["createCon
     }
 });
 const reviewReception = new _app_ReviewReception__WEBPACK_IMPORTED_MODULE_7__["ReviewReception"](Object(typeorm__WEBPACK_IMPORTED_MODULE_6__["getConnection"])());
-app.post('/api/register', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+app.post(`${apiUrl}/register`, (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
     let reviewRegistrationInfo = Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["deserialize"])(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewRegistrationInfo"], req.body.reviewRegistrationInfoJson);
     let responseBody;
     try {
@@ -427,7 +438,7 @@ app.use(express_fileupload__WEBPACK_IMPORTED_MODULE_5__({
     useTempFiles: true,
     tempFileDir: '/tmp/'
 }));
-app.post('/api/upload', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+app.post(`${apiUrl}/upload`, (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
     let file = req.files.file;
     let reviewId = req.body.reviewId;
     let responseBody;
@@ -456,7 +467,7 @@ app.post('/api/upload', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__[
         console.log("busy check error: " + error);
     }
 }));
-app.post('/api/loadReviewStatus', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+app.post(`${apiUrl}/loadReviewStatus`, (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
     let requestBody = req.body;
     let reviewId = requestBody.reviewId;
     let responseBody;
@@ -475,7 +486,7 @@ app.post('/api/loadReviewStatus', (req, res) => Object(tslib__WEBPACK_IMPORTED_M
     }
     res.send(responseBody);
 }));
-app.post('/api/loadReviewItem', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+app.post(`${apiUrl}/loadReviewItem`, (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
     let reviewId = req.body.reviewId;
     let responseBody;
     try {
@@ -493,7 +504,7 @@ app.post('/api/loadReviewItem', (req, res) => Object(tslib__WEBPACK_IMPORTED_MOD
     }
     res.send(responseBody);
 }));
-app.post('/api/updateReviewModel', (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
+app.post(`${apiUrl}/updateReviewModel`, (req, res) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(void 0, void 0, void 0, function* () {
     let requestBody = req.body;
     let reviewModel = Object(class_transformer__WEBPACK_IMPORTED_MODULE_3__["deserialize"])(_gainhow_review_data__WEBPACK_IMPORTED_MODULE_2__["ReviewModel"], requestBody.reviewModelInJson);
     let responseBody;
@@ -509,9 +520,18 @@ app.post('/api/updateReviewModel', (req, res) => Object(tslib__WEBPACK_IMPORTED_
     }
     res.send(responseBody);
 }));
+app.use('/uploadFilePageImages', (req, res) => {
+    // express.static('/uploadFilePageImages');
+    console.log(__dirname + req.path);
+    // 如果req.path的最後面是.jpeg才
+    fs__WEBPACK_IMPORTED_MODULE_8__["readFile"](__dirname + '/uploadFilePageImages' + req.path, (err, image) => {
+        res.send(image);
+    });
+});
 const port = process.env.port || 3333;
 const server = app.listen(port, () => {
     console.log('Listening at http://localhost:' + port + '/api');
+    console.log(__dirname);
 });
 server.on('error', console.error);
 
@@ -2729,7 +2749,7 @@ var FailureType;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/vince/gainhow-review/apps/api/src/main.ts */"./apps/api/src/main.ts");
+module.exports = __webpack_require__(/*! /Users/lalame888/projects/gainhow-review/apps/api/src/main.ts */"./apps/api/src/main.ts");
 
 
 /***/ }),
