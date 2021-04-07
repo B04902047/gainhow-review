@@ -33,7 +33,7 @@ export function ExportingModel(props: ExportingModelProps) {
       <div style={modelIndexStyle}>
         {props.reviewModel.modelName}
       </div>
-      <div>
+      <div style={{backgroundColor: "white"}}>
         {framedPages.map((framedPage: FramedPage, frameIndex: number) => {
           return (
             <ExportingFrame

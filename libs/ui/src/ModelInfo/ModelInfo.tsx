@@ -14,6 +14,7 @@ export interface ModelInfoProps {
   isHidden: boolean;
   style: CSSProperties;
   onToggle(): void;
+  hidable: boolean;
 }
 
 export function ModelInfo(props: ModelInfoProps) {
@@ -51,11 +52,11 @@ export function ModelInfo(props: ModelInfoProps) {
   return (
     <div style={style}>
       <div style={headerStyle}>
-        <img
+        {props.hidable && <img
           style={{padding: 6}}
           src={(props.isHidden)? DoubleLeftIcon: DoubleRightIcon}
           onClick={props.onToggle}
-        />
+        />}
       </div>
       {(props.isHidden)?
         <img
