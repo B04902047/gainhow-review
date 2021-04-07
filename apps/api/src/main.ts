@@ -7,9 +7,11 @@ import * as expressFileUpload from 'express-fileupload';
 import { UploadedFile } from 'express-fileupload';
 import { Connection, createConnection, getConnection } from 'typeorm';
 import { ReviewReception } from './app/ReviewReception';
+import * as fs from 'fs';
 // import { File, Fields, Files, IncomingForm } from "formidable";
 
 const app = express();
+const apiUrl = '/api';
 //console.log(process.env);
 
 app.use(express.json());
@@ -44,7 +46,7 @@ const connectionPromise: Promise<Connection> = createConnection({
 
 const reviewReception = new ReviewReception(getConnection());
 
-app.post('/api/register', async (req, res) => {
+app.post(`${apiUrl}/register`, async (req, res) => {
 
   let reviewRegistrationInfo: ReviewRegistrationInfo
     = deserialize(ReviewRegistrationInfo, req.body.reviewRegistrationInfoJson);
@@ -68,7 +70,7 @@ app.use(expressFileUpload({
   useTempFiles : true,
   tempFileDir : '/tmp/'
 }));
-app.post('/api/upload', async (req, res) => {
+app.post(`${apiUrl}/upload`, async (req, res) => {
   let file: UploadedFile = req.files!.file as UploadedFile;
   let reviewId: string = req.body.reviewId;
   let responseBody: UploadResponseBody;
@@ -101,7 +103,7 @@ app.post('/api/upload', async (req, res) => {
 })
 
 
-app.post('/api/loadReviewStatus', async (req, res) => {
+app.post(`${apiUrl}/loadReviewStatus`, async (req, res) => {
   let requestBody: LoadReviewStatusRequestBody = req.body;
   let reviewId: string = requestBody.reviewId;
   let responseBody: LoadReviewStatusResponseBody;
@@ -122,7 +124,7 @@ app.post('/api/loadReviewStatus', async (req, res) => {
 })
 
 
-app.post('/api/loadReviewItem', async (req, res) => {
+app.post(`${apiUrl}/loadReviewItem`, async (req, res) => {
   let reviewId: string = req.body.reviewId;
   let responseBody: {
     isSuccess: boolean;
@@ -145,7 +147,7 @@ app.post('/api/loadReviewItem', async (req, res) => {
   res.send(responseBody);
 });
 
-app.post('/api/updateReviewModel', async (req, res) => {
+app.post(`${apiUrl}/updateReviewModel`, async (req, res) => {
   let requestBody: UpdateReviewModelRequestBody = req.body;
   let reviewModel: ReviewModel
     = deserialize(ReviewModel, requestBody.reviewModelInJson);
@@ -162,9 +164,21 @@ app.post('/api/updateReviewModel', async (req, res) => {
   res.send(responseBody);
 })
 
+
+app.use('/uploadFilePageImages',(req,res)=>{
+ // express.static('/uploadFilePageImages');
+  console.log(__dirname+ req.path);
+  // 如果req.path的最後面是.jpeg才
+  fs.readFile(__dirname+ '/uploadFilePageImages'+req.path,(err,image)=>{
+    res.send(image);
+  });
+  
+});
+
 const port = process.env.port || 3333;
 const server = app.listen(port, () => {
   console.log('Listening at http://localhost:' + port + '/api');
+  console.log(__dirname);
 });
 server.on('error', console.error);
 

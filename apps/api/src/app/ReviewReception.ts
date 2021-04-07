@@ -196,9 +196,10 @@ export class ReviewReception implements ReviewReceptionInterface {
                         jpegRemoteUrl, {
                         responseType: 'stream'
                     });
-                    let jpegLocalPath: string = `${jpegLocalDir}/${uploadToken}/${pageNumber}.jpeg`;
+                    let jpegLocalPath: string = `uploadFilePageImages/${uploadToken}/${pageNumber}.jpeg`;
                     let writeStream = fs.createWriteStream(jpegLocalPath);
-                    let jpegLocalUrl: string = `${os.hostname()}/${jpegLocalPath}`;
+                    let jpegLocalUrl: string = `${os.networkInterfaces().en0[1].address}:3333/${jpegLocalPath}`;
+                    //  ${os.hostname()}/${jpegLocalPath}
                     response.data.pipe(writeStream);
                     return {
                         pdfTokenInFileConvertingServer: pdfRemoteUrl,
