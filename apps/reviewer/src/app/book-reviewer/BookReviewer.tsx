@@ -4,6 +4,7 @@ import BookFrameDictionary from "libs/data/src/lib/FrameDictionary/BookFrameDict
 import Book from "libs/data/src/lib/Product/Book";
 import ExportingFrame from "libs/ui/src/ExportList/exporting-frame/ExportingFrame";
 import React, { CSSProperties, useState } from "react";
+import { PlusOutlined, SwapOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 interface BookReviewerProps {
     initialReviewItem: ReviewItem;
@@ -252,10 +253,30 @@ function PagePair(props: PagePairProps): JSX.Element {
         display: "inline-block",
         verticalAlign: "top",
         paddingLeft: 1
-    }
+    };
+    let [showLeftFrameToolBar, setLeftFrameShowToolBar] = useState<boolean>(false);
+    let [showRightFrameToolBar, setRightFrameShowToolBar] = useState<boolean>(false);
     return (
         <div style={style}>
-            <div style={leftStyle}>
+            <SingleFrame
+                style={leftStyle}
+                namedFramePage={props.pair.left}
+                widthInMm={widthInMm}
+                heightInMm={heightInMm}
+                height={height}
+            />
+            <SingleFrame
+                style={leftStyle}
+                namedFramePage={props.pair.right}
+                widthInMm={widthInMm}
+                heightInMm={heightInMm}
+                height={height}
+            />
+            {/* <div style={leftStyle}
+                onMouseOver={() => setLeftFrameShowToolBar(true)}
+                onMouseLeave={() => setLeftFrameShowToolBar(false)}
+            >
+                <SingleFrameToolBar isHidden={!showLeftFrameToolBar || (props.pair.left?.framedPage === undefined)}/>
                 {(!props.pair.left)?
                     <EmptyFrame
                         widthInMm={widthInMm}
@@ -282,7 +303,11 @@ function PagePair(props: PagePairProps): JSX.Element {
                     height={height}
                 />}
             </div>
-            <div style={rightStyle}>
+            <div style={rightStyle}
+                onMouseOver={() => setRightFrameShowToolBar(true)}
+                onMouseLeave={() => setRightFrameShowToolBar(false)}
+            >
+                <SingleFrameToolBar isHidden={!showRightFrameToolBar || (props.pair.right?.framedPage === undefined)}/>
                 {(!props.pair.right)?
                     <EmptyFrame
                         widthInMm={widthInMm}
@@ -308,8 +333,55 @@ function PagePair(props: PagePairProps): JSX.Element {
                     horizontalPadding={0}
                     height={height}
                 />}
-            </div>
+            </div> */}
         </div>
+    )
+}
+
+type SingleFrameProps = {
+    namedFramePage?: NamedFramedPage;
+    style: CSSProperties;
+    widthInMm: number;
+    heightInMm: number;
+    height: number;
+};
+
+function SingleFrame(props: SingleFrameProps): JSX.Element {
+    let [isHovered, setIsHovered] = useState<boolean>(false);
+    console.log(props);
+    return (
+        <div style={props.style}
+            onMouseOver={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <SingleFrameToolBar isHidden={!isHovered || (props.namedFramePage?.framedPage === undefined)}/>
+            {(!props.namedFramePage)?
+                <EmptyFrame
+                    widthInMm={props.widthInMm}
+                    heightInMm={props.heightInMm}
+                    withBorder={false}
+                    isSelected={false}
+                    height={props.height}
+                />
+            : (!props.namedFramePage.framedPage)?
+                <EmptyFrame
+                    widthInMm={props.widthInMm}
+                    heightInMm={props.heightInMm}
+                    withBorder={true}
+                    isSelected={props.namedFramePage.isSelected}
+                    name={props.namedFramePage.name}
+                    height={props.height}
+                />
+            : <ExportingFrame
+                shadowed
+                framedPage={props.namedFramePage.framedPage}
+                isSelected={props.namedFramePage.isSelected}
+                onSelect={() => props.namedFramePage.onSelect()}
+                horizontalPadding={0}
+                height={props.height}
+            />}
+        </div>
+        
     )
 }
 
@@ -357,3 +429,27 @@ function EmptyFrame(props: EmptyFrameProps): JSX.Element {
     )
 }
 
+interface SingleFrameToolBarProps {
+    isHidden: boolean;
+}
+
+function SingleFrameToolBar(props: SingleFrameToolBarProps): JSX.Element {
+    let style: CSSProperties = {
+        height: 15,
+        fontSize: 18,
+        color: "#777777"
+    }
+    return (
+        <div style={style}>
+            {
+                !props.isHidden && (<>
+                    &thinsp;
+                    <PlusOutlined/> &thinsp;
+                    <SwapOutlined/> &thinsp;
+                    <EditOutlined/> &thinsp;
+                    <DeleteOutlined/>
+                </>)
+            }
+        </div>
+    );
+}

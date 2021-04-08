@@ -41,7 +41,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
     width: frameWidthInPx,
     border: (props.isSelected)? "solid 3px #1581ff": "solid 1px #707070",
     backgroundColor: "white",
-    boxShadow: "0 0 5px gray"
+    boxShadow: "0 0 2px 2px Gainsboro"
   };
 
   let positionXInMm: number = props.framedPage.positionX;

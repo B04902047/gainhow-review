@@ -27,6 +27,7 @@
   },
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.6.2",
     "@types/express-fileupload": "^1.1.6",
     "@types/formidable": "^1.0.32",
     "axios": "^0.21.1",
