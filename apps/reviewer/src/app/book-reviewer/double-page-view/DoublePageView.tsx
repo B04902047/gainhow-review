@@ -31,7 +31,7 @@ function DoublePageView(props: DoublePageViewProps): JSX.Element {
             <DoublePageWorkSpace style={workSpaceStyle}/>
             <ExportList
                 selectedModelIndex={0}
-                selectedFrameIndex={0}
+                selectedFrameIndex={'1'}
                 reviewItem={props.reviewItem}
                 style={exportListStyle}
                 onFrameSelect={() => {}}
