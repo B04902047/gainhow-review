@@ -22,7 +22,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
   let ratio: number = frameWidthInMm / frameHeightInMm;
   let frameHeightInPx = props.height || 96;
   let frameWidthInPx: number = frameHeightInPx * ratio;
-  let horizontalPadding: number = 9;
+  let horizontalPadding: number = 5;
   if (props.horizontalPadding !== undefined) horizontalPadding = props.horizontalPadding;
   if (props.isSelected) horizontalPadding = horizontalPadding - 2;
   let style: CSSProperties = {
@@ -46,13 +46,33 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
   let positionYInMm: number = props.framedPage.positionY;
   let rotationDegree: number = props.framedPage.rotationDegree;
   let sourcePage: UploadFilePageInfo = props.framedPage.getSourcePageInfo();
-  let imageStyle: CSSProperties = {
-    marginLeft: (frameWidthInPx / frameWidthInMm) * positionXInMm,
-    marginTop: (frameHeightInPx / frameHeightInMm) * positionYInMm,
-    width: (frameWidthInPx / frameWidthInMm) * sourcePage.widthInMm,
-    height: (frameWidthInPx / frameWidthInMm) * sourcePage.heightInMm,
-    transform: `rotate(${rotationDegree}deg)`
-  };
+  let imageStyle: CSSProperties;
+  let imageJSX: JSX.Element;
+  if (sourcePage) {
+    imageStyle= {
+      marginLeft: (frameWidthInPx / frameWidthInMm) * positionXInMm,
+      marginTop: (frameHeightInPx / frameHeightInMm) * positionYInMm,
+      width: (frameWidthInPx / frameWidthInMm) * sourcePage.widthInMm,
+      height: (frameWidthInPx / frameWidthInMm) * sourcePage.heightInMm,
+      transform: `rotate(${rotationDegree}deg)`
+    };
+    imageJSX = (
+      <img
+          src={sourcePage.jpegUrl}
+          style={imageStyle}
+      />
+    );
+  } else {
+    imageStyle = {
+      width: frameHeightInPx,
+      height: frameWidthInPx,
+      backgroundColor: 'white'
+    }
+    imageJSX = (
+      <div style={imageStyle}/>
+    );
+  }
+  
 
   let pageIndexStyle: CSSProperties = {
     width: frameWidthInPx + ((props.isSelected)? 6 : 0),
@@ -68,10 +88,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
       onClick={props.onSelect}
     >
       <div style={cropStyle}>
-        <img
-          src={sourcePage.jpegUrl}
-          style={imageStyle}
-        />
+        {imageJSX}
       </div>
       <div style={pageIndexStyle}>
         {props.framedPage.frameName}

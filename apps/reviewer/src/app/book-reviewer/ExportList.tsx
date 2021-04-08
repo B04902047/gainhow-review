@@ -1,10 +1,11 @@
 import { ExportingFrame } from '@gainhow-review/ui';
 
-import { FramedPage, ReviewItem, ReviewModel } from '@gainhow-review/data';
+import { Frame, FramedPage, ReviewItem, ReviewModel } from '@gainhow-review/data';
 import React, { CSSProperties } from 'react';
 import { BookPagingDirection } from 'libs/interfaces/src/lib/product';
 import e from 'express';
 import Book from 'libs/data/src/lib/Product/Book';
+import { CoverBlankFramePage } from './CoverBlankFramePage'
 
 export interface ExportListProps {
     selectedModelIndex: number;
@@ -21,14 +22,15 @@ export interface ExportListProps {
       backgroundColor: "#f7f7f7",
       border: '2px solid #E4E4E4',
       borderRight: 'none',
-      paddingTop: 5,
+      paddingTop: 15,
       paddingBottom: 16,
       overflow: "auto",
       whiteSpace: "nowrap",
       ...props.style
     };
     let modelsStyle: CSSProperties = {
-      marginLeft: 37
+      marginLeft: 37,
+      display: "inline-block",
     }
     let models: ReviewModel[] = props.reviewItem.models;
     let modelStyle: CSSProperties = {
@@ -36,7 +38,7 @@ export interface ExportListProps {
     };
 
     let groupStyle: CSSProperties = {
-
+        display: "inline-block"
     }
     return (
       <div style={style}>
@@ -53,6 +55,7 @@ export interface ExportListProps {
                             return(
                                 <ExportingGroupFrame
                                     key={index}
+                                    style={groupStyle}
                                     groupPage={groupPage}
                                     direct={product.pagingDirection}
                                     onSelect={(frameName: string)=>{props.onFrameSelect(modelIndex,frameName)}}
@@ -167,28 +170,26 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
     groupPage: GroupFramedPage,
     direct: BookPagingDirection,
     onSelect(frameId: string): void; 
+    style?: CSSProperties;
+    height?: number;
   }
-  function ExportingGroupFrame (props:ExportingFrameProps) :JSX.Element {
+  function ExportingGroupFrame (props: ExportingFrameProps) :JSX.Element {
     
-    let blankFramePage: JSX.Element = (
-        <div
-            style={{
-                backgroundColor: 'white',
-                border:'solid 1px #707070'
-            }}    
-        />
-    );
+    
     let style: CSSProperties;
     let pageKeyArray: Array<string>; 
     let pages:JSX.Element[];
     if (props.direct === 'BOTTOM_TO_TOP') {
         style = {
-        
+            ...props.style,
+            display:'inline-block'
         }
         pageKeyArray = ['上頁','下頁']
     } else {
         style = {
-            margin: 30
+            ...props.style,
+            margin: '0px 25px',
+            display:'inline-block'
         }
         pageKeyArray = ['左頁','右頁']
     }
@@ -196,11 +197,52 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
         pages = pageKeyArray.map((pageKey, index)=>{
 
             let framedPage: FramedPage = props.groupPage[pageKey];
+            
+            let frame: Frame = framedPage.getFrame();
+            
+                
+                let frameHeightInPx = props.height || 96;
+                let frameWidthInPx: number = frameHeightInPx;
+                let blankFramePageStyle: CSSProperties = {
+                    ...props.style,
+                    backgroundColor: 'white',
+                    border:'solid 1px #707070',
+                    height: frameHeightInPx,
+                    width: frameWidthInPx
+                }
             if(framedPage.frameName === '空白頁' ) {
-                return (blankFramePage)
+                let noneFramePageStyle: CSSProperties = {
+                    width:70
+                }
+                return (
+                    
+                    <div
+                        key={index}
+                        style={noneFramePageStyle}    
+                    />
+                )
             }
             else if (framedPage.frameName === '封面裏' || framedPage.frameName === '封底裏' ) {
-                return blankFramePage
+                let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
+                let frameHeightInMm = coverFrame.maxHeight;
+                let frameWidthInMm = coverFrame.maxWidth;
+                let ratio: number = frameWidthInMm / frameHeightInMm;
+                let frameHeightInPx = props.height || 96;
+                let frameWidthInPx: number = frameHeightInPx * ratio;
+                let coverBlankFramePageStyle: CSSProperties = {
+                    height:frameHeightInPx,
+
+                }
+                return (
+                    <CoverBlankFramePage
+                        key={index}
+                        frameName={framedPage.frameName}
+                        style={coverBlankFramePageStyle}
+                        frameHeightInPx={frameHeightInPx}
+                        frameWidthInPx={frameWidthInPx}
+                    />
+                    
+                )
             }
             else {
                 return (
@@ -209,6 +251,7 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
                     framedPage={framedPage}
                     isSelected={false}
                     onSelect={()=>{ props.onSelect(framedPage.frameName)}}
+                    height={props.height}
                 />)
             }
         });

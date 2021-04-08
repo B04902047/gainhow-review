@@ -26,12 +26,17 @@ export const App = () => {
   selectedModelIndex={0}
   selectedFrameIndex={0}
   reviewItem={BookReviewItem}
-  style={{}}
+  style={{
+    display: 'inline-block',
+    verticalAlign: 'top',
+    width: `calc(100vw - 300px - 6px)`,
+    height: 160,
+  }}
   onFrameSelect={()=>{}}
   />
+  return <BookReviewer reviewItem={bookReviewItem}/>;
 
   // return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
-  // return <BookReviewer reviewItem={bookReviewItem}/>;
 };
 
 export default App;
