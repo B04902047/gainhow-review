@@ -1,6 +1,6 @@
 
 
-import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo, ReviewRegistrationInfo, PerfectBoundBook } from '@gainhow-review/data';
+import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo, ReviewRegistrationInfo, PerfectBoundBook, Coat } from '@gainhow-review/data';
 
 import frontCoverJpeg from '../assets/testImages/to-one-with-life/front-cover.jpg';
 import page1Jpeg from '../assets/testImages/to-one-with-life/1.jpg';
@@ -14,7 +14,7 @@ const paperMaterial1 = new PaperMaterial("一級卡");
 const paperMaterial2 = new PaperMaterial("象牙卡");
 
 const paper1 = new Paper(
-    "一級卡250µm",
+    "雲彩紙",
     paperMaterial1,
     250,
     250,
@@ -22,21 +22,22 @@ const paper1 = new Paper(
 );
 
 const paper2 = new Paper(
-    "象牙卡280µm",
+    "銅版紙120g",
     paperMaterial1,
     280,
     300,
     true
 );
 
-
+const coat1 = new Coat('壓紋', '壓紋');
 const book = new PerfectBoundBook(
     210,
     297,
-    6,
+    21,
     "RIGHT_TO_LEFT",
     paper1,
-    paper2
+    paper2,
+    coat1
 );
 
 const reviewRegistrationInfo = new ReviewRegistrationInfo(
@@ -109,9 +110,9 @@ frontCover.sourcePageNumber = 0;
 frontCover.positionX = -20;
 frontCover.positionY = 10;
 frontCover.rotationDegree = 30;
-for (let i=1; i<=6; i++) {
+for (let i=1; i<=book.numberOfPages; i++) {
     reviewModel.framedPages[i].sourceFileIndex = 1;
-    reviewModel.framedPages[i].sourcePageNumber = i-1;
+    reviewModel.framedPages[i].sourcePageNumber = (i+5) % 6;
 }
 
 export {

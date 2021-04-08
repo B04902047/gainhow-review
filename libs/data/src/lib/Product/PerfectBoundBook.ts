@@ -9,17 +9,6 @@ import PerfectBoundBookFrameDictionary from "../FrameDictionary/PerfectBoundBook
 export default class PerfectBoundBook extends Book implements PerfectBoundBookInterface {
     readonly __productSubType = "PerfectBoundBook";
 
-    // @Type(() => Paper)
-    // public coverPaper!: Paper;
-
-    // @Type(() => Paper)
-    // public innerPagesPaper: Paper;
-
-    @Type(() => Coat)
-    public coverCoating?: Coat;
-
-    @Type(() => Coat)
-    public innerPageCoating?: Coat;
     constructor(
         public width: number,
         public height: number,
