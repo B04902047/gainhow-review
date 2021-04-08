@@ -21,17 +21,17 @@ export interface ExportListProps {
     let style: CSSProperties = {
       backgroundColor: "#f7f7f7",
       border: '2px solid #E4E4E4',
-      borderRight: 'none',
-      paddingTop: 15,
-      paddingBottom: 16,
+      borderLeft: 'none',
       overflow: "auto",
       whiteSpace: "nowrap",
       userSelect: 'none',
       ...props.style
     };
     let modelsStyle: CSSProperties = {
-      marginLeft: 37,
+      marginLeft: 30,
+      marginRight: 30,
       display: "inline-block",
+      marginTop: 27
     }
     let models: ReviewModel[] = props.reviewItem.models;
     let modelStyle: CSSProperties = {

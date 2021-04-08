@@ -98,7 +98,8 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
     height: 14,
     backgroundColor: '#666666',
     border: "solid 1px #d9d9d9",
-    borderRadius: '50%'
+    borderRadius: '50%',
+    cursor: 'grab'
   };
   let lowerZoomBarStyle: CSSProperties = {
     width: 0,
@@ -109,7 +110,7 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
   };
 
   const transparentImageSource = 
-  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   let transparentImage = new Image(0, 0);
   transparentImage.src = transparentImageSource;
   let [dragImage, _] = useState<HTMLImageElement>(transparentImage);

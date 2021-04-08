@@ -1,11 +1,12 @@
-import { NavLink } from "react-router-dom";
 import { FramedPage, ReviewItem, ReviewModel } from "@gainhow-review/data";
 import { Button, ImportList, ModelInfo } from "@gainhow-review/ui";
 import BookFrameDictionary from "libs/data/src/lib/FrameDictionary/BookFrameDictionary";
 import Book from "libs/data/src/lib/Product/Book";
 import ExportingFrame from "libs/ui/src/ExportList/exporting-frame/ExportingFrame";
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, Props, ReactChild, useState } from "react";
 import { PlusOutlined, SwapOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import ExportList from "./ExportList";
+import BasicSideToolBar from "../working-stage/side-tool-bar/SideToolBar";
 
 interface BookReviewerProps {
     initialReviewItem: ReviewItem;
@@ -19,7 +20,7 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
       = bufferedReviewItem.getFramedPage(0, selectedFrameIndex);
     if (!selectedFramedPage) throw new Error("debug: selected frame is undefined???");
 
-    let [importListIsHidden, setImportListIsHidden] = useState<boolean>(false);
+    let [importListIsHidden, setImportListIsHidden] = useState<boolean>(true);
     let importListStyle: CSSProperties = {
         display: "inline-block",
         verticalAlign: "top",
@@ -41,7 +42,7 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
         height: 180,
         verticalAlign: 'top',
         border: "solid 2px #E4E4E4",
-        borderLeft: "none",
+        borderTop: "none",
         backgroundColor: "#F7F7F7"
     };
     let nextStepButtonStyle: CSSProperties = {
@@ -60,8 +61,10 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
         backgroundColor: "#f4f4f4",
         border: "solid 2px #E4E4E4",
         borderBottom: "none",
-        width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px)`,
+        userSelect: "none",
+        width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px - 50px)`,
     };
+    let [viewMode, setViewMode] = useState<"DOUBLE_PAGE"|"OVERVIEW">("OVERVIEW");
     return (
         <div>
             <ImportList
@@ -72,12 +75,23 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
               isHidden={importListIsHidden}
               onToggle={() => setImportListIsHidden(!importListIsHidden)}
             />
-            <ExportOverview
+            <SideToolBar
+                style={{
+                    height: '100vh',
+                    display: 'inline-block'
+                }}
+                zoom={() => {}}
+            />
+            {(viewMode === "OVERVIEW")? <ExportOverview
                 style={workSpaceStyle}
                 reviewItem={bufferedReviewItem}
                 selectedFrameIndex={selectedFrameIndex}
                 onSelect={(frameIndex: number) => selectFrame(frameIndex)}
-            />
+                onEdit={(frameIndex) => onEdit(frameIndex)}
+            /> : <DoublePageView
+                style={workSpaceStyle}
+                reviewItem={bufferedReviewItem}
+            />}
             <div style={rightAreaStyle}>
                 <ModelInfo
                     product={bufferedReviewItem.product}
@@ -89,8 +103,8 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
 
                 <div style={downRightAreaStyle}>
                     <Button
-                    style={nextStepButtonStyle}
-                    isPrimary
+                        style={nextStepButtonStyle}
+                        isPrimary
                     >
                         下一步
                     </Button>
@@ -101,6 +115,10 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
             </div>
         </div>
       );
+    function onEdit(frameIndex: number): void {
+        selectFrame(frameIndex);
+        setViewMode("DOUBLE_PAGE");
+    }
 }
 
 interface ExportOverviewProps {
@@ -108,6 +126,7 @@ interface ExportOverviewProps {
     style: CSSProperties;
     selectedFrameIndex: number;
     onSelect(frameIndex: number): void;
+    onEdit(frameIndex: number): void;
 }
 
 export function ExportOverview(props: ExportOverviewProps): JSX.Element {
@@ -119,38 +138,21 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     let pagePairs: NamedFramedPagePair[] = [];
     pagePairs.push({
         [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
-            name: '封面',
-            framedPage: reviewModel.framedPages[0],
-            isSelected: (0 == props.selectedFrameIndex),
-            onSelect: () => props.onSelect(0)
+            ...getNamedFramedPage(0),
+            name: '封面'
         }
     });
     pagePairs.push({
         [(pagingDirection == "RIGHT_TO_LEFT")? "left": "right"]: {
-            name: '封面裡',
+            name: '（封面裡）',
             isSelected: false
         },
-        [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
-            name: '1',
-            framedPage: reviewModel.framedPages[1],
-            isSelected: (1 == props.selectedFrameIndex),
-            onSelect: () => props.onSelect(1)
-        }
+        [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: getNamedFramedPage(1)
     });
     for (let i=2; i<=book.numberOfPages; i+=2) {
-        let first: NamedFramedPage = {
-            name: String(i),
-            framedPage: reviewModel.framedPages[i],
-            isSelected: (i == props.selectedFrameIndex),
-            onSelect: () => props.onSelect(i)
-        }
-        let second: NamedFramedPage = (i+1 <= book.numberOfPages)? {
-            name: `${i+1}`,
-            framedPage: reviewModel.framedPages[i+1],
-            isSelected: (i+1 == props.selectedFrameIndex),
-            onSelect: () => props.onSelect(i+1)
-        } : {
-            name: '封底裡',
+        let first: NamedFramedPage = getNamedFramedPage(i)
+        let second: NamedFramedPage = (i+1 <= book.numberOfPages)? getNamedFramedPage(i+1) : {
+            name: '（封底裡）',
             isSelected: false,
             onSelect: () => {}
         };
@@ -162,7 +164,7 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     if (book.numberOfPages % 2 !== 0) {
         pagePairs.push({
             [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
-                name: '封底裡',
+                name: '（封底裡）',
                 isSelected: false,
                 onSelect: () => {}
             }
@@ -171,21 +173,20 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
 
     pagePairs.push({
         [(pagingDirection == "RIGHT_TO_LEFT")? "left": "right"]: {
-            name: '封底',
-            // TODO: framedPage: reviewModel.framedPages[book.numberOfPages + 1]
-            isSelected: (book.numberOfPages + 1 == props.selectedFrameIndex),
-            onSelect: () => props.onSelect(book.numberOfPages + 1)
+            ...getNamedFramedPage(book.numberOfPages + 1),
+            name: '封底'
         }
     });
     
     let pagePairStyle: CSSProperties = {
         paddingLeft: 10,
         paddingRight: 10,
+        paddingTop: 20,
         height: 200
     };
     let pagePairsStyle: CSSProperties = {
         padding: 30,
-        paddingTop: 50,
+        paddingTop: 30,
     };
     let style: CSSProperties = {
         backgroundColor: "#F7F7F7",
@@ -216,6 +217,18 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     function insertBlankFramedPage(frameIndex: number): void {
 
     }
+    function getNamedFramedPage(frameIndex: number): NamedFramedPage {
+        return {
+            name: String(frameIndex),
+            framedPage: reviewModel.framedPages[frameIndex],
+            isSelected: (frameIndex == props.selectedFrameIndex),
+            onSelect: () => props.onSelect(frameIndex),
+            onEdit: () => props.onEdit(frameIndex),
+            onInsert: () => {},
+            onDelete: () => {},
+            onSwap: () => {}
+        }
+    }
 }
 
 
@@ -224,6 +237,10 @@ interface NamedFramedPage {
     framedPage?: FramedPage;
     isSelected: boolean;
     onSelect(): void;
+    onEdit?(): void;
+    onInsert?(): void;
+    onDelete?(): void;
+    onSwap?(): void;
 }
 
 interface NamedFramedPagePair {
@@ -255,8 +272,6 @@ function PagePair(props: PagePairProps): JSX.Element {
         verticalAlign: "top",
         paddingLeft: 1
     };
-    let [showLeftFrameToolBar, setLeftFrameShowToolBar] = useState<boolean>(false);
-    let [showRightFrameToolBar, setRightFrameShowToolBar] = useState<boolean>(false);
     return (
         <div style={style}>
             <SingleFrame
@@ -267,74 +282,12 @@ function PagePair(props: PagePairProps): JSX.Element {
                 height={height}
             />
             <SingleFrame
-                style={leftStyle}
+                style={rightStyle}
                 namedFramePage={props.pair.right}
                 widthInMm={widthInMm}
                 heightInMm={heightInMm}
                 height={height}
             />
-            {/* <div style={leftStyle}
-                onMouseOver={() => setLeftFrameShowToolBar(true)}
-                onMouseLeave={() => setLeftFrameShowToolBar(false)}
-            >
-                <SingleFrameToolBar isHidden={!showLeftFrameToolBar || (props.pair.left?.framedPage === undefined)}/>
-                {(!props.pair.left)?
-                    <EmptyFrame
-                        widthInMm={widthInMm}
-                        heightInMm={heightInMm}
-                        withBorder={false}
-                        isSelected={false}
-                        height={height}
-                    />
-                : (!props.pair.left.framedPage)?
-                    <EmptyFrame
-                        widthInMm={widthInMm}
-                        heightInMm={heightInMm}
-                        withBorder={true}
-                        isSelected={props.pair.left.isSelected}
-                        name={props.pair.left.name}
-                        height={height}
-                    />
-                : <ExportingFrame
-                    shadowed
-                    framedPage={props.pair.left.framedPage}
-                    isSelected={props.pair.left.isSelected}
-                    onSelect={() => props.pair.left.onSelect()}
-                    horizontalPadding={0}
-                    height={height}
-                />}
-            </div>
-            <div style={rightStyle}
-                onMouseOver={() => setRightFrameShowToolBar(true)}
-                onMouseLeave={() => setRightFrameShowToolBar(false)}
-            >
-                <SingleFrameToolBar isHidden={!showRightFrameToolBar || (props.pair.right?.framedPage === undefined)}/>
-                {(!props.pair.right)?
-                    <EmptyFrame
-                        widthInMm={widthInMm}
-                        heightInMm={heightInMm}
-                        withBorder={false}
-                        isSelected={false}
-                        height={height}
-                    />
-                : (!props.pair.right.framedPage)?
-                    <EmptyFrame
-                        widthInMm={widthInMm}
-                        heightInMm={heightInMm}
-                        height={height}
-                        withBorder={true}
-                        isSelected={props.pair.right.isSelected}
-                        name={props.pair.right.name}
-                    />
-                : <ExportingFrame
-                    shadowed
-                    framedPage={props.pair.right.framedPage}
-                    isSelected={props.pair.right.isSelected}
-                    onSelect={() => props.pair.right.onSelect()}
-                    horizontalPadding={0}
-                    height={height}
-                />}
-            </div> */}
         </div>
     )
 }
@@ -348,24 +301,29 @@ type SingleFrameProps = {
 };
 
 function SingleFrame(props: SingleFrameProps): JSX.Element {
-    let [isHovered, setIsHovered] = useState<boolean>(false);
-    console.log(props);
+    let [showToolBar, setShowToolBar] = useState<boolean>(false);
+    let [isDraggable, setIsDraggable] = useState<boolean>(false);
+    
     return (
         <div style={props.style}
-            onMouseOver={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onMouseOver={() => setShowToolBar(true)}
+            onMouseLeave={() => setShowToolBar(false)}
         >
-            <SingleFrameToolBar isHidden={!isHovered || (props.namedFramePage?.framedPage === undefined)}/>
+            <SingleFrameToolBar
+                isHidden={!showToolBar || (props.namedFramePage?.framedPage === undefined)}
+                onEdit={props.namedFramePage?.onEdit}
+                onInsert={props.namedFramePage?.onInsert}
+                onDelete={props.namedFramePage?.onDelete}
+                onSwap={props.namedFramePage?.onSwap}
+            />
             {(!props.namedFramePage)?
-                <EmptyFrame
+                <NoFrame
                     widthInMm={props.widthInMm}
                     heightInMm={props.heightInMm}
-                    withBorder={false}
-                    isSelected={false}
                     height={props.height}
                 />
             : (!props.namedFramePage.framedPage)?
-                <EmptyFrame
+                <BlankFrame
                     widthInMm={props.widthInMm}
                     heightInMm={props.heightInMm}
                     withBorder={true}
@@ -373,29 +331,54 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                     name={props.namedFramePage.name}
                     height={props.height}
                 />
-            : <ExportingFrame
-                shadowed
-                framedPage={props.namedFramePage.framedPage}
-                isSelected={props.namedFramePage.isSelected}
-                onSelect={() => props.namedFramePage.onSelect()}
-                horizontalPadding={0}
-                height={props.height}
-            />}
+            : 
+            <div style={{
+                position: 'relative'
+            }}
+                onMouseLeave={() => setIsDraggable(false)}
+            >
+                <ExportingFrame
+                    shadowed
+                    framedPage={props.namedFramePage.framedPage}
+                    isSelected={props.namedFramePage.isSelected}
+                    onSelect={() => props.namedFramePage.onSelect()}
+                    horizontalPadding={0}
+                    height={props.height}
+                    onMouseOver={() => setIsDraggable(true)}
+                />
+                {isDraggable && <div 
+                    style={{
+                        position: "absolute",
+                        top: (props.namedFramePage.isSelected)? -1: 1,
+                        left: (props.namedFramePage.isSelected)? 3: 1,
+                        cursor: 'move'
+                    }}
+                    onClick={() => props.namedFramePage.onSelect()}
+                >
+                    <ShadowingFrame
+                        widthInMm={props.widthInMm}
+                        heightInMm={props.heightInMm}
+                        height={props.height}
+                    />
+                </div>
+                }
+            </div>}
         </div>
         
     )
 }
 
-interface EmptyFrameProps {
+interface BlankFrameProps {
     widthInMm: number;
     heightInMm: number;
     withBorder: boolean;
     isSelected: boolean;
     name?: string;
     height: number;
+    backgroundColor?: string;
 }
 
-function EmptyFrame(props: EmptyFrameProps): JSX.Element {
+function BlankFrame(props: BlankFrameProps): JSX.Element {
 
     let frameWidthInPx = props.height / props.heightInMm * props.widthInMm;
     let pageIndexStyle: CSSProperties = {
@@ -411,8 +394,7 @@ function EmptyFrame(props: EmptyFrameProps): JSX.Element {
             display: "inline-block",
             verticalAlign: "top"
         }}>
-            <div
-                style={{
+            <div style={{
                     width: frameWidthInPx,
                     height: props.height,
                     border: (!props.withBorder)? "none"
@@ -420,7 +402,9 @@ function EmptyFrame(props: EmptyFrameProps): JSX.Element {
                             : "solid 1px #707070",
                     marginTop: (props.isSelected)? 5: 9,
                     paddingBottom: 0,
-                    backgroundColor: (props.withBorder)? "white": "inherit"
+                    backgroundColor: (props.backgroundColor)? props.backgroundColor
+                                    : (props.withBorder)? "white"
+                                    :  "inherit"
                 }}
             />
             <div style={pageIndexStyle}>
@@ -430,13 +414,55 @@ function EmptyFrame(props: EmptyFrameProps): JSX.Element {
     )
 }
 
+interface NoFrameProps {
+    widthInMm: number;
+    heightInMm: number;
+    height: number;
+}
+
+function NoFrame(props: NoFrameProps): JSX.Element {
+    return (
+        <BlankFrame
+            widthInMm={props.widthInMm}
+            heightInMm={props.heightInMm}
+            withBorder={false}
+            isSelected={false}
+            height={props.height}
+        />
+    );
+}
+
+interface ShadowingFrameProps {
+    widthInMm: number;
+    heightInMm: number;
+    height: number;
+}
+
+function ShadowingFrame(props: ShadowingFrameProps): JSX.Element {
+    return (
+        <BlankFrame
+            widthInMm={props.widthInMm}
+            heightInMm={props.heightInMm}
+            withBorder={false}
+            isSelected={false}
+            height={props.height}
+            backgroundColor="#4ba3ff77"
+        />
+    );
+
+}
+
 interface SingleFrameToolBarProps {
     isHidden: boolean;
+    onEdit(): void;
+    onInsert(): void;
+    onDelete(): void;
+    onSwap(): void;
 }
 
 function SingleFrameToolBar(props: SingleFrameToolBarProps): JSX.Element {
     let style: CSSProperties = {
-        height: 15,
+        height: 20,
         fontSize: 18,
         color: "#777777"
     }
@@ -445,12 +471,114 @@ function SingleFrameToolBar(props: SingleFrameToolBarProps): JSX.Element {
             {
                 !props.isHidden && (<>
                     &thinsp;
-                    <PlusOutlined/> &thinsp;
-                    <SwapOutlined/> &thinsp;
-                    <EditOutlined/> &thinsp;
-                    <DeleteOutlined/>
+                    <SingleFrameToolBarButton
+                        onClick={props.onInsert}
+                    >
+                        <PlusOutlined/>
+                    </SingleFrameToolBarButton>
+                    &thinsp;
+                    <SingleFrameToolBarButton
+                        onClick={props.onSwap}
+                    >
+                        <SwapOutlined/>
+                    </SingleFrameToolBarButton>
+                    &thinsp;
+                    <SingleFrameToolBarButton
+                        onClick={props.onEdit}
+                    >
+                        <EditOutlined/>
+                    </SingleFrameToolBarButton>
+                    &thinsp;
+                    <SingleFrameToolBarButton
+                        onClick={props.onDelete}
+                    >
+                        <DeleteOutlined/>
+                    </SingleFrameToolBarButton>
                 </>)
             }
         </div>
     );
+}
+
+interface SingleFrameToolBarButtonProps {
+    children: JSX.Element;
+    onClick(): void;
+}
+
+function SingleFrameToolBarButton(props: SingleFrameToolBarButtonProps): JSX.Element {
+    let [isHovered, setIsHovered] = useState<boolean>(false);
+    return (
+        <div style={{
+            borderRadius: '30% 30%',
+            padding: '0px 3px',
+            backgroundColor: (isHovered)? 'LightGray' : 'inherit',
+            display: 'inline-block',
+            cursor: 'pointer'
+        }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onClick={props.onClick}
+        >
+            {props.children}
+        </div>
+    )
+}
+
+interface DoublePageViewProps {
+    style: CSSProperties;
+    reviewItem: ReviewItem;
+}
+
+function DoublePageView(props: DoublePageViewProps): JSX.Element {
+    let exportListStyle: CSSProperties = {
+        //display: 'inline-block',
+        verticalAlign: 'top',
+        width: props.style.width,
+        height: '180px',
+    };
+    let workSpaceStyle: CSSProperties = {
+        width: props.style.width,
+        height: `calc(100vh - ${exportListStyle.height} - 2px)`
+    };
+    return (
+        <div style={props.style}>
+            <DoublePageWorkSpace style={workSpaceStyle}/>
+            <ExportList
+                selectedModelIndex={0}
+                selectedFrameIndex={0}
+                reviewItem={props.reviewItem}
+                style={exportListStyle}
+                onFrameSelect={() => {}}
+            />
+        </div>
+    )
+}
+
+interface DoublePageWorkSpaceProps {
+    style: CSSProperties;
+}
+
+function DoublePageWorkSpace(props: DoublePageWorkSpaceProps): JSX.Element {
+    return (
+        <div style={props.style}>
+        </div>
+    )
+}
+
+interface SideToolBarProps {
+    style: CSSProperties;
+    zoom: (power: number) => void;
+}
+
+function SideToolBar(props: SideToolBarProps): JSX.Element {
+    return (
+        <div style={props.style}>
+            <BasicSideToolBar
+                style={{
+                    height: '100vh',
+                }}
+                zoom={() => {}}
+            />
+        </div>
+    )
 }
