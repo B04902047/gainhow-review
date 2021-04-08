@@ -13,6 +13,7 @@ export interface ExportingPageProps {
   onSelect(): void;
   horizontalPadding?: number;
   height?: number;
+  shadowed?: boolean;
 }
 
 export function ExportingFrame(props: ExportingPageProps): JSX.Element {
@@ -39,7 +40,8 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
     height: frameHeightInPx,
     width: frameWidthInPx,
     border: (props.isSelected)? "solid 3px #1581ff": "solid 1px #707070",
-    backgroundColor: "white"
+    backgroundColor: "white",
+    boxShadow: "0 0 5px gray"
   };
 
   let positionXInMm: number = props.framedPage.positionX;

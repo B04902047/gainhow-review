@@ -19,7 +19,7 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
   let [[selectedModelIndex, selectedFrameIndex], selectFrame] = useState<[number, number]>([0, 0]);
   let selectedFramedPage: FramedPage | undefined
     = bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex);
-  if (!selectedFramedPage) throw new Error("debug: selected frame is undefined???å");
+  if (!selectedFramedPage) throw new Error("debug: selected frame is undefined???");
 
   let [importListIsHidden, setImportListIsHidden] = useState<boolean>(false);
   let middleAreaHeight: string = "calc(100vh - 182px)";

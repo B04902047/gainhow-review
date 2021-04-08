@@ -7,10 +7,17 @@ import ExportingFrame from "libs/ui/src/ExportList/exporting-frame/ExportingFram
 import React, { CSSProperties, useState } from "react";
 
 interface BookReviewerProps {
-    reviewItem: ReviewItem;
+    initialReviewItem: ReviewItem;
 }
 
 export function BookReviewer(props: BookReviewerProps): JSX.Element {
+    let [bufferedReviewItem, updateBufferedReviewItem] = useState<ReviewItem>(props.initialReviewItem);
+
+    let [selectedFrameIndex, selectFrame] = useState<number>(0);
+    let selectedFramedPage: FramedPage | undefined
+      = bufferedReviewItem.getFramedPage(0, selectedFrameIndex);
+    if (!selectedFramedPage) throw new Error("debug: selected frame is undefined???");
+
     let [importListIsHidden, setImportListIsHidden] = useState<boolean>(false);
     let importListStyle: CSSProperties = {
         display: "inline-block",
@@ -58,7 +65,7 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
         <div>
             <ImportList
               style={importListStyle}
-              files={props.reviewItem.status.uploadFileStatuses}
+              files={bufferedReviewItem.status.uploadFileStatuses}
               selectPage={() => {}}
               isSelected={() => false}
               isHidden={importListIsHidden}
@@ -66,11 +73,13 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
             />
             <ExportOverview
                 style={workSpaceStyle}
-                reviewItem={props.reviewItem}
+                reviewItem={bufferedReviewItem}
+                selectedFrameIndex={selectedFrameIndex}
+                onSelect={(frameIndex: number) => selectFrame(frameIndex)}
             />
             <div style={rightAreaStyle}>
                 <ModelInfo
-                    product={props.reviewItem.product}
+                    product={bufferedReviewItem.product}
                     isHidden={false}
                     onToggle={() => {}}
                     style={modelInfoStyle}
@@ -96,6 +105,8 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
 interface ExportOverviewProps {
     reviewItem: ReviewItem;
     style: CSSProperties;
+    selectedFrameIndex: number;
+    onSelect(frameIndex: number): void;
 }
 
 export function ExportOverview(props: ExportOverviewProps): JSX.Element {
@@ -108,28 +119,39 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     pagePairs.push({
         [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
             name: '封面',
-            framedPage: reviewModel.framedPages[0]
+            framedPage: reviewModel.framedPages[0],
+            isSelected: (0 == props.selectedFrameIndex),
+            onSelect: () => props.onSelect(0)
         }
     });
     pagePairs.push({
         [(pagingDirection == "RIGHT_TO_LEFT")? "left": "right"]: {
-            name: '封面裡'
+            name: '封面裡',
+            isSelected: false
         },
         [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
             name: '1',
-            framedPage: reviewModel.framedPages[1]
+            framedPage: reviewModel.framedPages[1],
+            isSelected: (1 == props.selectedFrameIndex),
+            onSelect: () => props.onSelect(1)
         }
     });
     for (let i=2; i<=book.numberOfPages; i+=2) {
         let first: NamedFramedPage = {
             name: String(i),
-            framedPage: reviewModel.framedPages[i]
+            framedPage: reviewModel.framedPages[i],
+            isSelected: (i == props.selectedFrameIndex),
+            onSelect: () => props.onSelect(i)
         }
         let second: NamedFramedPage = (i+1 <= book.numberOfPages)? {
             name: `${i+1}`,
-            framedPage: reviewModel.framedPages[i+1]
+            framedPage: reviewModel.framedPages[i+1],
+            isSelected: (i+1 == props.selectedFrameIndex),
+            onSelect: () => props.onSelect(i+1)
         } : {
-            name: '封底裡'
+            name: '封底裡',
+            isSelected: false,
+            onSelect: () => {}
         };
         pagePairs.push({
             left: (pagingDirection == "RIGHT_TO_LEFT")? first: second,
@@ -139,7 +161,9 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     if (book.numberOfPages % 2 !== 0) {
         pagePairs.push({
             [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
-                name: '封底裡'
+                name: '封底裡',
+                isSelected: false,
+                onSelect: () => {}
             }
         });
     }
@@ -148,6 +172,8 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
         [(pagingDirection == "RIGHT_TO_LEFT")? "left": "right"]: {
             name: '封底',
             // TODO: framedPage: reviewModel.framedPages[book.numberOfPages + 1]
+            isSelected: (book.numberOfPages + 1 == props.selectedFrameIndex),
+            onSelect: () => props.onSelect(book.numberOfPages + 1)
         }
     });
     
@@ -156,29 +182,47 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
         paddingRight: 10,
         height: 200
     };
+    let pagePairsStyle: CSSProperties = {
+        padding: 30,
+        paddingTop: 50,
+    };
     let style: CSSProperties = {
         backgroundColor: "#F7F7F7",
         ...props.style,
     }
     return (
         <div style={style}>
-           {pagePairs.map(pair => {
-                return (
-                    <PagePair
-                        style={pagePairStyle}
-                        key={pair.left?.name || pair.right?.name}
-                        pair={pair}
-                    />
-                );
-            })}
+            <div style={pagePairsStyle}>
+                {pagePairs.map(pair => {
+                    return (
+                        <PagePair
+                            style={pagePairStyle}
+                            key={pair.left?.name || pair.right?.name}
+                            pair={pair}
+                        />
+                    );
+                })}
+            </div>
         </div>
     );
+
+    function insertFramedPage(frameIndex: number, sourceFileNumber: number, pageNumberInSourceFile: number): void {
+
+    }
+    function deleteFrame(frameIndex: number): void {
+
+    }
+    function insertBlankFramedPage(frameIndex: number): void {
+
+    }
 }
 
 
 interface NamedFramedPage {
     name: string;
     framedPage?: FramedPage;
+    isSelected: boolean;
+    onSelect(): void;
 }
 
 interface NamedFramedPagePair {
@@ -200,56 +244,72 @@ function PagePair(props: PagePairProps): JSX.Element {
     let widthInMm: number = 210+6;
     let heightInMm: number = 297+6;
     let height: number = 160;
+    let leftStyle: CSSProperties = {
+        display: "inline-block",
+        verticalAlign: "top",
+        paddingRight: 1
+    };
+    let rightStyle: CSSProperties = {
+        display: "inline-block",
+        verticalAlign: "top",
+        paddingLeft: 1
+    }
     return (
         <div style={style}>
-            {(!props.pair.left)?
-                <EmptyFrame
-                    widthInMm={widthInMm}
-                    heightInMm={heightInMm}
-                    withBorder={false}
-                    isSelected={false}
+            <div style={leftStyle}>
+                {(!props.pair.left)?
+                    <EmptyFrame
+                        widthInMm={widthInMm}
+                        heightInMm={heightInMm}
+                        withBorder={false}
+                        isSelected={false}
+                        height={height}
+                    />
+                : (!props.pair.left.framedPage)?
+                    <EmptyFrame
+                        widthInMm={widthInMm}
+                        heightInMm={heightInMm}
+                        withBorder={true}
+                        isSelected={props.pair.left.isSelected}
+                        name={props.pair.left.name}
+                        height={height}
+                    />
+                : <ExportingFrame
+                    shadowed
+                    framedPage={props.pair.left.framedPage}
+                    isSelected={props.pair.left.isSelected}
+                    onSelect={() => props.pair.left.onSelect()}
+                    horizontalPadding={0}
                     height={height}
-                />
-            : (!props.pair.left.framedPage)?
-                <EmptyFrame
-                    widthInMm={widthInMm}
-                    heightInMm={heightInMm}
-                    withBorder={true}
-                    isSelected={false}
-                    name={props.pair.left.name}
+                />}
+            </div>
+            <div style={rightStyle}>
+                {(!props.pair.right)?
+                    <EmptyFrame
+                        widthInMm={widthInMm}
+                        heightInMm={heightInMm}
+                        withBorder={false}
+                        isSelected={false}
+                        height={height}
+                    />
+                : (!props.pair.right.framedPage)?
+                    <EmptyFrame
+                        widthInMm={widthInMm}
+                        heightInMm={heightInMm}
+                        height={height}
+                        withBorder={true}
+                        isSelected={props.pair.right.isSelected}
+                        name={props.pair.right.name}
+                    />
+                : <ExportingFrame
+                    shadowed
+                    framedPage={props.pair.right.framedPage}
+                    isSelected={props.pair.right.isSelected}
+                    onSelect={() => props.pair.right.onSelect()}
+                    horizontalPadding={0}
                     height={height}
-                />
-            : <ExportingFrame
-                framedPage={props.pair.left.framedPage}
-                isSelected={false}
-                onSelect={() => {}}
-                horizontalPadding={0}
-                height={height}
-            />}
-            {(!props.pair.right)?
-                <EmptyFrame
-                    widthInMm={widthInMm}
-                    heightInMm={heightInMm}
-                    withBorder={false}
-                    isSelected={false}
-                    height={height}
-                />
-            : (!props.pair.right.framedPage)?
-                <EmptyFrame
-                    widthInMm={widthInMm}
-                    heightInMm={heightInMm}
-                    height={height}
-                    withBorder={true}
-                    isSelected={false}
-                    name={props.pair.right.name}
-                />
-            : <ExportingFrame
-                framedPage={props.pair.right.framedPage}
-                isSelected={false}
-                onSelect={() => {}}
-                horizontalPadding={0}
-                height={height}
-            />}
+                />}
+            </div>
         </div>
     )
 }

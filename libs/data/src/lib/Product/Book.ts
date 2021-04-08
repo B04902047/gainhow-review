@@ -28,7 +28,7 @@ export default abstract class Book extends Product implements BookInterface {
         innerPagesPaper: Paper,
         coverCoating?: Coat,
         innerPageCoating?: Coat,
-        ) {
+    ) {
         super();
         this.coverPaper = coverPaper;
         this.innerPagesPaper = innerPagesPaper;
@@ -44,8 +44,8 @@ export default abstract class Book extends Product implements BookInterface {
     }
     productSubTypeChineseName = "書籍";
     public getInfo(): Array<string> {
-        let coverInfo: string = `封面：${this.coverPaper}、${(this.coverCoating)? this.coverCoating.chineseName:'不上膜'}`;
-        let innerPageInfo: string = `內頁：${this.innerPagesPaper}、${(this.innerPageCoating)? this.innerPageCoating.chineseName:'不上膜'}`
+        let coverInfo: string = `封面：${this.coverPaper.name}、${(this.coverCoating)? this.coverCoating.chineseName:'不上膜'}`;
+        let innerPageInfo: string = `內頁：${this.innerPagesPaper.name}、${(this.innerPageCoating)? this.innerPageCoating.chineseName:'不上膜'}`
        
         let pagingDirectionInChineseName: string ;
         switch (this.pagingDirection) {

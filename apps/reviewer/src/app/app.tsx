@@ -34,7 +34,7 @@ export const App = () => {
   }}
   onFrameSelect={()=>{}}
   />
-  return <BookReviewer reviewItem={bookReviewItem}/>;
+  return <BookReviewer initialReviewItem={bookReviewItem}/>;
 
   // return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
 };
