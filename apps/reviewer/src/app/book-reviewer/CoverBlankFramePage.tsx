@@ -5,6 +5,7 @@ interface CoverBlankFramePageProps {
     frameName: string,
     frameHeightInPx: number,
     frameWidthInPx: number,
+    horizontalPadding?: number,
     style?: CSSProperties
 }
 
@@ -16,7 +17,8 @@ export function CoverBlankFramePage (props: CoverBlankFramePageProps) {
 
     let style: CSSProperties = {
         ...props.style,
-        display: 'inline-block'
+        display: 'inline-block',
+        padding: (props.horizontalPadding)? props.horizontalPadding: 3
     };
     
   let cropStyle: CSSProperties = {

@@ -4,7 +4,7 @@ import ApiTester from './api-tester/ApiTester';
 import { reviewItem} from './testObjects1';
 import {reviewItem as BookReviewItem} from './testObjects2';
 
-import {ExportList} from './book-reviewer/ExportList'
+import { ExportList } from './book-reviewer/ExportList'
 import { reviewItem as singleSheetReviewItem } from './testObjects1';
 import { reviewItem as bookReviewItem } from './testObjects2';
 import WorkingStage from './working-stage/WorkingStage';

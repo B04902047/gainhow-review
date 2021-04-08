@@ -26,6 +26,7 @@ export interface ExportListProps {
       paddingBottom: 16,
       overflow: "auto",
       whiteSpace: "nowrap",
+      userSelect: 'none',
       ...props.style
     };
     let modelsStyle: CSSProperties = {
@@ -195,32 +196,9 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
     }
 
         pages = pageKeyArray.map((pageKey, index)=>{
-
             let framedPage: FramedPage = props.groupPage[pageKey];
-            
-            let frame: Frame = framedPage.getFrame();
-            
-                
-                let frameHeightInPx = props.height || 96;
-                let frameWidthInPx: number = frameHeightInPx;
-                let blankFramePageStyle: CSSProperties = {
-                    ...props.style,
-                    backgroundColor: 'white',
-                    border:'solid 1px #707070',
-                    height: frameHeightInPx,
-                    width: frameWidthInPx
-                }
             if(framedPage.frameName === '空白頁' ) {
-                let noneFramePageStyle: CSSProperties = {
-                    width:70
-                }
-                return (
-                    
-                    <div
-                        key={index}
-                        style={noneFramePageStyle}    
-                    />
-                )
+                return null
             }
             else if (framedPage.frameName === '封面裏' || framedPage.frameName === '封底裏' ) {
                 let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
@@ -229,10 +207,7 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
                 let ratio: number = frameWidthInMm / frameHeightInMm;
                 let frameHeightInPx = props.height || 96;
                 let frameWidthInPx: number = frameHeightInPx * ratio;
-                let coverBlankFramePageStyle: CSSProperties = {
-                    height:frameHeightInPx,
-
-                }
+                let coverBlankFramePageStyle: CSSProperties;
                 return (
                     <CoverBlankFramePage
                         key={index}
@@ -240,8 +215,8 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
                         style={coverBlankFramePageStyle}
                         frameHeightInPx={frameHeightInPx}
                         frameWidthInPx={frameWidthInPx}
+                        horizontalPadding={3}
                     />
-                    
                 )
             }
             else {
@@ -252,6 +227,7 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
                     isSelected={false}
                     onSelect={()=>{ props.onSelect(framedPage.frameName)}}
                     height={props.height}
+                    horizontalPadding={3}
                 />)
             }
         });

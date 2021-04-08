@@ -23,7 +23,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
   let ratio: number = frameWidthInMm / frameHeightInMm;
   let frameHeightInPx = props.height || 96;
   let frameWidthInPx: number = frameHeightInPx * ratio;
-  let horizontalPadding: number = 5;
+  let horizontalPadding: number = 9;
   if (props.horizontalPadding !== undefined) horizontalPadding = props.horizontalPadding;
   if (props.isSelected) horizontalPadding = horizontalPadding - 2;
   let style: CSSProperties = {
@@ -41,7 +41,6 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
     width: frameWidthInPx,
     border: (props.isSelected)? "solid 3px #1581ff": "solid 1px #707070",
     backgroundColor: "white",
-    boxShadow: "0 0 5px gray"
   };
 
   let positionXInMm: number = props.framedPage.positionX;
