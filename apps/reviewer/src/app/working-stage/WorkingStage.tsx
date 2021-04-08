@@ -82,7 +82,8 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
             let newFramedPage: FramedPage = new FramedPage(
               selectedFramedPage.frameId,
               selectedFramedPage.frameName,
-              selectedFramedPage.reviewModel
+              selectedFramedPage.reviewModel,
+              selectedFrameIndex
             );
             newFramedPage.sourceFileIndex = fileIndex;
             newFramedPage.sourcePageNumber = pageIndex;

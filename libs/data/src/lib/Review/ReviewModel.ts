@@ -83,7 +83,8 @@ export default class ReviewModel implements ReviewModelInterface {
             return new FramedPage(
                 frameId,
                 name,
-                this
+                this,
+                frameIndex
             );
         });
         function generateFrameIdFromModelId(modelId: string, frameNumber: number): string {

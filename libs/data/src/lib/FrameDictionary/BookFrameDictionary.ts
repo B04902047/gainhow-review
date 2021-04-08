@@ -42,7 +42,6 @@ export default abstract class BookFrameDictionary extends FrameDictionary {
             let newFrames = new Map<string, RectangleFrame>();
             // frames.set('cover', this.coverFrame);
             newFrames.set('封面', this.frontCoverFrame);
-            //this._frames = Object.assign(this._frames, this.innerPageFrames);
             this.innerPageFrames.forEach((frame, key) => {
                 newFrames.set(key, frame);
             });

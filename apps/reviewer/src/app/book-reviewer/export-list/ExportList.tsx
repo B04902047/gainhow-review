@@ -112,7 +112,8 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
     let blankFramePage = new FramedPage(
         '空白頁',
         '空白頁',
-        framedPages[0].reviewModel
+        framedPages[0].reviewModel,
+        -1
     );
     for( let framedPage of framedPages) {
         let inputGroup: HorizontalGroupFramedPage = {
@@ -132,7 +133,8 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
             let backCoverBlankPage = new FramedPage(
                 '封底裏',
                 '封底裏',
-                framedPage.reviewModel
+                framedPage.reviewModel,
+                -1
             );
             if ( isNeedUseOldGroup ) {
                 lastGroup['右頁'] = backCoverBlankPage;
@@ -148,7 +150,8 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
             let frontCoverBlankPage = new FramedPage(
                 '封面裏',
                 '封面裏',
-                framedPage.reviewModel
+                framedPage.reviewModel,
+                -1
             );
             inputGroup = {'左頁': frontCoverBlankPage, '右頁': framedPage};
         } else {
