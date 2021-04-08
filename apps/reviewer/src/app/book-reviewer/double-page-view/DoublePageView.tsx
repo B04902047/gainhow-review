@@ -13,6 +13,9 @@ import { ExportList } from '../export-list/ExportList';
   interface DoublePageViewProps {
     style: CSSProperties;
     reviewItem: ReviewItem;
+    selectedModelIndex: number;
+    selectedFrameIndex: number;
+    onSelect(modelIndex:number, frameIndex:number):void;
 }
 
 function DoublePageView(props: DoublePageViewProps): JSX.Element {
@@ -30,11 +33,11 @@ function DoublePageView(props: DoublePageViewProps): JSX.Element {
         <div style={props.style}>
             <DoublePageWorkSpace style={workSpaceStyle}/>
             <ExportList
-                selectedModelIndex={0}
-                selectedFrameIndex={'1'}
+                selectedModelIndex={props.selectedModelIndex}
+                selectedFrameIndex={props.selectedFrameIndex}
                 reviewItem={props.reviewItem}
                 style={exportListStyle}
-                onFrameSelect={() => {}}
+                onFrameSelect={props.onSelect}
             />
         </div>
     )

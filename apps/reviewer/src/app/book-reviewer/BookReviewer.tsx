@@ -91,6 +91,9 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
             /> : <DoublePageView
                 style={workSpaceStyle}
                 reviewItem={bufferedReviewItem}
+                selectedModelIndex={0}
+                selectedFrameIndex={selectedFrameIndex}
+                onSelect={(modelIndex,frameIndex)=>{selectFrame(frameIndex)}}
             />}
             <div style={rightAreaStyle}>
                 <ModelInfo

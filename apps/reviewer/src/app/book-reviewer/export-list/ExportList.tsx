@@ -9,10 +9,10 @@ import { CoverBlankFramePage } from '@gainhow-review/ui'
 
 export interface ExportListProps {
     selectedModelIndex: number;
-    selectedFrameIndex: string;
+    selectedFrameIndex: number;
     reviewItem: ReviewItem;
     style: CSSProperties;
-    onFrameSelect(modelIndex: number, frameName: string): void;
+    onFrameSelect(modelIndex: number, frameIndex: number): void;
   }
   
   export function ExportList(props: ExportListProps) {
@@ -42,8 +42,8 @@ export interface ExportListProps {
         display: "inline-block"
     }
 
-    function isSelected(modelIndex: number,frameName: string): boolean {
-        if (props.selectedModelIndex === modelIndex && props.selectedFrameIndex ===frameName ) {
+    function isSelected(modelIndex: number,frameIndex: number): boolean {
+        if (props.selectedModelIndex === modelIndex && props.selectedFrameIndex ===frameIndex ) {
           return true;
         }
         return false;
@@ -66,8 +66,8 @@ export interface ExportListProps {
                                     style={groupStyle}
                                     groupPage={groupPage}
                                     direct={product.pagingDirection}
-                                    onSelect={(frameName: string)=>{props.onFrameSelect(modelIndex,frameName)}}
-                                    isSelected={(frameName)=>{return isSelected(modelIndex, frameName)}}
+                                    onSelect={(frameIndex: number)=>{props.onFrameSelect(modelIndex,frameIndex)}}
+                                    isSelected={(frameIndex: number)=>{return isSelected(modelIndex, frameIndex)}}
                                 />
                             )
                         })
@@ -181,8 +181,8 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
   interface ExportingFrameProps {
     groupPage: GroupFramedPage,
     direct: BookPagingDirection,
-    onSelect(frameName: string): void; 
-    isSelected(frameName: string): boolean;
+    onSelect(frameIndex: number): void; 
+    isSelected(frameIndex: number): boolean;
     style?: CSSProperties;
     height?: number;
   }
@@ -236,8 +236,8 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
                     <ExportingFrame
                     key={index}
                     framedPage={framedPage}
-                    isSelected={props.isSelected(framedPage.frameName)}
-                    onSelect={()=>{ props.onSelect(framedPage.frameName)}}
+                    isSelected={props.isSelected(framedPage.frameIndexInModel)}
+                    onSelect={()=>{ props.onSelect(framedPage.frameIndexInModel)}}
                     height={props.height}
                     horizontalPadding={3}
                 />)
