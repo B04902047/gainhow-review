@@ -2,11 +2,10 @@ import React from 'react';
 import 'reflect-metadata';
 import ApiTester from './api-tester/ApiTester';
 
-import { ExportList } from './book-reviewer/ExportList'
 import { reviewItem as singleSheetReviewItem } from './testObjects1';
 import { reviewItem as bookReviewItem } from './testObjects2';
 import WorkingStage from './working-stage/WorkingStage';
-import { BookReviewer, ExportOverview } from './book-reviewer/BookReviewer';
+import { BookReviewer } from './book-reviewer/BookReviewer';
 
 // import * as webpack from 'webpack';
 // const plugins = []

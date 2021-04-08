@@ -5,7 +5,7 @@ import React, { CSSProperties } from 'react';
 import { BookPagingDirection } from 'libs/interfaces/src/lib/product';
 import e from 'express';
 import Book from 'libs/data/src/lib/Product/Book';
-import { CoverBlankFramePage } from './CoverBlankFramePage'
+import { CoverBlankFramePage } from '@gainhow-review/ui'
 
 export interface ExportListProps {
     selectedModelIndex: number;
