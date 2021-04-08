@@ -41,20 +41,40 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
     width: frameWidthInPx,
     border: (props.isSelected)? "solid 3px #1581ff": "solid 1px #707070",
     backgroundColor: "white",
-    boxShadow: "0 0 2px 2px Gainsboro"
+    // boxShadow: "0 0 2px 2px Gainsboro"
   };
 
   let positionXInMm: number = props.framedPage.positionX;
   let positionYInMm: number = props.framedPage.positionY;
   let rotationDegree: number = props.framedPage.rotationDegree;
   let sourcePage: UploadFilePageInfo = props.framedPage.getSourcePageInfo();
-  let imageStyle: CSSProperties = {
-    marginLeft: (frameWidthInPx / frameWidthInMm) * positionXInMm,
-    marginTop: (frameHeightInPx / frameHeightInMm) * positionYInMm,
-    width: (frameWidthInPx / frameWidthInMm) * sourcePage.widthInMm,
-    height: (frameWidthInPx / frameWidthInMm) * sourcePage.heightInMm,
-    transform: `rotate(${rotationDegree}deg)`
-  };
+  let imageStyle: CSSProperties;
+  let imageJSX: JSX.Element;
+  if (sourcePage) {
+    imageStyle= {
+      marginLeft: (frameWidthInPx / frameWidthInMm) * positionXInMm,
+      marginTop: (frameHeightInPx / frameHeightInMm) * positionYInMm,
+      width: (frameWidthInPx / frameWidthInMm) * sourcePage.widthInMm,
+      height: (frameWidthInPx / frameWidthInMm) * sourcePage.heightInMm,
+      transform: `rotate(${rotationDegree}deg)`
+    };
+    imageJSX = (
+      <img
+          src={sourcePage.jpegUrl}
+          style={imageStyle}
+      />
+    );
+  } else {
+    imageStyle = {
+      width: frameHeightInPx,
+      height: frameWidthInPx,
+      backgroundColor: 'white'
+    }
+    imageJSX = (
+      <div style={imageStyle}/>
+    );
+  }
+  
 
   let pageIndexStyle: CSSProperties = {
     width: frameWidthInPx + ((props.isSelected)? 6 : 0),
@@ -70,10 +90,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
       onClick={props.onSelect}
     >
       <div style={cropStyle}>
-        <img
-          src={sourcePage.jpegUrl}
-          style={imageStyle}
-        />
+        {imageJSX}
       </div>
       <div style={pageIndexStyle}>
         {props.framedPage.frameName}

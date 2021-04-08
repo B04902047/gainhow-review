@@ -1,6 +1,6 @@
 
 
-import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo, ReviewRegistrationInfo } from '@gainhow-review/data';
+import {SaddleStichedBook,SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo, ReviewRegistrationInfo } from '@gainhow-review/data';
 
 import testImage1 from '../assets/testImages/1.jpg'
 import testImage2 from '../assets/testImages/2.jpg'
@@ -23,6 +23,14 @@ const paper2 = new Paper(
     300,
     true
 );
+const SaddleStichedBook1 = new SaddleStichedBook(
+    210, 
+    297, 
+    20,
+    'RIGHT_TO_LEFT',
+    paper2,
+    paper2,
+);
 
 const singleSheet1 = new SingleSheet(
     90, 54, true, paper1
@@ -40,6 +48,9 @@ const fileId1: string = "test-file-id1";
 
 const reviewStatus1 = new ReviewStatus(
     3
+);
+const reviewStatus2 = new ReviewStatus(
+    1
 );
 let uploadFileStatus1 = new UploadFileStatus(
     reviewStatus1,
@@ -109,6 +120,13 @@ const reviewItem = new ReviewItem(
     singleSheet1
 );
 
+const BookreviewItem = new ReviewItem(
+    reviewStatus2,
+    'reviewIdwwqe',
+    SaddleStichedBook1
+);
+
+
 let frameIndices: string[] = reviewItem.frameDictionary.frameNames;
 const reviewModel1: ReviewModel = reviewItem.models[0];
 const page1_1: FramedPage = reviewModel1.framedPages[0];
@@ -143,5 +161,6 @@ export {
     page1_1,
     uploadFileStatus2,
     uploadFileStatuses1,
-    reviewRegistrationInfo
+    reviewRegistrationInfo,
+    BookreviewItem
 }
