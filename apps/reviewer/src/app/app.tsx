@@ -17,7 +17,7 @@ export const App = () => {
 
   // return <ApiTester/>;
   // return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
-  return <BookReviewer reviewItem={bookReviewItem}/>;
+  return <BookReviewer initialReviewItem={bookReviewItem}/>;
 };
 
 export default App;
