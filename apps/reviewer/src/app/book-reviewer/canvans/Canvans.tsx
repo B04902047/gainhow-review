@@ -63,15 +63,17 @@ export function Canvas(props: CanvansProps) {
   let frameHeightInPx: string = calcFrameheight();
   let imageScale: string  = `calc(${frameWidthtInPx} / ${frame.maxWidth})`;
 
+  const pageMargin: string = '20px';
+  const textHeight: string = `${20}px`
   function calcFrameWidth(): string {
     let calcWidthByMaxWidth = `calc(${props.style.width} * ${defaultRatio} / 2)`;
-    let calcWidthByMaxHeight = `calc(${frame.maxWidth} * ${props.style.height}  * ${defaultRatio} / ${frame.maxHeight} )`
+    let calcWidthByMaxHeight = `calc(${frame.maxWidth} * ${props.style.height}  * ${defaultRatio} / ${frame.maxHeight}  )`
     return `min(${calcWidthByMaxWidth} , ${calcWidthByMaxHeight})`
   }
 
   function calcFrameheight(): string {
     let calcHeightByMaxHeight = `calc(${props.style.height} * ${defaultRatio} )`;
-    let calcHeightByMaxWidth = `calc(${frame.maxHeight} * ${props.style.width} * ${defaultRatio}  / ${frame.maxWidth} )`
+    let calcHeightByMaxWidth = `calc(${frame.maxHeight} * ${props.style.width} * ${defaultRatio} / 2 / ${frame.maxWidth} )`
     return `min(${calcHeightByMaxHeight} , ${calcHeightByMaxWidth})` 
   }
 
@@ -106,8 +108,6 @@ export function Canvas(props: CanvansProps) {
   }
 
 
-  const pageMargin: string = '20px';
-  const textHeight: string = `${20}px`
   const twoPageWidth: string = `calc(${frameWidthtInPx} * 2 + ${pageMargin})`;
   const twoPageHeight: string = `calc(${frameHeightInPx} + ${textHeight})`;
 const twoPageAreaStyle: CSSProperties = {
