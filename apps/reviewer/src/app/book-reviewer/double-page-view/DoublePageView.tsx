@@ -1,5 +1,6 @@
 
 import { FramedPage, ReviewItem } from '@gainhow-review/data';
+import { SourceImageToolBar } from '@gainhow-review/ui';
 import { findGroupFramedPageWithFramedPage, GroupFramedPage,groupFramedPage } from '@gainhow-review/utils';
 import Book from 'libs/data/src/lib/Product/Book';
 import React, { CSSProperties, useEffect, useState } from 'react';
@@ -127,6 +128,7 @@ function DoublePageWorkSpace(props: DoublePageWorkSpaceProps): JSX.Element {
                     }
                 }}
             />
+            {(isLeftPageEditing || isRightPageEditing) && <SourceImageToolBar/>}
         </div>
     )
 }

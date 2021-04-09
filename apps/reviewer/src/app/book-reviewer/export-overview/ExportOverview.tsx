@@ -10,7 +10,6 @@ import { PlusOutlined, SwapOutlined, DeleteOutlined, EditOutlined } from '@ant-d
 
 
   import './ExportOverview.module.css';
-import { useDrag } from 'libs/ui/src/hooks';
   
 
 interface ExportOverviewProps {
@@ -208,19 +207,29 @@ type SingleFrameProps = {
     height: number;
 };
 
+function useImage(source: string): HTMLImageElement {
+  let image = new Image(0, 0);
+  image.src = source;
+  image.setAttribute('width', '1000');
+  let [statedImage, _] = useState<HTMLImageElement>(image);
+  return statedImage;
+}
+
 function SingleFrame(props: SingleFrameProps): JSX.Element {
     let [showToolBar, setShowToolBar] = useState<boolean>(false);
     let [isDroppable, setIsDroppable] = useState<boolean>(false);
 
-    let [[positionX, positionY], setPosition] = useState([0, 0]);
+    let dragImage = useImage(
+        (props.namedFramePage?.framedPage?.getSourcePageInfo()?.jpegUrl) || ""
+    );
 
     return (
         <div style={{
             display: "inline-block",
             verticalAlign: "top",
             position: "relative",
-            left: positionX,
-            top: positionY,
+            left: 0,
+            top: 0,
         }}
             onMouseEnter={() => setShowToolBar(true)}
             onMouseLeave={() => setShowToolBar(false)}
@@ -253,7 +262,7 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                 onClick={() => props.namedFramePage.onSelect()}
                 onDoubleClick={() => props.namedFramePage.onEdit()}
                 draggable
-                onDragStart={() => {}}
+                onDragStart={(event) => event.dataTransfer.setDragImage(dragImage, 0, 0)}
             >
                 <ExportingFrame
                     shadowed

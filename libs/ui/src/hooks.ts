@@ -4,8 +4,10 @@ export function useDrag(initialPositionX: number, initialPositionY: number): [nu
     let [isDragging, setIsDragging] = useState(false);
     let [[positionX, positionY], setPosition] = useState<[number, number]>([initialPositionX, initialPositionY]);
     useEffect(() => {
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
+        if (isDragging) {
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
         return () => {
             document.removeEventListener('mousemove', onMouseMove)
             document.removeEventListener('mouseup', onMouseUp)
@@ -13,14 +15,14 @@ export function useDrag(initialPositionX: number, initialPositionY: number): [nu
     })
     return [positionX, positionY, onDraggedObjectMouseDown];
     function onMouseMove(event: MouseEvent): void {
-        if (isDragging) {
-            let pageX = event.pageX;
-            let pageY = event.pageY;
-            setPosition([
-                pageX,
-                pageY
-            ])
-        }
+        const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+        const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+        let newPositionX = Math.max(Math.min(event.pageX, vw - 200), 20);
+        let newPositionY = Math.max(Math.min(event.pageY, vh - 200), 20);
+        setPosition([
+            newPositionX,
+            newPositionY
+        ])
     }
 
     function onMouseUp(event: MouseEvent): void {
