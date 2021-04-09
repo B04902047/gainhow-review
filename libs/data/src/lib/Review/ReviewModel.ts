@@ -6,7 +6,6 @@ import { ReviewModel as ReviewModelInterface} from "@gainhow-review/interfaces";
 import FramedPage from "./FramedPage";
 import ReviewItem from "./ReviewItem";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
-import { ConnectionOptions } from "tls";
 
 @Entity()
 export default class ReviewModel implements ReviewModelInterface {

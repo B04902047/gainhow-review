@@ -199,7 +199,7 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
     
     return (
         <div style={props.style}
-            onMouseOver={() => setShowToolBar(true)}
+            onMouseEnter={() => setShowToolBar(true)}
             onMouseLeave={() => setShowToolBar(false)}
         >
             <SingleFrameToolBar
@@ -237,7 +237,7 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                     onSelect={() => props.namedFramePage.onSelect()}
                     horizontalPadding={0}
                     height={props.height}
-                    onMouseOver={() => setIsDraggable(true)}
+                    onMouseEnter={() => setIsDraggable(true)}
                 />
                 {isDraggable && <div 
                     style={{
@@ -247,6 +247,7 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                         cursor: 'move'
                     }}
                     onClick={() => props.namedFramePage.onSelect()}
+                    onDoubleClick={() => props.namedFramePage.onEdit()}
                 >
                     <ShadowingFrame
                         widthInMm={props.widthInMm}

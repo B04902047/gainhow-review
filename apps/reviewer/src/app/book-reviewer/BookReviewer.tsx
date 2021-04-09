@@ -29,7 +29,7 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
     let rightAreaStyle: CSSProperties = {
         display: "inline-block",
         verticalAlign: "top",
-    }
+    };
     let modelInfoStyle: CSSProperties = {
         width: 300,
         height: 'calc(100vh - 182px)'
