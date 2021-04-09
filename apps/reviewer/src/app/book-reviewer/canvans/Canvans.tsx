@@ -19,7 +19,7 @@ export interface CanvansProps {
 
 
 export function Canvas(props: CanvansProps) {
-  const defaultRatio: number = 0.6;
+  const defaultRatio: number = 0.8;
   const myRef = useRef(null);
   const [preViewPercentaeg, setPreViewPercentae] = useState(props.viewPercentage);
   const scrollToMiddle = () => {
