@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import FramePageComponent from './FramePageComponent';
+import FrameLine from './FrameLine';
 
-describe('FramePageComponent', () => {
+describe('FrameLine', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(< FramePageComponent />);
+    const { baseElement } = render(< div/>);
     expect(baseElement).toBeTruthy();
   });
 });

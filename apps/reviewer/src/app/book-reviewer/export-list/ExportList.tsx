@@ -7,6 +7,7 @@ import e from 'express';
 import Book from 'libs/data/src/lib/Product/Book';
 import { CoverBlankFramePage } from '@gainhow-review/ui'
 
+import { GroupFramedPage,groupFramedPage } from '@gainhow-review/utils'
 export interface ExportListProps {
     selectedModelIndex: number;
     selectedFrameIndex: number;
@@ -82,101 +83,6 @@ export interface ExportListProps {
   };
 
 
-export type GroupFramedPage  =  HorizontalGroupFramedPage | StraightGroupFramedPage ;
-  type HorizontalGroupFramedPage = {
-    '左頁' : FramedPage,
-    '右頁' : FramedPage,
-  }
-  type StraightGroupFramedPage = {
-    '上頁' : FramedPage,
-    '下頁' : FramedPage,
-  }
-export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDirection) : Array<GroupFramedPage> {
-    let groupArray: Array<GroupFramedPage> = [];
-
-    if ( direct === 'RIGHT_TO_LEFT' ) {
-        groupArray = rightToLeftGroupFramedPage(framedPages);
-    }
-    else if ( direct === 'LEFT_TO_RIGHT' ) {
-        groupArray = leftToRightGroupFramedPage(framedPages);
-    }
-    else {
-        groupArray = bottomToTopGroupFramedPage(framedPages);
-    }
-    return groupArray;
-    
-  }
-
-  function bottomToTopGroupFramedPage (framedPages: FramedPage[]): Array<GroupFramedPage> {
-    return [];
-  }
-
-  function leftToRightGroupFramedPage (framedPages: FramedPage[]): Array<GroupFramedPage> {
-    return [];
-  }
-
-  function rightToLeftGroupFramedPage (framedPages: FramedPage[]): Array<HorizontalGroupFramedPage> {
-    let groupArray: Array<HorizontalGroupFramedPage> = [];
-    let blankFramePage = new FramedPage(
-        '空白頁',
-        '空白頁',
-        framedPages[0].reviewModel,
-        -1
-    );
-    for( let framedPage of framedPages) {
-        let inputGroup: HorizontalGroupFramedPage = {
-            '左頁': blankFramePage,
-            '右頁': blankFramePage
-        };
-        let lastGroupIndex: number = (groupArray.length === 0)? 0 : groupArray.length-1;
-        let lastGroup: GroupFramedPage = groupArray[lastGroupIndex];
-        let isNeedUseOldGroup: boolean = false;
-        if (lastGroup) {
-            if(lastGroup['右頁'].frameName === '空白頁') isNeedUseOldGroup = true;
-        }
-        if (framedPage.frameName === '封面') { 
-            inputGroup['右頁'] = framedPage;
-        } else if (framedPage.frameName === '封底') {
-            // TODO: 加上封底裏
-            let backCoverBlankPage = new FramedPage(
-                '封底裏',
-                '封底裏',
-                framedPage.reviewModel,
-                -1
-            );
-            if ( isNeedUseOldGroup ) {
-                lastGroup['右頁'] = backCoverBlankPage;
-            } else {
-                let backFramePageGroup = {
-                    '左頁': blankFramePage,
-                    '右頁': backCoverBlankPage
-                }
-                groupArray.push(backFramePageGroup);
-            }
-            inputGroup['左頁'] =  framedPage
-        } else if (framedPage.frameName === '1' ) {
-            let frontCoverBlankPage = new FramedPage(
-                '封面裏',
-                '封面裏',
-                framedPage.reviewModel,
-                -1
-            );
-            inputGroup = {'左頁': frontCoverBlankPage, '右頁': framedPage};
-        } else {
-            
-            if (isNeedUseOldGroup) {
-                inputGroup = groupArray.pop();
-                inputGroup['右頁'] = framedPage;
-            }
-            else {
-                inputGroup['左頁'] = framedPage;
-            }
-        }
-        groupArray.push(inputGroup);
-    }
-    return groupArray;
-  }
-
 
   interface ExportingFrameProps {
     groupPage: GroupFramedPage,
@@ -187,8 +93,6 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
     height?: number;
   }
   function ExportingGroupFrame (props: ExportingFrameProps) :JSX.Element {
-    
-    
     let style: CSSProperties;
     let pageKeyArray: Array<string>; 
     let pages:JSX.Element[];
