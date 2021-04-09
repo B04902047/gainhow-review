@@ -10,3 +10,5 @@ export * from './lib/ui';
 
 export * from './ExportList/exporting-model/ExportingModel';
 export * from './lib/buttons';
+
+export * from './SourceImageToolBar/SourceImageToolBar';

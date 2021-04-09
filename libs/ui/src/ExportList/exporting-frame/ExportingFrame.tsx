@@ -11,8 +11,8 @@ export interface ExportingPageProps {
   framedPage: FramedPage;
   isSelected: boolean;
   onSelect(): void;
-  onMouseEnter?(): void;
-  onMouseLeave?(): void;
+  onDragEnter?(): void;
+  onDragLeave?(): void;
   horizontalPadding?: number;
   height?: number;
   shadowed?: boolean;
@@ -92,8 +92,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
       onClick={props.onSelect}
     >
       <div style={cropStyle}
-        onMouseEnter={props.onMouseEnter}
-        onMouseLeave={props.onMouseLeave}
+        onDragEnter={props.onDragEnter}
       >
         {imageJSX}
       </div>

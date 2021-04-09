@@ -3,21 +3,24 @@ import { FramedPage, ReviewItem, ReviewModel } from '@gainhow-review/data';
 import { ExportingFrame } from '@gainhow-review/ui';
 import BookFrameDictionary from 'libs/data/src/lib/FrameDictionary/BookFrameDictionary';
 import { Book } from 'libs/interfaces/src/lib/product';
-import React, { CSSProperties, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { PlusOutlined, SwapOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 
 
 
   import './ExportOverview.module.css';
+import { useDrag } from 'libs/ui/src/hooks';
   
 
 interface ExportOverviewProps {
     reviewItem: ReviewItem;
     style: CSSProperties;
     selectedFrameIndex: number;
-    onSelect(frameIndex: number): void;
-    onEdit(frameIndex: number): void;
+    onFrameSelect(frameIndex: number): void;
+    onFrameEdit(frameIndex: number): void;
+    onSwapFrames(frameIndex1: number, frameIndex2: number): void;
+    onFrameReplaceSourceFile(frameIndex: number, sourceFileNumber: number, pageNumberInSourceFile: number): void;
 }
 
 export function ExportOverview(props: ExportOverviewProps): JSX.Element {
@@ -44,8 +47,7 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
         let first: NamedFramedPage = getNamedFramedPage(i)
         let second: NamedFramedPage = (i+1 <= book.numberOfPages)? getNamedFramedPage(i+1) : {
             name: '（封底裡）',
-            isSelected: false,
-            onSelect: () => {}
+            isSelected: false
         };
         pagePairs.push({
             left: (pagingDirection == "RIGHT_TO_LEFT")? first: second,
@@ -56,8 +58,7 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
         pagePairs.push({
             [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
                 name: '（封底裡）',
-                isSelected: false,
-                onSelect: () => {}
+                isSelected: false
             }
         });
     }
@@ -111,13 +112,17 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     function getNamedFramedPage(frameIndex: number): NamedFramedPage {
         return {
             name: String(frameIndex),
+            frameIndex,
             framedPage: reviewModel.framedPages[frameIndex],
             isSelected: (frameIndex == props.selectedFrameIndex),
-            onSelect: () => props.onSelect(frameIndex),
-            onEdit: () => props.onEdit(frameIndex),
+            onSelect: () => props.onFrameSelect(frameIndex),
+            onEdit: () => props.onFrameEdit(frameIndex),
             onInsert: () => {},
             onDelete: () => {},
-            onSwap: () => {}
+            onReplaceSourcePage: () => {},
+            onDrop: () => {
+                props.onSwapFrames(frameIndex, props.selectedFrameIndex);
+            }
         }
     }
 }
@@ -128,12 +133,14 @@ export default ExportOverview;
 interface NamedFramedPage {
     name: string;
     framedPage?: FramedPage;
+    frameIndex?: number;
     isSelected: boolean;
-    onSelect(): void;
+    onSelect?(): void;
     onEdit?(): void;
     onInsert?(): void;
     onDelete?(): void;
-    onSwap?(): void;
+    onReplaceSourcePage?(): void;
+    onDrop?(): void;
 }
 
 export interface NamedFramedPagePair {
@@ -155,27 +162,16 @@ export function PagePair(props: PagePairProps): JSX.Element {
     let widthInMm: number = 210+6;
     let heightInMm: number = 297+6;
     let height: number = 160;
-    let leftStyle: CSSProperties = {
-        display: "inline-block",
-        verticalAlign: "top",
-        paddingRight: 1
-    };
-    let rightStyle: CSSProperties = {
-        display: "inline-block",
-        verticalAlign: "top",
-        paddingLeft: 1
-    };
     return (
         <div style={style}>
             <SingleFrame
-                style={leftStyle}
                 namedFramePage={props.pair.left}
                 widthInMm={widthInMm}
                 heightInMm={heightInMm}
                 height={height}
             />
+            <MiddleLine/>
             <SingleFrame
-                style={rightStyle}
                 namedFramePage={props.pair.right}
                 widthInMm={widthInMm}
                 heightInMm={heightInMm}
@@ -185,9 +181,28 @@ export function PagePair(props: PagePairProps): JSX.Element {
     )
 }
 
+function MiddleLine(props: {}): JSX.Element {
+    let [isDraggedOver, setIsDraggedOver] = useState(false);
+
+    return (
+        <div
+            style={{
+                display: "inline-block",
+                width: 5,
+                marginTop: 20,
+                height: 187,
+                backgroundColor: (isDraggedOver)? '#4ba3ff77' : 'inherit',
+                borderRadius: '1px',
+                boxShadow: (isDraggedOver)? '0 0 1px 1px #4ba3ff77' : 'none'
+            }}
+            onDragEnter={() => setIsDraggedOver(true)}
+            onDragLeave={() => setIsDraggedOver(false)}
+        />
+    );
+}
+
 type SingleFrameProps = {
     namedFramePage?: NamedFramedPage;
-    style: CSSProperties;
     widthInMm: number;
     heightInMm: number;
     height: number;
@@ -195,19 +210,28 @@ type SingleFrameProps = {
 
 function SingleFrame(props: SingleFrameProps): JSX.Element {
     let [showToolBar, setShowToolBar] = useState<boolean>(false);
-    let [isDraggable, setIsDraggable] = useState<boolean>(false);
-    
+    let [isDroppable, setIsDroppable] = useState<boolean>(false);
+
+    let [[positionX, positionY], setPosition] = useState([0, 0]);
+
     return (
-        <div style={props.style}
+        <div style={{
+            display: "inline-block",
+            verticalAlign: "top",
+            position: "relative",
+            left: positionX,
+            top: positionY,
+        }}
             onMouseEnter={() => setShowToolBar(true)}
             onMouseLeave={() => setShowToolBar(false)}
+            title="拖曳以調換頁序"
         >
             <SingleFrameToolBar
                 isHidden={!showToolBar || (props.namedFramePage?.framedPage === undefined)}
                 onEdit={props.namedFramePage?.onEdit}
                 onInsert={props.namedFramePage?.onInsert}
                 onDelete={props.namedFramePage?.onDelete}
-                onSwap={props.namedFramePage?.onSwap}
+                onReplaceSourcePage={props.namedFramePage?.onReplaceSourcePage}
             />
             {(!props.namedFramePage)?
                 <NoFrame
@@ -225,10 +249,11 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                     height={props.height}
                 />
             : 
-            <div style={{
-                position: 'relative'
-            }}
-                onMouseLeave={() => setIsDraggable(false)}
+            <div style={{ position: 'relative', cursor: 'move' }}
+                onClick={() => props.namedFramePage.onSelect()}
+                onDoubleClick={() => props.namedFramePage.onEdit()}
+                draggable
+                onDragStart={() => {}}
             >
                 <ExportingFrame
                     shadowed
@@ -237,17 +262,15 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                     onSelect={() => props.namedFramePage.onSelect()}
                     horizontalPadding={0}
                     height={props.height}
-                    onMouseEnter={() => setIsDraggable(true)}
+                    onDragEnter={() => setIsDroppable(true)}
                 />
-                {isDraggable && <div 
+                {isDroppable && <div 
                     style={{
                         position: "absolute",
                         top: (props.namedFramePage.isSelected)? -1: 1,
-                        left: (props.namedFramePage.isSelected)? 3: 1,
-                        cursor: 'move'
+                        left: (props.namedFramePage.isSelected)? 3: 1
                     }}
-                    onClick={() => props.namedFramePage.onSelect()}
-                    onDoubleClick={() => props.namedFramePage.onEdit()}
+                    onDragLeave={() => setIsDroppable(false)}
                 >
                     <ShadowingFrame
                         widthInMm={props.widthInMm}
@@ -259,7 +282,9 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
             </div>}
         </div>
         
-    )
+    );
+
+    
 }
 
 interface BlankFrameProps {
@@ -353,52 +378,57 @@ interface SingleFrameToolBarProps {
   onEdit(): void;
   onInsert(): void;
   onDelete(): void;
-  onSwap(): void;
+  onReplaceSourcePage(): void;
 }
 
 function SingleFrameToolBar(props: SingleFrameToolBarProps): JSX.Element {
-  let style: CSSProperties = {
-      height: 20,
-      fontSize: 18,
-      color: "#777777"
-  }
-  return (
-      <div style={style}>
-          {
-              !props.isHidden && (<>
-                  &thinsp;
-                  <SingleFrameToolBarButton
-                      onClick={props.onInsert}
-                  >
-                      <PlusOutlined/>
-                  </SingleFrameToolBarButton>
-                  &thinsp;
-                  <SingleFrameToolBarButton
-                      onClick={props.onSwap}
-                  >
-                      <SwapOutlined/>
-                  </SingleFrameToolBarButton>
-                  &thinsp;
-                  <SingleFrameToolBarButton
-                      onClick={props.onEdit}
-                  >
-                      <EditOutlined/>
-                  </SingleFrameToolBarButton>
-                  &thinsp;
-                  <SingleFrameToolBarButton
-                      onClick={props.onDelete}
-                  >
-                      <DeleteOutlined/>
-                  </SingleFrameToolBarButton>
-              </>)
-          }
-      </div>
-  );
+    let style: CSSProperties = {
+        height: 20,
+        fontSize: 18,
+        color: "#777777"
+    }
+    return (
+        <div style={style}>
+            {
+                !props.isHidden && (<>
+                    &thinsp;
+                    <SingleFrameToolBarButton
+                        onClick={props.onInsert}
+                        title="往左新增頁面"
+                    >
+                        <PlusOutlined/>
+                    </SingleFrameToolBarButton>
+                    &thinsp;
+                    <SingleFrameToolBarButton
+                        onClick={props.onReplaceSourcePage}
+                        title="置入頁面"
+                    >
+                        <SwapOutlined/>
+                    </SingleFrameToolBarButton>
+                    &thinsp;
+                    <SingleFrameToolBarButton
+                        onClick={props.onEdit}
+                        title="編輯頁面"
+                    >
+                        <EditOutlined/>
+                    </SingleFrameToolBarButton>
+                    &thinsp;
+                    <SingleFrameToolBarButton
+                        onClick={props.onDelete}
+                        title="刪除頁面"
+                    >
+                        <DeleteOutlined/>
+                    </SingleFrameToolBarButton>
+                </>)
+            }
+        </div>
+    );
 }
 
 interface SingleFrameToolBarButtonProps {
   children: JSX.Element;
   onClick(): void;
+  title?: string
 }
 
 function SingleFrameToolBarButton(props: SingleFrameToolBarButtonProps): JSX.Element {
@@ -414,6 +444,7 @@ function SingleFrameToolBarButton(props: SingleFrameToolBarButtonProps): JSX.Ele
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onClick={props.onClick}
+          title={props.title}
       >
           {props.children}
       </div>

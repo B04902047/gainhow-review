@@ -6,6 +6,7 @@ import { reviewItem as singleSheetReviewItem } from './testObjects1';
 import { reviewItem as bookReviewItem } from './testObjects2';
 import WorkingStage from './working-stage/WorkingStage';
 import { BookReviewer } from './book-reviewer/BookReviewer';
+import { SourceImageToolBar } from '@gainhow-review/ui';
 
 // import * as webpack from 'webpack';
 // const plugins = []
@@ -16,7 +17,12 @@ import { BookReviewer } from './book-reviewer/BookReviewer';
 
 export const App = () => {
   // return <ApiTester/>;
-  return <BookReviewer initialReviewItem={bookReviewItem}/>;
+  return (
+    <div>
+      <BookReviewer initialReviewItem={bookReviewItem}/>
+      <SourceImageToolBar/>
+    </div>
+  );
 
   // return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
 };
