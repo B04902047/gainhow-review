@@ -86,10 +86,10 @@ function DoublePageWorkSpace(props: DoublePageWorkSpaceProps): JSX.Element {
         setIsLeftPageEditing(true);
     }
     useEffect(()=>{
-        if(props.selectedFrameIndex === props.leftFramePage.frameIndexInModel && (isRightPageEditing||isLeftPageEditing)) {
+        if(props.selectedFrameIndex === props.leftFramePage.frameIndexInModel && isRightPageEditing) {
             setLeftIsEditing();
         }
-        if(props.selectedFrameIndex === props.rightFramePage.frameIndexInModel && (isRightPageEditing||isLeftPageEditing)) {
+        if(props.selectedFrameIndex === props.rightFramePage.frameIndexInModel && isLeftPageEditing) {
             setRightIsEditing();
         }
     },[props.selectedFrameIndex]);
