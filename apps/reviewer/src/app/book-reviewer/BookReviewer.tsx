@@ -86,8 +86,8 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
                 style={workSpaceStyle}
                 reviewItem={bufferedReviewItem}
                 selectedFrameIndex={selectedFrameIndex}
-                onSelect={(frameIndex: number) => selectFrame(frameIndex)}
-                onEdit={(frameIndex) => onEdit(frameIndex)}
+                onFrameSelect={(frameIndex: number) => selectFrame(frameIndex)}
+                onFrameEdit={(frameIndex) => onEdit(frameIndex)}
             /> : <DoublePageView
                 style={workSpaceStyle}
                 reviewItem={bufferedReviewItem}

@@ -12,3 +12,5 @@ export * from './Canvas/frame-page-component/FramePageComponent';
 export * from './Canvas/frame-line/FrameLine';
 export * from './ExportList/exporting-model/ExportingModel';
 export * from './lib/buttons';
+
+export * from './SourceImageToolBar/SourceImageToolBar';
