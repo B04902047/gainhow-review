@@ -1,7 +1,5 @@
 
 import React, { Children, CSSProperties, useEffect } from 'react';
-import { Frame, Line } from '@gainhow-review/data'  
-import {Layer, Line as KonvaLine, Stage, Group} from 'react-konva';
 import './FrameLine.module.css';
   
 /* eslint-disable-next-line */

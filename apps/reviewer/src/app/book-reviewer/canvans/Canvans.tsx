@@ -5,7 +5,8 @@ import { FramedPage, Frame, UploadFilePageInfo } from '@gainhow-review/data'
 import { FramePageComponent } from '@gainhow-review/ui';
 /* eslint-disable-next-line */
 export interface CanvansProps {
-  framePage: FramedPage;
+  leftFramePage: FramedPage;
+  rightFramePage: FramedPage;
   style: CSSProperties;
   viewPercentage: number;
   isEditing: boolean;
@@ -53,15 +54,14 @@ export function Canvas(props: CanvansProps) {
   }
 
   useEffect(scrollToMiddle,[props.viewPercentage])
-  let frame: Frame = props.framePage.getFrame();
-
+  let frame: Frame = props.leftFramePage.getFrame();
+  if(!frame) { frame = props.rightFramePage.getFrame();}
   let frameWidthtInPx: string = calcFrameWidth();
   let frameHeightInPx: string = calcFrameheight();
-
   let imageScale: string  = `calc(${frameWidthtInPx} / ${frame.maxWidth})`;
 
   function calcFrameWidth(): string {
-    let calcWidthByMaxWidth = `calc(${props.style.width} * ${defaultRatio})`;
+    let calcWidthByMaxWidth = `calc(${props.style.width} * ${defaultRatio} / 2)`;
     let calcWidthByMaxHeight = `calc(${frame.maxWidth} * ${props.style.height}  * ${defaultRatio} / ${frame.maxHeight} )`
     return `min(${calcWidthByMaxWidth} , ${calcWidthByMaxHeight})`
   }
@@ -71,7 +71,8 @@ export function Canvas(props: CanvansProps) {
     let calcHeightByMaxWidth = `calc(${frame.maxHeight} * ${props.style.width} * ${defaultRatio}  / ${frame.maxWidth} )`
     return `min(${calcHeightByMaxHeight} , ${calcHeightByMaxWidth})` 
   }
-  
+
+
   const style: CSSProperties = {
     userSelect: 'none',
     position: 'relative',
@@ -85,25 +86,13 @@ export function Canvas(props: CanvansProps) {
     transformOrigin:'0 0',
     width: `calc(${props.style.width})`,
     height: `calc(${props.style.height})`,
-    top: `max(calc(50% - calc(calc(${props.style.height}) * ${props.viewPercentage/100}) / 2), 0px)`,
-    left: `max(calc(50% - calc(calc(${props.style.width}) * ${props.viewPercentage/100}) /2 ), 0px)`,
+    top: `max(calc(50% - calc(calc(${props.style.height})  * ${props.viewPercentage/100}) /2 ), 0px)`,
+    left: `max(calc(50% - calc(calc(${props.style.width})  * ${props.viewPercentage/100}) /2 ), 0px)`,
     position: 'absolute',
     overflow: (props.isEditing)? 'visible': 'hidden'
   };
 
-
-  const framePageComponentStyle: CSSProperties = {
-    width: `calc(${frameWidthtInPx})`,
-    height: `calc(${frameHeightInPx} )`,
-    top: `calc(50% - calc(${frameHeightInPx} / 2))`,
-    left: `calc(50% - calc(${frameWidthtInPx} / 2))`,
-    position: 'absolute',
-    zIndex: 100,
-    background: 'white',
-  };
-
-
-  const editingFrameNameMargin: number = 35;
+  const editingFrameNameMargin: number = 5;
   const editingFrameNameStyle: CSSProperties = {
     userSelect: 'none',
     position: 'absolute',
@@ -113,23 +102,79 @@ export function Canvas(props: CanvansProps) {
     fontSize: '20px'
   }
 
+
+  const pageMargin: string = '20px';
+  const textHeight: string = `${20}px`
+  const twoPageWidth: string = `calc(${frameWidthtInPx} * 2 + ${pageMargin})`;
+  const twoPageHeight: string = `calc(${frameHeightInPx} + ${textHeight})`;
+const twoPageAreaStyle: CSSProperties = {
+  position: 'relative',
+  width:twoPageWidth,
+  height:twoPageHeight,
+  top: `calc(calc(100% - ${twoPageHeight}) / 2)`,
+  left: `calc(calc(100% - ${twoPageWidth}) / 2)`
+}
+
+  const leftPageStyle: CSSProperties = {
+    position: 'relative',
+    float:'left',
+    textAlign: 'left',
+    width: `50%`,
+    height: '100%'
+  }
+  const rightPageStyle: CSSProperties = {
+    position: 'relative',
+    float:'right',
+    textAlign: 'right',
+    width: `50%`,
+    height: '100%'
+  }
+
+  const framePageComponentStyle: CSSProperties = {
+    width: `calc(${frameWidthtInPx})`,
+    height: `calc(${frameHeightInPx} )`,
+    position: 'absolute',
+    zIndex: 100,
+  };
+
  
   return (
     <div style={style} ref={myRef} >
         <div 
           style={CanvansStyle} 
           onClick={()=>{if(props.isEditing) props.setIsEditing(false)}}>
-          <div style={framePageComponentStyle}>
-          <FramePageComponent
-              mmToPxScale={imageScale}
-              framePage={props.framePage}
-              isEditing={props.isEditing}
-              onImageClick={(e)=>{
-                 props.setIsEditing(true);e.stopPropagation();}
-              }
-            />
+            <div style={twoPageAreaStyle}>
+              <div style={leftPageStyle}>
+                <div style={framePageComponentStyle}>
+                <FramePageComponent
+                    mmToPxScale={imageScale}
+                    framePage={props.leftFramePage}
+                    isEditing={props.isEditing}
+                    onImageClick={(e)=>{
+                      props.setIsEditing(true);e.stopPropagation();}
+                    }
+                  />
+                </div>
+                { (props.leftFramePage.frameName !== '空白頁') &&
+                  <div style={editingFrameNameStyle}>{props.leftFramePage.frameName}</div>
+                }
+            </div>
+            <div style={rightPageStyle}>
+                <div style={framePageComponentStyle}>
+                <FramePageComponent
+                    mmToPxScale={imageScale}
+                    framePage={props.rightFramePage}
+                    isEditing={props.isEditing}
+                    onImageClick={(e)=>{
+                      props.setIsEditing(true);e.stopPropagation();}
+                    }
+                  />
+                </div>
+                { (props.rightFramePage.frameName !== '空白頁') &&
+                  <div style={editingFrameNameStyle}>{props.rightFramePage.frameName}</div>
+                }
+            </div>
           </div>
-          <div style={editingFrameNameStyle}>{props.framePage.frameName}</div>
         </div>
     </div>
   );

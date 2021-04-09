@@ -16,9 +16,10 @@ import { BookReviewer } from './book-reviewer/BookReviewer';
 
 export const App = () => {
   // return <ApiTester/>;
+  // return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
+
   return <BookReviewer initialReviewItem={bookReviewItem}/>;
 
-  // return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
 };
 
 export default App;

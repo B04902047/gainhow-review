@@ -92,7 +92,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
       onClick={props.onSelect}
     >
       <div style={cropStyle}
-        onMouseOver={() => props.onMouseOver()}
+        onMouseOver={props.onMouseOver}
         onMouseLeave={props.onMouseLeave}
       >
         {imageJSX}

@@ -1,11 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import FrameLine from './FrameLine';
+import Canvans from './Canvans';
 
-describe('FrameLine', () => {
+describe('Canvans', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(< FrameLine />);
+    const { baseElement } = render(< Canvans />);
     expect(baseElement).toBeTruthy();
   });
 });

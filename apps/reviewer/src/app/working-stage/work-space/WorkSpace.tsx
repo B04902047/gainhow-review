@@ -1,6 +1,6 @@
 
 import { FramedPage } from '@gainhow-review/data';
-import { Canvans } from '../canvans/Canvans';
+import { Canvas } from '../canvans/Canvans';
 import React, { CSSProperties, useState } from 'react';
 import SideToolBar from '../side-tool-bar/SideToolBar';
 
@@ -43,7 +43,7 @@ export function WorkSpace(props: WorkSpaceProps) {
         style={leftToolBarStyle}
         zoom={(ratio) => setViewPercentage(Math.pow(initialViewPercentage, ratio))}
       />
-      <Canvans
+      <Canvas
         style={canvasStyle}
         framePage={props.framedPage}
         viewPercentage={viewPercentage}
