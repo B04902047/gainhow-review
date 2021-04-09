@@ -9,8 +9,11 @@ export interface CanvansProps {
   rightFramePage: FramedPage;
   style: CSSProperties;
   viewPercentage: number;
-  isEditing: boolean;
-  setIsEditing(isEditing: boolean): void;
+  isLeftPageEditing: boolean;
+  isRightPageEditing: boolean;
+
+  setIsLeftPageEditing(isEditing: boolean): void;
+  setIsRightPageEditing(isEditing: boolean): void;
 }
 
 
@@ -89,7 +92,7 @@ export function Canvas(props: CanvansProps) {
     top: `max(calc(50% - calc(calc(${props.style.height})  * ${props.viewPercentage/100}) /2 ), 0px)`,
     left: `max(calc(50% - calc(calc(${props.style.width})  * ${props.viewPercentage/100}) /2 ), 0px)`,
     position: 'absolute',
-    overflow: (props.isEditing)? 'visible': 'hidden'
+    overflow: (props.isLeftPageEditing)? 'visible': 'hidden'
   };
 
   const editingFrameNameMargin: number = 5;
@@ -142,16 +145,20 @@ const twoPageAreaStyle: CSSProperties = {
     <div style={style} ref={myRef} >
         <div 
           style={CanvansStyle} 
-          onClick={()=>{if(props.isEditing) props.setIsEditing(false)}}>
+          onClick={()=>{
+              if(props.isLeftPageEditing) props.setIsLeftPageEditing(false);
+              if(props.isRightPageEditing) props.setIsRightPageEditing(false);
+          }}>
             <div style={twoPageAreaStyle}>
               <div style={leftPageStyle}>
                 <div style={framePageComponentStyle}>
                 <FramePageComponent
                     mmToPxScale={imageScale}
                     framePage={props.leftFramePage}
-                    isEditing={props.isEditing}
+                    isEditing={props.isLeftPageEditing}
                     onImageClick={(e)=>{
-                      props.setIsEditing(true);e.stopPropagation();}
+                      props.setIsLeftPageEditing(true);
+                      e.stopPropagation();}
                     }
                   />
                 </div>
@@ -164,9 +171,10 @@ const twoPageAreaStyle: CSSProperties = {
                 <FramePageComponent
                     mmToPxScale={imageScale}
                     framePage={props.rightFramePage}
-                    isEditing={props.isEditing}
+                    isEditing={props.isRightPageEditing}
                     onImageClick={(e)=>{
-                      props.setIsEditing(true);e.stopPropagation();}
+                      props.setIsRightPageEditing(true);
+                      e.stopPropagation();}
                     }
                   />
                 </div>

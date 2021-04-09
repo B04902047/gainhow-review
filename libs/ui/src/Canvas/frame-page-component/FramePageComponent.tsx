@@ -28,9 +28,6 @@ export function FramePageComponent(props: FramePageComponentProps) {
   const marksZIndex: number = 30;
   const imageTransformFrameZIndex: number = 40;
   let imageTransformFrame: JSX.Element = null;
-  let cropImageJSX: JSX.Element = null;
-  let originalImageJSX: JSX.Element = null;
-  let frameJSX: JSX.Element = null;
   if (frame) {
 
     let sourcePageInfo: UploadFilePageInfo = props.framePage.getSourcePageInfo();
@@ -197,34 +194,17 @@ export function FramePageComponent(props: FramePageComponentProps) {
       />
     </> 
   );
-    imageTransformFrame = (
-      <div style={imageTransformFrameStyle}>
-        {imageTransformFrameIcons}
-      </div> 
-    );
 
-    originalImageJSX = (
-      <img src={imageAddress} style={originalImageStyle}></img>
-    );
-
-    cropImageJSX = (
-      <img 
-          src={imageAddress} 
-          style={clipedImageStyle}
-          onClick={(e)=>props.onImageClick(e)}
-      />
-    );
 
     return (
       <div onClick={(e)=>{
-        if(imageTransformFrame !== null) {
           props.onImageClick(e)}
-        }
       }>
         {
           (props.isEditing) ? 
-       
-            {imageTransformFrame}
+            <div style={imageTransformFrameStyle}>
+              {imageTransformFrameIcons}
+            </div> 
               :
             <></>
         }
@@ -235,7 +215,11 @@ export function FramePageComponent(props: FramePageComponentProps) {
         borderColor={'#E2007F'}
         zIndex={cutLineZIndex}
       >
-          {cropImageJSX}
+          <img 
+            src={imageAddress} 
+            style={clipedImageStyle}
+            onClick={(e)=>props.onImageClick(e)}
+          />
       </FrameLine>
       <FrameLine
         borderWidth={bleedingAreaBorderWidth}
@@ -243,7 +227,7 @@ export function FramePageComponent(props: FramePageComponentProps) {
         borderColor={'#333333'}
         zIndex={bleedingAreaZIndex}
       >
-          {originalImageJSX}
+          <img src={imageAddress} style={originalImageStyle}></img>
       </FrameLine>
       {marks}
       </div>
