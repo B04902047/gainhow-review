@@ -1,6 +1,6 @@
 
 
-import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo, ReviewRegistrationInfo, PerfectBoundBook, Coat } from '@gainhow-review/data';
+import { SingleSheet, Paper, PaperMaterial, ReviewItem, ReviewStatus, UploadFileStatus, ReviewModel, FramedPage, Frame, UploadFilePageInfo, ReviewRegistrationInfo, PerfectBoundBook, Coat, SaddleStichedBook } from '@gainhow-review/data';
 
 import frontCoverJpeg from '../assets/testImages/to-one-with-life/front-cover.jpg';
 import page1Jpeg from '../assets/testImages/to-one-with-life/1.jpg';
@@ -30,7 +30,7 @@ const paper2 = new Paper(
 );
 
 const coat1 = new Coat('壓紋', '壓紋');
-const book = new PerfectBoundBook(
+const book = new SaddleStichedBook(
     210,
     297,
     21,

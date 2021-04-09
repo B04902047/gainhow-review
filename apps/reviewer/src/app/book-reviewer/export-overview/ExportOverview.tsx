@@ -156,7 +156,8 @@ export function PagePair(props: PagePairProps): JSX.Element {
     let style: CSSProperties = {
         display: "inline-block",
         verticalAlign: "top",
-        ...props.style
+        ...props.style,
+        whiteSpace: "nowrap"
     };
     let widthInMm: number = 210+6;
     let heightInMm: number = 297+6;

@@ -61,7 +61,7 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
         border: "solid 2px #E4E4E4",
         borderBottom: "none",
         userSelect: "none",
-        overflow: 'auto',
+        overflow: 'hidden',
         width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px - 50px)`,
     };
     let [viewMode, setViewMode] = useState<"DOUBLE_PAGE"|"OVERVIEW">("OVERVIEW");

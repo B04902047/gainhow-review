@@ -24,7 +24,7 @@ interface SourceImageToolBarProps {
 }
 
 export function SourceImageToolBar(props: SourceImageToolBarProps): JSX.Element {
-    let [positionX, positionY, onToolBarHolderMouseDown] = useDrag(350, 570);
+    let [positionX, positionY, onToolBarHolderMouseDown] = useDrag(400, 650);
     return (
         <div style={{
             position: 'absolute',
