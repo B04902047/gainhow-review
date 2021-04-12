@@ -97,12 +97,12 @@ interface EditPdfRequestBody {
 export interface EditPdfNotFinishedYetResponseBody {
     isFinished: false;
     hasError: false;
-    resultingTokens: Array<string>;
 }
 
 export interface EditPdfFinishedResponseBody {
     isFinished: true;
     hasError: false;
+    resultingTokens: Array<string>;
 }
 
 export interface EditPdfErrorResponseBody {
@@ -115,3 +115,32 @@ export type EditPdfResponseBody
     = EditPdfFinishedResponseBody
     | EditPdfNotFinishedYetResponseBody
     | EditPdfErrorResponseBody;
+
+interface MergeFilesRequestBody {
+    filesPdfToken: Array<string>;
+}
+
+export interface MergeFilesNotFinishedYetResponseBody {
+    isFinished: false;
+    hasError: false;
+}
+
+export interface MergeFilesFinishedResponseBody {
+    isFinished: true;
+    hasError: false;
+    resultingPdfToken: string;
+    resultingPdfUrl: string
+}
+
+export interface MergeFilesErrorResponseBody {
+    isFinished: false;
+    hasError: true;
+    error: any;
+}
+
+export type MergeFilesResponseBody
+    = MergeFilesNotFinishedYetResponseBody
+    | MergeFilesFinishedResponseBody
+    | MergeFilesErrorResponseBody;
+
+    //TODO: 搬檔 & 單邊拓模 的API
