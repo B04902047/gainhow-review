@@ -48,7 +48,7 @@ interface IconProps {
   onClick?(): void;
 }
 
-function Icon(props: IconProps): JSX.Element {
+export function Icon(props: IconProps): JSX.Element {
   let style: CSSProperties = {
     width: 50,
     height: 30,

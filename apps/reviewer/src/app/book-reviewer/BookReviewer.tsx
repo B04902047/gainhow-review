@@ -3,9 +3,10 @@ import { Button, ImportList, ModelInfo } from "@gainhow-review/ui";
 import BookFrameDictionary from "libs/data/src/lib/FrameDictionary/BookFrameDictionary";
 import Book from "libs/data/src/lib/Product/Book";
 import React, { CSSProperties, Props, ReactChild, useState } from "react";
-import BasicSideToolBar from "../working-stage/side-tool-bar/SideToolBar";
+import BasicSideToolBar, { Icon } from "../working-stage/side-tool-bar/SideToolBar";
 import { ExportOverview } from "./export-overview/ExportOverview";
 import DoublePageView from "./double-page-view/DoublePageView";
+import { reviewItem } from "../testObjects1";
 
 interface BookReviewerProps {
     initialReviewItem: ReviewItem;
@@ -88,6 +89,9 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
                 selectedFrameIndex={selectedFrameIndex}
                 onFrameSelect={(frameIndex: number) => selectFrame(frameIndex)}
                 onFrameEdit={(frameIndex) => onEdit(frameIndex)}
+                onSwapFrames={(frameIndex1, frameIndex2) => {
+                    updateBufferedReviewItem(reviewItem => reviewItem.swapFramedPagesImmutably(0, frameIndex1, frameIndex2))
+                }}
             /> : <DoublePageView
                 style={workSpaceStyle}
                 reviewItem={bufferedReviewItem}
@@ -131,7 +135,10 @@ interface SideToolBarProps {
 
 function SideToolBar(props: SideToolBarProps): JSX.Element {
     return (
-        <div style={props.style}>
+        <div style={{
+            position: 'relative',
+            ...props.style
+        }}>
             <BasicSideToolBar
                 style={{
                     height: '100vh',

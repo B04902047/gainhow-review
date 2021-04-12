@@ -50,7 +50,7 @@ export default class FramedPage implements FramedPageInterface {
         frameId: string,
         frameName: string,
         reviewModel: ReviewModel,
-        readonly frameIndexInModel: number,
+        public frameIndexInModel: number,
         positionX: number = 0,
         positionY: number = 0,
         scaleX: number = 1,

@@ -59,6 +59,28 @@ export default class ReviewModel implements ReviewModelInterface {
         return newReviewModel;
     }
 
+    public swapFramedPagesImmutably(index1: number, index2: number): ReviewModel {
+        let newReviewModel = new ReviewModel(
+            this.modelId,
+            this.modelName,
+            this.reviewItem
+        );
+        let temp: FramedPage;
+        let newFramedPages = new Array<FramedPage>();
+            newFramedPages = [...this.framedPages];
+            temp = newFramedPages[index1];
+            newFramedPages[index1] = newFramedPages[index2];
+            newFramedPages[index2] = temp;
+            newFramedPages[index1].frameIndexInModel = index1;
+            newFramedPages[index2].frameIndexInModel = index2;
+            
+        newFramedPages.forEach((framedPage) => {
+            framedPage.reviewModel = newReviewModel;
+        })
+        newReviewModel.framedPages = newFramedPages;
+        return newReviewModel;
+    }
+
     public get framedPages(): Array<FramedPage> {
         if (!this._framedPages) return this.createAndSetBlankFramedPages();
         return this._framedPages;

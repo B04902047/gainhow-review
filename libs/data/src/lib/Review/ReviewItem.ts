@@ -154,4 +154,11 @@ export default class ReviewItem implements ReviewItemInterface {
         let newModel: ReviewModel = oldModel.setFramedPageImmutably(frameIndex, framedPage);
         return this.setReviewModelImmutably(modelIndex, newModel);
     }
+    public swapFramedPagesImmutably(modelIndex: number, frameIndex1: number, frameIndex2: number): ReviewItem {
+        let oldModel: ReviewModel | undefined
+            = this.models[modelIndex];
+        if (!oldModel) throw new Error("modelIndex out of index");
+        let newModel: ReviewModel = oldModel.swapFramedPagesImmutably(frameIndex1, frameIndex2);
+        return this.setReviewModelImmutably(modelIndex, newModel);
+    }
 }
