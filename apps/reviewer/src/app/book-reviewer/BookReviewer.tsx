@@ -94,6 +94,7 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
                 selectedModelIndex={0}
                 selectedFrameIndex={selectedFrameIndex}
                 onSelect={(modelIndex,frameIndex)=>{selectFrame(frameIndex)}}
+                updateReviewItem={(newReviewItem)=> updateBufferedReviewItem(newReviewItem)}
             />}
             <div style={rightAreaStyle}>
                 <ModelInfo

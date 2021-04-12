@@ -33,7 +33,7 @@ const coat1 = new Coat('壓紋', '壓紋');
 const book = new SaddleStichedBook(
     210,
     297,
-    21,
+    20,
     "RIGHT_TO_LEFT",
     paper1,
     paper2,

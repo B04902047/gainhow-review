@@ -16,6 +16,7 @@ export interface ExportingPageProps {
   horizontalPadding?: number;
   height?: number;
   shadowed?: boolean;
+  isDroggable?: boolean
 }
 
 export function ExportingFrame(props: ExportingPageProps): JSX.Element {
@@ -90,6 +91,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
     <div
       style={style}
       onClick={props.onSelect}
+      draggable={props.isDroggable}
     >
       <div style={cropStyle}
         onDragEnter={props.onDragEnter}

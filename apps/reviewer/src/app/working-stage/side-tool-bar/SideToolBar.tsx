@@ -7,7 +7,9 @@ import ZoomInIcon from '../../../assets/icons/ZoomInIcon.svg';
 import ZoomOutIcon from '../../../assets/icons/ZoomOutIcon.svg';
 import ResetSizeIcon from '../../../assets/icons/ResetSizeIcon.svg';
 
-  import './SideToolBar.module.css';
+
+import './SideToolBar.module.css';
+import { from } from 'form-data';
   
 
 /* eslint-disable-next-line */
