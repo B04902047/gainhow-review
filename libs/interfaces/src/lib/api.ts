@@ -76,7 +76,7 @@ export type LoadReviewItemResponseBody
     = LoadReviewItemSuccessResponseBody
     | LoadReviewItemErrorResponseBody;
 
-interface EditPdfRequestBody {
+export interface EditPdfRequestBody {
     tasks: Array<{
         maxWidth: number;
         maxHeight: number;
@@ -94,53 +94,144 @@ interface EditPdfRequestBody {
     }>;
 }
 
-export interface EditPdfNotFinishedYetResponseBody {
+export interface EditPdfSuccessResponseBody {
+    hasError: false;
+    taskToken: string;
+}
+export interface EditPdfErrorResponseBody {
+    hasError: true;
+    message?: string;
+}
+export type EditPdfResponseBody = EditPdfSuccessResponseBody | EditPdfErrorResponseBody;
+
+export interface CheckEditPdfRequestBody {
+    taskToken: string;
+}
+
+export interface CheckEditPdfNotFinishedYetResponseBody {
     isFinished: false;
     hasError: false;
 }
 
-export interface EditPdfFinishedResponseBody {
+export interface CheckEditPdfFinishedResponseBody {
     isFinished: true;
     hasError: false;
     resultingTokens: Array<string>;
 }
 
-export interface EditPdfErrorResponseBody {
+export interface CheckEditPdfErrorResponseBody {
     isFinished: false;
     hasError: true;
     error: any;
 }
 
-export type EditPdfResponseBody
-    = EditPdfFinishedResponseBody
-    | EditPdfNotFinishedYetResponseBody
-    | EditPdfErrorResponseBody;
+export type CheckEditPdfResponseBody
+    = CheckEditPdfFinishedResponseBody
+    | CheckEditPdfNotFinishedYetResponseBody
+    | CheckEditPdfErrorResponseBody;
 
-interface MergeFilesRequestBody {
-    filesPdfToken: Array<string>;
+export interface MergeFilesRequestBody {
+    sourceFilePdfTokens: Array<string>;
 }
 
-export interface MergeFilesNotFinishedYetResponseBody {
+export interface MergeFilesSuccessResponseBody {
+    hasError: false;
+    taskToken: string;
+}
+
+export interface CheckMergeFilesRequestBody {
+    taskToken: string;
+}
+
+export interface CkeckMergeFilesErrorResponseBody {
+    hasError: true;
+    message: string;
+}
+export type MergeFilesResponseBody
+    = MergeFilesSuccessResponseBody
+    | CkeckMergeFilesErrorResponseBody;
+
+export interface CkeckMergeFilesNotFinishedYetResponseBody {
     isFinished: false;
     hasError: false;
 }
 
-export interface MergeFilesFinishedResponseBody {
+export interface CkeckMergeFilesFinishedResponseBody {
     isFinished: true;
     hasError: false;
     resultingPdfToken: string;
     resultingPdfUrl: string
 }
 
-export interface MergeFilesErrorResponseBody {
+export interface CkeckMergeFilesErrorResponseBody {
     isFinished: false;
     hasError: true;
     error: any;
 }
 
-export type MergeFilesResponseBody
-    = MergeFilesNotFinishedYetResponseBody
-    | MergeFilesFinishedResponseBody
-    | MergeFilesErrorResponseBody;
+export type CkeckMergeFilesResponseBody
+    = CkeckMergeFilesNotFinishedYetResponseBody
+    | CkeckMergeFilesFinishedResponseBody
+    | CkeckMergeFilesErrorResponseBody;
 
-    //TODO: 搬檔 & 單邊拓模 的API
+
+export interface MoveFileRequestBody {
+    sourceFileToken: string;
+    targetPath: string;
+}
+
+export interface MoveFileSuccessResponseBody {
+    hasError: false;
+}
+
+export interface MoveFileErrorResponseBody {
+    hasError: true;
+    message?: any;
+}
+
+export type MoveFileResponseBody = MoveFileSuccessResponseBody | MoveFileErrorResponseBody;
+
+
+// TODO: 搬檔 & 單邊拓模 的API
+
+export interface ReplicateFileForRollStockPrintersRequestBody {
+    sourceFileToken: string;
+    maxWidth: number;
+    productionMessage: string;
+}
+
+export interface ReplicateFileForRollStockPrintersSuccessResponseBody {
+    hasError: false;
+    taskToken: string;
+}
+
+export interface ReplicateFileForRollStockPrintersErrorsResponseBody {
+    hasError: true;
+    message?: any;
+}
+
+export interface CheckReplicateFileForRollStockPrintersRequestBody {
+    taskToken: string;
+}
+
+export interface CheckReplicateFileForRollStockPrintersErrorResponseBody {
+    hasError: true;
+    isFinished: false;
+    message?: any;
+}
+
+export interface CheckReplicateFileForRollStockPrintersNotFinishedResponseBody {
+    hasError: false;
+    isFinished: false;
+}
+
+export interface CheckReplicateFileForRollStockPrintersFinishedResponseBody {
+    hasError: false;
+    isFinished: true;
+    resultingPdfToken: string;
+}
+
+export type CheckReplicateFileForRollStockPrintersResponseBody
+    = CheckReplicateFileForRollStockPrintersErrorResponseBody
+    | CheckReplicateFileForRollStockPrintersNotFinishedResponseBody
+    | CheckReplicateFileForRollStockPrintersFinishedResponseBody;

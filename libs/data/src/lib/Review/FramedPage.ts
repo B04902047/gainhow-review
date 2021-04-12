@@ -32,7 +32,7 @@ export default class FramedPage implements FramedPageInterface {
     public reviewModel: ReviewModel;
 
     @Column('varchar', { length: 16 })
-    public readonly frameName: string;
+    public frameName: string;
 
     @Column('int')
     public positionX: number;

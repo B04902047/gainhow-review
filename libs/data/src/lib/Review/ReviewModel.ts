@@ -65,14 +65,19 @@ export default class ReviewModel implements ReviewModelInterface {
             this.modelName,
             this.reviewItem
         );
-        let temp: FramedPage;
+        let tempPage: FramedPage;
+        let tempName: string;
+
         let newFramedPages = new Array<FramedPage>();
             newFramedPages = [...this.framedPages];
-            temp = newFramedPages[index1];
+            tempPage = newFramedPages[index1];
             newFramedPages[index1] = newFramedPages[index2];
-            newFramedPages[index2] = temp;
+            newFramedPages[index2] = tempPage;
             newFramedPages[index1].frameIndexInModel = index1;
             newFramedPages[index2].frameIndexInModel = index2;
+            tempName = newFramedPages[index1].frameName
+            newFramedPages[index1].frameName = newFramedPages[index2].frameName;
+            newFramedPages[index2].frameName = tempName;
             
         newFramedPages.forEach((framedPage) => {
             framedPage.reviewModel = newReviewModel;
