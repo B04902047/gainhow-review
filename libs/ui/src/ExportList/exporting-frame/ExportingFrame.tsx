@@ -12,7 +12,6 @@ export interface ExportingPageProps {
   isSelected: boolean;
   onSelect(): void;
   onDragEnter?(): void;
-  onDragLeave?(): void;
   horizontalPadding?: number;
   height?: number;
   shadowed?: boolean;
@@ -81,7 +80,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
 
   let pageIndexStyle: CSSProperties = {
     width: frameWidthInPx + ((props.isSelected)? 6 : 0),
-    color: (props.isSelected)? "#1581ff" : "black",
+    color: (props.isSelected)? "#1581ff" : "#333333",
     fontSize: 14,
     fontFamily: "arial",
     textAlign: "center",

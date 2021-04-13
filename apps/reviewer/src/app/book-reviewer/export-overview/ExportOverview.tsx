@@ -77,7 +77,7 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     };
     let pagePairsStyle: CSSProperties = {
         padding: 30,
-        paddingTop: 30,
+        paddingTop: 30
     };
     let style: CSSProperties = {
         backgroundColor: "#F7F7F7",
@@ -92,6 +92,8 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
                             style={pagePairStyle}
                             key={pair.left?.name || pair.right?.name}
                             pair={pair}
+                            pageWidthInMm={frameDictionary.frontCoverFrame.maxWidth}
+                            pageHeightInMm={frameDictionary.frontCoverFrame.maxHeight}
                         />
                     );
                 })}
@@ -120,6 +122,7 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
             onDelete: () => {},
             onReplaceSourcePage: () => {},
             onDrop: () => {
+                console.log('dropped');
                 props.onSwapFrames(frameIndex, props.selectedFrameIndex);
             }
         }
@@ -148,6 +151,8 @@ export interface NamedFramedPagePair {
 }
 
 interface PagePairProps {
+    pageWidthInMm: number;
+    pageHeightInMm: number;
     pair: NamedFramedPagePair;
     style?: CSSProperties;
 }
@@ -159,29 +164,27 @@ export function PagePair(props: PagePairProps): JSX.Element {
         ...props.style,
         whiteSpace: "nowrap"
     };
-    let widthInMm: number = 210+6;
-    let heightInMm: number = 297+6;
     let height: number = 160;
     return (
         <div style={style}>
             <SingleFrame
                 namedFramePage={props.pair.left}
-                widthInMm={widthInMm}
-                heightInMm={heightInMm}
+                widthInMm={props.pageWidthInMm}
+                heightInMm={props.pageHeightInMm}
                 height={height}
             />
-            <MiddleLine/>
+            <MiddleLine onDrop={props.pair.left?.onInsert || (() => {})}/>
             <SingleFrame
                 namedFramePage={props.pair.right}
-                widthInMm={widthInMm}
-                heightInMm={heightInMm}
+                widthInMm={props.pageWidthInMm}
+                heightInMm={props.pageHeightInMm}
                 height={height}
             />
         </div>
     )
 }
 
-function MiddleLine(props: {}): JSX.Element {
+function MiddleLine(props: { onDrop(): void }): JSX.Element {
     let [isDraggedOver, setIsDraggedOver] = useState(false);
 
     return (
@@ -189,6 +192,7 @@ function MiddleLine(props: {}): JSX.Element {
             style={{
                 display: "inline-block",
                 width: 5,
+                margin: 1,
                 marginTop: 20,
                 height: 187,
                 backgroundColor: (isDraggedOver)? '#4ba3ff77' : 'inherit',
@@ -197,6 +201,11 @@ function MiddleLine(props: {}): JSX.Element {
             }}
             onDragEnter={() => setIsDraggedOver(true)}
             onDragLeave={() => setIsDraggedOver(false)}
+            onDragOver={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+            }}
+            onDrop={props.onDrop}
         />
     );
 }
@@ -209,11 +218,10 @@ type SingleFrameProps = {
 };
 
 function useImage(source: string): HTMLImageElement {
-  let image = new Image(0, 0);
-  image.src = source;
-  image.setAttribute('width', '1000');
-  let [statedImage, _] = useState<HTMLImageElement>(image);
-  return statedImage;
+    let image = new Image(0, 0);
+    image.src = source;
+    let [statedImage, _] = useState<HTMLImageElement>(image);
+    return statedImage;
 }
 
 function SingleFrame(props: SingleFrameProps): JSX.Element {
@@ -263,7 +271,10 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                 onClick={() => props.namedFramePage.onSelect()}
                 onDoubleClick={() => props.namedFramePage.onEdit()}
                 draggable
-                onDragStart={(event) => event.dataTransfer.setDragImage(dragImage, 0, 0)}
+                onDragStart={(event) => {
+                    event.dataTransfer.setDragImage(dragImage, 0, 0);
+                    props.namedFramePage.onSelect();
+                }}
             >
                 <ExportingFrame
                     shadowed
@@ -281,6 +292,14 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                         left: (props.namedFramePage.isSelected)? 3: 1
                     }}
                     onDragLeave={() => setIsDroppable(false)}
+                    onDragOver={(event) => {
+                        event.stopPropagation();
+                        event.preventDefault();
+                    }}
+                    onDrop={(event) => {
+                        setIsDroppable(false);
+                        props.namedFramePage.onDrop();
+                    }}
                 >
                     <ShadowingFrame
                         widthInMm={props.widthInMm}
@@ -322,7 +341,8 @@ function BlankFrame(props: BlankFrameProps): JSX.Element {
         <div style={{
             display: "inline-block",
             verticalAlign: "top"
-        }}>
+        }}
+        >
             <div style={{
                     width: frameWidthInPx,
                     height: props.height,
