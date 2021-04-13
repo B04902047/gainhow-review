@@ -88,13 +88,15 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
             <div style={pagePairsStyle}>
                 {pagePairs.map(pair => {
                     return (
-                        <PagePair
-                            style={pagePairStyle}
-                            key={pair.left?.name || pair.right?.name}
-                            pair={pair}
-                            pageWidthInMm={frameDictionary.frontCoverFrame.maxWidth}
-                            pageHeightInMm={frameDictionary.frontCoverFrame.maxHeight}
-                        />
+                        <>
+                            <PagePair
+                                style={pagePairStyle}
+                                key={pair.left?.name || pair.right?.name}
+                                pair={pair}
+                                pageWidthInMm={frameDictionary.frontCoverFrame.maxWidth}
+                                pageHeightInMm={frameDictionary.frontCoverFrame.maxHeight}
+                            />
+                        </>
                     );
                 })}
             </div>
