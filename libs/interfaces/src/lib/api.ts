@@ -29,7 +29,6 @@ export type UploadResponseBody
     = UploadSuccessResponseBody
     | UploadErrorResponseBody;
 
-
 export interface LoadReviewStatusRequestBody {
     reviewId: string;
 }
@@ -43,8 +42,6 @@ interface UpdateReviewModelErrorResponseBody {
 export type UpdateReviewModelResponseBody
     = UpdateReviewModelSuccessResponseBody
     | UpdateReviewModelErrorResponseBody;
-
-
 
 export interface LoadReviewStatusRequestBody {
     reviewId: string;
@@ -75,6 +72,9 @@ interface LoadReviewItemErrorResponseBody {
 export type LoadReviewItemResponseBody
     = LoadReviewItemSuccessResponseBody
     | LoadReviewItemErrorResponseBody;
+
+
+/** ======================================================== */
 
 export interface EditPdfRequestBody {
     tasks: Array<{
@@ -139,6 +139,15 @@ export interface MergeFilesSuccessResponseBody {
     taskToken: string;
 }
 
+export interface MergeFilesErrorResponseBody {
+    hasError: true;
+    message?: any;
+}
+
+export type MergeFilesResponseBody
+    = MergeFilesSuccessResponseBody
+    | MergeFilesErrorResponseBody;
+
 export interface CheckMergeFilesRequestBody {
     taskToken: string;
 }
@@ -147,9 +156,6 @@ export interface CkeckMergeFilesErrorResponseBody {
     hasError: true;
     message: string;
 }
-export type MergeFilesResponseBody
-    = MergeFilesSuccessResponseBody
-    | CkeckMergeFilesErrorResponseBody;
 
 export interface CkeckMergeFilesNotFinishedYetResponseBody {
     isFinished: false;
