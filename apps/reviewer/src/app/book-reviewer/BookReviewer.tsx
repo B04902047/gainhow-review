@@ -6,7 +6,10 @@ import React, { CSSProperties, Props, ReactChild, useState } from "react";
 import BasicSideToolBar, { Icon } from "../working-stage/side-tool-bar/SideToolBar";
 import { ExportOverview } from "./export-overview/ExportOverview";
 import DoublePageView from "./double-page-view/DoublePageView";
-import { reviewItem } from "../testObjects1";
+import DoublePageViewMode from '../../assets/icons/DoublePageViewMode.svg';
+import DoublePageViewModeBlue from '../../assets/icons/DoublePageViewModeBlue.svg';
+import OverviewMode from '../../assets/icons/OverviewMode.svg';
+import OverviewModeBlue from '../../assets/icons/OverviewModeBlue.svg';
 
 interface BookReviewerProps {
     initialReviewItem: ReviewItem;
@@ -82,6 +85,8 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
                     display: 'inline-block'
                 }}
                 zoom={() => {}}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
             />
             {(viewMode === "OVERVIEW")? <ExportOverview
                 style={workSpaceStyle}
@@ -131,6 +136,8 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
 interface SideToolBarProps {
     style: CSSProperties;
     zoom: (power: number) => void;
+    viewMode: "DOUBLE_PAGE"|"OVERVIEW";
+    setViewMode(newMode: "DOUBLE_PAGE"|"OVERVIEW"): void;
 }
 
 function SideToolBar(props: SideToolBarProps): JSX.Element {
@@ -139,6 +146,33 @@ function SideToolBar(props: SideToolBarProps): JSX.Element {
             position: 'relative',
             ...props.style
         }}>
+            <Icon
+                style={{
+                    position: 'absolute',
+                    bottom: 510
+                }}
+                src={OverviewMode}
+                srcWhenSelected={OverviewModeBlue}
+                isSelected={props.viewMode === "OVERVIEW"}
+                onClick={() => props.setViewMode("OVERVIEW")}
+            />
+            <Icon
+                style={{
+                    position: 'absolute',
+                    bottom: 465
+                }}
+                src={DoublePageViewMode}
+                srcWhenSelected={DoublePageViewModeBlue}
+                isSelected={props.viewMode === "DOUBLE_PAGE"}
+                onClick={() => props.setViewMode("DOUBLE_PAGE")}
+            />
+            <hr style={{
+                position: 'absolute',
+                bottom: 450,
+                width: 33,
+                margin: 8,
+                border: 'solid 1px #d9d9d9'
+            }}/>
             <BasicSideToolBar
                 style={{
                     height: '100vh',

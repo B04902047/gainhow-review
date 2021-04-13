@@ -29,7 +29,7 @@ export function SideToolBar(props: SideToolBarProps): JSX.Element {
   };
   return (
     <div style={style}>
-      <div style={{height: `calc(${props.style.height} - 435px)`}}/>
+      <div style={{height: `calc(${props.style.height} - 445px)`}}/>
       <Icon src={UndoIcon}/>
       <Icon src={RedoIcon}/>
       <hr style={hrStyle}/>
@@ -46,6 +46,8 @@ interface IconProps {
   src: string;
   style?: CSSProperties;
   onClick?(): void;
+  isSelected?: boolean;
+  srcWhenSelected?: string;
 }
 
 export function Icon(props: IconProps): JSX.Element {
@@ -60,8 +62,9 @@ export function Icon(props: IconProps): JSX.Element {
   return (
     <div style={style}>
       <img
-        src={props.src}
+        src={(props.isSelected && props.srcWhenSelected)? props.srcWhenSelected: props.src}
         onClick={props.onClick}
+        style={{cursor: 'pointer'}}
       />
     </div>
   );
