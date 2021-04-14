@@ -78,6 +78,8 @@ export type LoadReviewItemResponseBody
 
 export interface EditPdfRequestBody {
     tasks: Array<{
+        taskToken: string;
+        timeStamp: Date;
         maxWidth: number;
         maxHeight: number;
         sourceFiles: Array<{
@@ -92,54 +94,60 @@ export interface EditPdfRequestBody {
             };
         }>;
     }>;
+    reportUrl: string;
 }
 
 export interface EditPdfSuccessResponseBody {
-    hasError: false;
     taskToken: string;
+    timeStamp: Date;
+    hasError: false;
 }
 export interface EditPdfErrorResponseBody {
+    taskToken: string;
+    timeStamp: Date;
     hasError: true;
     message?: string;
 }
 export type EditPdfResponseBody = EditPdfSuccessResponseBody | EditPdfErrorResponseBody;
 
-export interface CheckEditPdfRequestBody {
+interface EditPdfSuccessfulReport {
     taskToken: string;
-}
-
-export interface CheckEditPdfNotFinishedYetResponseBody {
-    isFinished: false;
+    timeStamp: Date;
+    resultingFileToken: string;
     hasError: false;
 }
 
-export interface CheckEditPdfFinishedResponseBody {
-    isFinished: true;
-    hasError: false;
-    resultingTokens: Array<string>;
-}
-
-export interface CheckEditPdfErrorResponseBody {
-    isFinished: false;
+interface EditPdfErrorReport {
+    taskToken: string;
+    timeStamp: Date;
     hasError: true;
-    error: any;
+    message?: any;
 }
 
-export type CheckEditPdfResponseBody
-    = CheckEditPdfFinishedResponseBody
-    | CheckEditPdfNotFinishedYetResponseBody
-    | CheckEditPdfErrorResponseBody;
+type EditPdfReport = EditPdfSuccessfulReport | EditPdfErrorReport;
+
+export interface ReportEditPdfRequestBody {
+    reports: Array<EditPdfReport>;
+}
+
+
 
 export interface MergeFilesRequestBody {
     sourceFilePdfTokens: Array<string>;
+    taskToken: string;
+    timeStamp: Date;
+    reportUrl: string;
 }
 
 export interface MergeFilesSuccessResponseBody {
-    hasError: false;
     taskToken: string;
+    timeStamp: Date;
+    hasError: false;
 }
 
 export interface MergeFilesErrorResponseBody {
+    taskToken: string;
+    timeStamp: Date;
     hasError: true;
     message?: any;
 }
@@ -148,97 +156,63 @@ export type MergeFilesResponseBody
     = MergeFilesSuccessResponseBody
     | MergeFilesErrorResponseBody;
 
-export interface CheckMergeFilesRequestBody {
+export interface ReportMergeFilesErrorRequestBody {
     taskToken: string;
-}
-
-export interface CkeckMergeFilesErrorResponseBody {
+    timeStamp: Date;
     hasError: true;
     message: string;
 }
 
-export interface CkeckMergeFilesNotFinishedYetResponseBody {
-    isFinished: false;
-    hasError: false;
-}
-
-export interface CkeckMergeFilesFinishedResponseBody {
-    isFinished: true;
+export interface ReportMergeFilesSuccessRequestBody {
+    taskToken: string;
+    timeStamp: Date;
     hasError: false;
     resultingPdfToken: string;
-    resultingPdfUrl: string
+    resultingPdfUrl: string;
 }
 
-export interface CkeckMergeFilesErrorResponseBody {
-    isFinished: false;
-    hasError: true;
-    error: any;
-}
-
-export type CkeckMergeFilesResponseBody
-    = CkeckMergeFilesNotFinishedYetResponseBody
-    | CkeckMergeFilesFinishedResponseBody
-    | CkeckMergeFilesErrorResponseBody;
+export type ReportMergeFilesRequestBody
+    = ReportMergeFilesSuccessRequestBody
+    | ReportMergeFilesErrorRequestBody;
 
 
 export interface MoveFileRequestBody {
+    taskToken: string;
+    timeStamp: Date;
     sourceFileTokens: Array<string>;
     zip: boolean;
     targetPath: string;
+    reportUrl: string;
 }
 
 export interface MoveFileSuccessResponseBody {
+    taskToken: string;
+    timeStamp: Date;
     hasError: false;
 }
 
 export interface MoveFileErrorResponseBody {
+    taskToken: string;
+    timeStamp: Date;
     hasError: true;
     message?: any;
 }
 
 export type MoveFileResponseBody = MoveFileSuccessResponseBody | MoveFileErrorResponseBody;
 
-
-// TODO: 搬檔 & 單邊拓模 的API
-
-export interface ReplicateFileForRollStockPrintersRequestBody {
-    sourceFileToken: string;
-    maxWidth: number;
-    productionMessage: string;
-}
-
-export interface ReplicateFileForRollStockPrintersSuccessResponseBody {
-    hasError: false;
+export interface ReportMoveFileSuccessRequestBody {
     taskToken: string;
+    timeStamp: Date;
+    hasError: false;
 }
 
-export interface ReplicateFileForRollStockPrintersErrorsResponseBody {
+export interface ReportMoveFileErrorRequestBody {
+    taskToken: string;
+    timeStamp: Date;
     hasError: true;
     message?: any;
 }
 
-export interface CheckReplicateFileForRollStockPrintersRequestBody {
-    taskToken: string;
-}
-
-export interface CheckReplicateFileForRollStockPrintersErrorResponseBody {
-    hasError: true;
-    isFinished: false;
-    message?: any;
-}
-
-export interface CheckReplicateFileForRollStockPrintersNotFinishedResponseBody {
-    hasError: false;
-    isFinished: false;
-}
-
-export interface CheckReplicateFileForRollStockPrintersFinishedResponseBody {
-    hasError: false;
-    isFinished: true;
-    resultingPdfToken: string;
-}
-
-export type CheckReplicateFileForRollStockPrintersResponseBody
-    = CheckReplicateFileForRollStockPrintersErrorResponseBody
-    | CheckReplicateFileForRollStockPrintersNotFinishedResponseBody
-    | CheckReplicateFileForRollStockPrintersFinishedResponseBody;
+export type ReportMoveFileRequestBody
+    = ReportMoveFileSuccessRequestBody
+    | ReportMoveFileErrorRequestBody

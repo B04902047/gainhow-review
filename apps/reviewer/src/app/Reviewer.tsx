@@ -9,7 +9,7 @@ import { SingleSheetReviewer } from "./single-sheet-reviewer/SingleSheetReviewer
 
 export function Reviewer(props: {reviewId: string}): JSX.Element {
     let [reviewItem, setReviewItem] = useState<ReviewItem | undefined>(undefined);
-    let reviewReception = new ReviewReception('api/');
+    let reviewReception = new ReviewReception('/api');
 
     if (!reviewItem) {
         reviewReception.loadReviewItem(props.reviewId)
@@ -32,12 +32,11 @@ export function Reviewer(props: {reviewId: string}): JSX.Element {
         );
     } else throw new Error("product type not implemented");
 
-    function saveReviewItem(reviewItem: ReviewItem): void {
-        Promise.all(reviewItem.models.map((model) => {
+    async function saveReviewItem(reviewItem: ReviewItem): Promise<void> {
+        await Promise.all(reviewItem.models.map((model) => {
             return reviewReception.updateReviewModel(model);
-        })).then(() => {
-            setReviewItem(reviewItem);
-        });
+        }));
+        setReviewItem(reviewItem);
     }
 }
 
