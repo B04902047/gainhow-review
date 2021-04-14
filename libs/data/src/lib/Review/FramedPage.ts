@@ -1,5 +1,5 @@
 
-import { Exclude, Expose } from "class-transformer";
+import { deserialize, Exclude, Expose, serialize } from "class-transformer";
 import Frame from "../Frame/Frame";
 import { FramedPage as FramedPageInterface} from "@gainhow-review/interfaces";
 import ReviewModel from "./ReviewModel";
@@ -130,7 +130,7 @@ export default class FramedPage implements FramedPageInterface {
     }
 
     public clone(): FramedPage {
-        return Object.assign(this);
+        return deserialize(FramedPage, serialize(this));
     }
     // 需要的method : setFile  getPreviewImage getResultImage getResultFlie
     // cleanFile? 空白頁? 選擇了頁是不是可以改選擇用空白頁 
@@ -156,5 +156,10 @@ export default class FramedPage implements FramedPageInterface {
             positionX: positionX,
             positionY: positionY
         })
+    }
+
+    public hasResults(): boolean {
+        if (this.resultingJpegUrl && this.resultingPdfUrl) return true;
+        return false;
     }
 }

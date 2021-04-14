@@ -8,11 +8,12 @@ import WorkSpace from './work-space/WorkSpace';
   
 
 /* eslint-disable-next-line */
-export interface WorkingStageProps {
+export interface ReviewingStageProps {
   initialReviewItem: ReviewItem;  // for buffering in current component
+  saveReviewItem(reviewItem: ReviewItem): void;
 }
 
-export function WorkingStage(props: WorkingStageProps): JSX.Element {
+export function ReviewingStage(props: ReviewingStageProps): JSX.Element {
 
   let [bufferedReviewItem, updateBufferedReviewItem] = useState<ReviewItem>(props.initialReviewItem);
 
@@ -139,5 +140,5 @@ export function WorkingStage(props: WorkingStageProps): JSX.Element {
 };
 
 
-export default WorkingStage;
+export default ReviewingStage;
 

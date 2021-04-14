@@ -182,7 +182,8 @@ export type CkeckMergeFilesResponseBody
 
 
 export interface MoveFileRequestBody {
-    sourceFileToken: string;
+    sourceFileTokens: Array<string>;
+    zip: boolean;
     targetPath: string;
 }
 

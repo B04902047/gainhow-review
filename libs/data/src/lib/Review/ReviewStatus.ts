@@ -47,4 +47,12 @@ export default class ReviewStatus implements ReviewStatusInterface {
         });
         return reviewStatus;
     }
+
+    public allUploadFilesAreConverted(): boolean {
+        if (this.uploadFileStatuses === undefined) throw new Error('TypeORM should have set uploadFileStatuses.');
+        for (let fileStatus of this.uploadFileStatuses) {
+            if (fileStatus.pageInfos === undefined) return false;
+        }
+        return true;
+    }
 }

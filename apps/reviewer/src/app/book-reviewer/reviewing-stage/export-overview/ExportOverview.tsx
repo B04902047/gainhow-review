@@ -37,7 +37,7 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     });
     pagePairs.push({
         [(pagingDirection == "RIGHT_TO_LEFT")? "left": "right"]: {
-            name: '（封面裡）',
+            name: '（封面裏）',
             isSelected: false
         },
         [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: getNamedFramedPage(1)
@@ -45,7 +45,7 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     for (let i=2; i<=book.numberOfPages; i+=2) {
         let first: NamedFramedPage = getNamedFramedPage(i)
         let second: NamedFramedPage = (i+1 <= book.numberOfPages)? getNamedFramedPage(i+1) : {
-            name: '（封底裡）',
+            name: '（封底裏）',
             isSelected: false
         };
         pagePairs.push({
@@ -56,7 +56,7 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     if (book.numberOfPages % 2 !== 0) {
         pagePairs.push({
             [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
-                name: '（封底裡）',
+                name: '（封底裏）',
                 isSelected: false
             }
         });
@@ -88,15 +88,13 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
             <div style={pagePairsStyle}>
                 {pagePairs.map(pair => {
                     return (
-                        <>
-                            <PagePair
-                                style={pagePairStyle}
-                                key={pair.left?.name || pair.right?.name}
-                                pair={pair}
-                                pageWidthInMm={frameDictionary.frontCoverFrame.maxWidth}
-                                pageHeightInMm={frameDictionary.frontCoverFrame.maxHeight}
-                            />
-                        </>
+                        <PagePair
+                            style={pagePairStyle}
+                            key={pair.left?.name || pair.right?.name}
+                            pair={pair}
+                            pageWidthInMm={frameDictionary.frontCoverFrame.maxWidth}
+                            pageHeightInMm={frameDictionary.frontCoverFrame.maxHeight}
+                        />
                     );
                 })}
             </div>
@@ -222,7 +220,12 @@ type SingleFrameProps = {
 function useImage(source: string): HTMLImageElement {
     let image = new Image(0, 0);
     image.src = source;
-    let [statedImage, _] = useState<HTMLImageElement>(image);
+    let [statedImage, setStatedImage] = useState<HTMLImageElement>(image);
+    useEffect(() => {
+        image = new Image(0, 0);
+        image.src = source;
+        setStatedImage(image);
+    }, [source])
     return statedImage;
 }
 

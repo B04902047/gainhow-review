@@ -116,7 +116,6 @@ export function findGroupFramedPageWithFramedPage(groups:Array<GroupFramedPage>,
   return result
 }
 
-
 export function keepTryingTo<X, Y>(
   doSomething: (input: X) => Promise<Y | "NOT_FINISHED_YET">,
   input: X,
