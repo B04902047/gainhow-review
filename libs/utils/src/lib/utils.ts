@@ -115,3 +115,24 @@ export function findGroupFramedPageWithFramedPage(groups:Array<GroupFramedPage>,
   if(!result) throw Error('findGroupFramedPageWithFramedPage找不到GroupFramedPage');
   return result
 }
+
+export function keepTryingTo<X, Y>(
+  doSomething: (input: X) => Promise<Y | "NOT_FINISHED_YET">,
+  input: X,
+  timeout: number = 2000
+): Promise<Y> {
+  return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+          let doSomethingResult = await doSomething(input);
+          if (doSomethingResult === "NOT_FINISHED_YET") resolve(
+              keepTryingTo(
+                  doSomething,
+                  input,
+                  timeout
+              )
+          );
+          else resolve(doSomethingResult);
+      }, timeout)
+  })
+
+}
