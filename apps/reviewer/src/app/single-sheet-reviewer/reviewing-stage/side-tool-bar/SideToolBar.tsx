@@ -1,11 +1,11 @@
 
 import React, { CSSProperties, useEffect, useState } from 'react';
-import UndoIcon from '../../../assets/icons/UndoIcon.svg';
-import RedoIcon from '../../../assets/icons/RedoIcon.svg';
-import SaveIcon from '../../../assets/icons/SaveIcon.svg';
-import ZoomInIcon from '../../../assets/icons/ZoomInIcon.svg';
-import ZoomOutIcon from '../../../assets/icons/ZoomOutIcon.svg';
-import ResetSizeIcon from '../../../assets/icons/ResetSizeIcon.svg';
+import UndoIcon from '../../../../assets/icons/UndoIcon.svg';
+import RedoIcon from '../../../../assets/icons/RedoIcon.svg';
+import SaveIcon from '../../../../assets/icons/SaveIcon.svg';
+import ZoomInIcon from '../../../../assets/icons/ZoomInIcon.svg';
+import ZoomOutIcon from '../../../../assets/icons/ZoomOutIcon.svg';
+import ResetSizeIcon from '../../../../assets/icons/ResetSizeIcon.svg';
 
   import './SideToolBar.module.css';
   
