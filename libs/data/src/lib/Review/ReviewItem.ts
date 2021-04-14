@@ -170,4 +170,7 @@ export default class ReviewItem implements ReviewItemInterface {
         }
         return true;
     }
+    public allUploadFilesAreConverted(): boolean {
+        return this.status.allUploadFilesAreConverted();
+    }
 }

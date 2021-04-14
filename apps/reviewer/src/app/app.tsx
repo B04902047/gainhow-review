@@ -20,7 +20,8 @@ export const App = () => {
   return (
       <BookReviewingStage
         initialReviewItem={bookReviewItem}
-        saveReviewItem={() => {}}
+        saveReviewItem={(async () => {})}
+        onFinished={() => {}}
       />
   );
 

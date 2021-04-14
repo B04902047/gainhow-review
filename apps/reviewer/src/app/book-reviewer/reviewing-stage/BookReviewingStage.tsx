@@ -12,20 +12,34 @@ import OverviewModeBlue from '../../../assets/icons/OverviewModeBlue.svg';
 import BasicSideToolBar, { Icon } from "../../single-sheet-reviewer/reviewing-stage/side-tool-bar/SideToolBar";
 import { ExportOverview } from "./export-overview/ExportOverview";
 import DoublePageView from "./double-page-view/DoublePageView";
-import { ReviewReception } from "@gainhow-review/features";
+import { ReviewReception, useReviewItemBusyChecker } from "@gainhow-review/features";
 
 
 interface BookReviewingStageProps {
     initialReviewItem: ReviewItem;
-    saveReviewItem(bufferedReviewItem: ReviewItem): void;
+    saveReviewItem(bufferedReviewItem: ReviewItem): Promise<void>;
+    onFinished(bufferedReviewItem: ReviewItem): void;
 }
 
 export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element {
     let [bufferedReviewItem, updateBufferedReviewItem] = useState<ReviewItem>(props.initialReviewItem);
 
-    let [isLoading, setIsLoading] = useState(props.initialReviewItem.allExportFilesAreGenerated());
-    /** TODO: busy check */
-
+    let [isLoading, setIsLoading] = useState(props.initialReviewItem.allUploadFilesAreConverted());
+    
+    // busy checking
+    useReviewItemBusyChecker(
+        bufferedReviewItem.reviewId,
+        bufferedReviewItem,
+        updateBufferedReviewItem,
+        (reviewItem) => { 
+            setIsLoading(false);
+            let initializedReviewItem = initFramedPagesWithUploadFiles(reviewItem)
+            updateBufferedReviewItem(initializedReviewItem);
+            props.saveReviewItem(initializedReviewItem);
+        },
+        (reviewItem) => reviewItem.allUploadFilesAreConverted(),
+        isLoading
+    );
 
     let [selectedFrameIndex, selectFrame] = useState<number>(0);
     let selectedFramedPage: FramedPage | undefined
@@ -57,6 +71,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
         borderTop: "none",
         backgroundColor: "#F7F7F7"
     };
+    let [nextStepButtonIsTriggered, setNextStepButtonIsTriggered] = useState<boolean>(false);
     let nextStepButtonStyle: CSSProperties = {
         marginBottom: 10,
         marginTop: 50,
@@ -80,6 +95,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
     let [viewMode, setViewMode] = useState<"DOUBLE_PAGE"|"OVERVIEW">("OVERVIEW");
     return (
         <div>
+            {isLoading && <UploadFileConvertingModal reviewItem={bufferedReviewItem}/>}
             <ImportList
               style={importListStyle}
               files={bufferedReviewItem.status.uploadFileStatuses}
@@ -126,11 +142,32 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                     <Button
                         style={nextStepButtonStyle}
                         isPrimary
+                        disabled={nextStepButtonIsTriggered}
+                        onClick={async () => {
+                            let reviewReception = new ReviewReception('/api');
+                            setNextStepButtonIsTriggered(true);
+                            try {
+                                await props.saveReviewItem(bufferedReviewItem);
+                                await reviewReception.generateFinalResults(bufferedReviewItem);
+                                console.log(nextStepButtonIsTriggered);
+                                setNextStepButtonIsTriggered(false);
+                                props.onFinished(bufferedReviewItem);
+                            } catch (error) {
+                                // TODO: 提醒使用者可以再按一次
+                                // setNextStepButtonIsTriggered(false);
+                            } finally {
+                              //  
+                            }
+                            
+                        }}
                     >
-                        下一步
+                        {(nextStepButtonIsTriggered)? "預覽列印中..." : "預覽列印"}
                     </Button>
-                    <Button style={previousStepButtonStyle}>
-                        上一步
+                    <Button
+                        style={previousStepButtonStyle}
+                        onClick={() => {}}
+                    >
+                        上一頁
                     </Button>
                 </div>
             </div>
@@ -142,32 +179,19 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
     }
 }
 
-interface UploadFileConvertingStageProps {
-    reviewItem: ReviewItem;
-    reviewId: string;
-    onConversionFinished(): void;
-    updateReviewItem(reviewItem: ReviewItem): void;
+function initFramedPagesWithUploadFiles(reviewItem: ReviewItem): ReviewItem {
+
 }
 
-function UploadFileConvertingStage(props: UploadFileConvertingStageProps): JSX.Element {
 
-    let reviewReception = new ReviewReception('api/');
-    let [reviewItem, setReviewItem] = useState<ReviewItem>(props.reviewItem);
-    
-    useEffect(() => {
-        reviewReception.loadReviewItem(props.reviewId)
-            .then(reviewItem => {
-                if (reviewItem.status.allUploadFilesAreConverted()) {
-                    props.onConversionFinished();
-                } else {
-                    setTimeout(() => setReviewItem(reviewItem), 2000);
-                }
-            });
-    }, [reviewItem]);
+
+interface UploadFileConvertingModalProps {
+    reviewItem: ReviewItem;
+}
+
+function UploadFileConvertingModal(props: UploadFileConvertingModalProps): JSX.Element {
     /** TODO: 畫一個可愛的等待畫面 */
-    return (
-
-    );
+    return <></>;
 }
 
 interface SideToolBarProps {
