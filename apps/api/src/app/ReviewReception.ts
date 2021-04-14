@@ -1,9 +1,11 @@
 import { ReviewItem, ReviewModel, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data'
+import { keepTryingTo } from '@gainhow-review/utils'
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Connection, Repository } from 'typeorm';
 import * as fs from 'fs'
 import * as FormData from 'form-data';
 import * as os from 'os';
+import { from } from 'form-data';
 
 function paramsToFormData(data: {[key: string]: string}): FormData {
     let formData = new FormData();
@@ -12,26 +14,7 @@ function paramsToFormData(data: {[key: string]: string}): FormData {
     })
     return formData;
 }
-function keepTryingTo<X, Y>(
-    doSomething: (input: X) => Promise<Y | "NOT_FINISHED_YET">,
-    input: X,
-    timeout: number = 2000
-): Promise<Y> {
-    return new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            let doSomethingResult = await doSomething(input);
-            if (doSomethingResult === "NOT_FINISHED_YET") resolve(
-                keepTryingTo(
-                    doSomething,
-                    input,
-                    timeout
-                )
-            );
-            else resolve(doSomethingResult);
-        }, timeout)
-    })
 
-}
 
 export class ReviewReception implements ReviewReceptionInterface {
     constructor(

@@ -59,8 +59,8 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
         } else if (framedPage.frameName === '封底') {
             // TODO: 加上封底裏
             let backCoverBlankPage = new FramedPage(
-                '封底裏',
-                '封底裏',
+                '(封底裏)',
+                '(封底裏)',
                 framedPage.reviewModel,
                 -1
             );
@@ -76,8 +76,8 @@ export function groupFramedPage(framedPages: FramedPage[], direct: BookPagingDir
             inputGroup['左頁'] =  framedPage
         } else if (framedPage.frameName === '1' ) {
             let frontCoverBlankPage = new FramedPage(
-                '封面裏',
-                '封面裏',
+                '(封面裏)',
+                '(封面裏)',
                 framedPage.reviewModel,
                 -1
             );
@@ -114,4 +114,26 @@ export function findGroupFramedPageWithFramedPage(groups:Array<GroupFramedPage>,
   }
   if(!result) throw Error('findGroupFramedPageWithFramedPage找不到GroupFramedPage');
   return result
+}
+
+
+export function keepTryingTo<X, Y>(
+  doSomething: (input: X) => Promise<Y | "NOT_FINISHED_YET">,
+  input: X,
+  timeout: number = 2000
+): Promise<Y> {
+  return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+          let doSomethingResult = await doSomething(input);
+          if (doSomethingResult === "NOT_FINISHED_YET") resolve(
+              keepTryingTo(
+                  doSomething,
+                  input,
+                  timeout
+              )
+          );
+          else resolve(doSomethingResult);
+      }, timeout)
+  })
+
 }
