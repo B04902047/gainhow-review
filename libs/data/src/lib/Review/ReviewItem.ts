@@ -161,4 +161,13 @@ export default class ReviewItem implements ReviewItemInterface {
         let newModel: ReviewModel = oldModel.swapFramedPagesImmutably(frameIndex1, frameIndex2);
         return this.setReviewModelImmutably(modelIndex, newModel);
     }
+
+    public allExportFilesAreGenerated(): boolean {
+        for (let model of this.models) {
+            for (let framedPage of model.framedPages) {
+                if (framedPage.hasResults()) return false;
+            }
+        }
+        return true;
+    }
 }

@@ -70,8 +70,8 @@ export default class ReviewModel implements ReviewModelInterface {
 
         let newFramedPages = new Array<FramedPage>();
             newFramedPages = [...this.framedPages];
-            tempPage = newFramedPages[index1];
-            newFramedPages[index1] = newFramedPages[index2];
+            tempPage = newFramedPages[index1].clone();
+            newFramedPages[index1] = newFramedPages[index2].clone();
             newFramedPages[index2] = tempPage;
             newFramedPages[index1].frameIndexInModel = index1;
             newFramedPages[index2].frameIndexInModel = index2;

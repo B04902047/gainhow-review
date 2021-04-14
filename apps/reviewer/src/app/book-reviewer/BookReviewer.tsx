@@ -1,4 +1,4 @@
-import { FramedPage, ReviewItem, ReviewModel } from "@gainhow-review/data";
+import { FramedPage, ReviewItem, ReviewModel, ReviewStatus, SingleSheet } from "@gainhow-review/data";
 import { Button, ImportList, ModelInfo } from "@gainhow-review/ui";
 import BookFrameDictionary from "libs/data/src/lib/FrameDictionary/BookFrameDictionary";
 import Book from "libs/data/src/lib/Product/Book";
@@ -10,12 +10,113 @@ import DoublePageViewMode from '../../assets/icons/DoublePageViewMode.svg';
 import DoublePageViewModeBlue from '../../assets/icons/DoublePageViewModeBlue.svg';
 import OverviewMode from '../../assets/icons/OverviewMode.svg';
 import OverviewModeBlue from '../../assets/icons/OverviewModeBlue.svg';
+import { ReviewReception } from "@gainhow-review/features";
+
+type ReviewStage = "LOADING" | "UPLOAD_FILE_CONVERTING" | "REVIEWING"
+
+export function Reviewer(props: {reviewId: string}): JSX.Element {
+    let [[stage, reviewItem], setStage] = useState<[ReviewStage, ReviewItem | undefined ]>(['LOADING', undefined]);
+
+    let reviewReception = new ReviewReception('api/');
+    switch (stage) {
+        case "LOADING":
+            reviewReception.loadReviewItem(props.reviewId)
+                .then((reviewItem: ReviewItem) => {
+                    if (reviewItem.status.allUploadFilesAreConverted()) {
+                        setStage(["REVIEWING", reviewItem])
+                    }
+                })
+            return <LoadingStage/>
+        case "UPLOAD_FILE_CONVERTING":
+            return <UploadFileConvertingStage
+                initialReviewStatus={reviewItem.status}
+                reviewId={props.reviewId}
+                onConversionFinished={() => {
+                    reviewReception.loadReviewItem(props.reviewId)
+                        .then((reviewItem) => {
+                            setStage(["REVIEWING", reviewItem])
+                        });
+                }}
+            />
+        case "REVIEWING":
+            if (reviewItem.product instanceof Book) {
+                return (
+                    <BookReviewer
+                        reviewItem={reviewItem}
+                        saveReviewItem={(reviewItem) => {
+                            Promise.all(reviewItem.models.map((model) => {
+                                return reviewReception.updateReviewModel(model);
+                            })).then(() => {
+                                setStage(["REVIEWING", reviewItem]);
+                            });
+                        }}
+                    />
+                );
+            }
+            else if (reviewItem.product instanceof SingleSheet) {
+                /** 把名字＆資料夾改好然後放過來 */
+            }
+    }
+}
+
+interface UploadFileConvertingStageProps {
+    initialReviewStatus: ReviewStatus;
+    reviewId: string;
+    onConversionFinished(): void;
+}
+
+
+function UploadFileConvertingStage(props: UploadFileConvertingStageProps): JSX.Element {
+
+    let reviewReception = new ReviewReception('api/');
+    
+    /** TODO: 畫一個可愛的等待畫面，然後busy check ReviewStatus */
+}
 
 interface BookReviewerProps {
-    initialReviewItem: ReviewItem;
+    reviewItem: ReviewItem;
+    saveReviewItem(bufferedReviewItem: ReviewItem): void;
 }
 
 export function BookReviewer(props: BookReviewerProps): JSX.Element {
+    let stage: "REVIEWING" | "EXPORT_FILE_GENERATING" | "CHECKING";
+    if (props.reviewItem.status.progress === "REGISTERED") stage = "REVIEWING";
+    else if (!props.reviewItem.allExportFilesAreGenerated()) stage = "EXPORT_FILE_GENERATING";
+    else stage = "CHECKING";
+    
+    switch (stage) {
+        case "REVIEWING":
+            return <BookReviewingStage
+                initialReviewItem={props.reviewItem}
+                saveReviewItem={props.saveReviewItem}
+            />
+        case "EXPORT_FILE_GENERATING":
+            return <ExportFileGeneratingStage/>
+        case "CHECKING":
+            return <CheckingStage/>
+    }
+}
+
+
+function LoadingStage(): JSX.Element {
+
+}
+
+function CheckingStage(): JSX.Element {
+
+}
+
+function ExportFileGeneratingStage(): JSX.Element {
+
+}
+
+
+interface BookReviewingStageProps {
+    initialReviewItem: ReviewItem;
+    saveReviewItem(bufferedReviewItem: ReviewItem): void;
+}
+
+export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element {
     let [bufferedReviewItem, updateBufferedReviewItem] = useState<ReviewItem>(props.initialReviewItem);
 
     let [selectedFrameIndex, selectFrame] = useState<number>(0);
@@ -102,7 +203,7 @@ export function BookReviewer(props: BookReviewerProps): JSX.Element {
                 reviewItem={bufferedReviewItem}
                 selectedModelIndex={0}
                 selectedFrameIndex={selectedFrameIndex}
-                onSelect={(modelIndex,frameIndex)=>{selectFrame(frameIndex)}}
+                onSelect={(modelIndex, frameIndex) => selectFrame(frameIndex)}
             />}
             <div style={rightAreaStyle}>
                 <ModelInfo
