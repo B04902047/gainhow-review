@@ -8,7 +8,8 @@ import Book from 'libs/data/src/lib/Product/Book';
 import { CoverBlankFramePage, DrogMiddleLine } from '@gainhow-review/ui'
 
 import { GroupFramedPage,groupFramedPage } from '@gainhow-review/utils'
-import { ReactSortable } from "react-sortablejs";
+import { ReactSortable, Sortable } from "react-sortablejs";
+import { from } from 'form-data';
 
 export interface SortableExportListProps {
     selectedModelIndex: number;
@@ -99,50 +100,99 @@ export interface SortableExportListProps {
         }
         return false;
     }
+    function onDragStart(evt: Sortable.SortableEvent) {
+        console.log(evt.oldIndex);
+        props.onFrameSelect(props.selectedModelIndex, evt.oldIndex);
+    }
+
+    function onDragEnd(evt: Sortable.SortableEvent) {
+        console.log(evt.newIndex);
+        props.onFrameSelect(props.selectedModelIndex, evt.newIndex);
+    }
+
+    return (
+        <div style={style}>
+          <div style={modelsStyle}>
+            {models.map((model: ReviewModel, modelIndex: number) => {
+                let groupPages = groupFramedPage(model.framedPages,product.pagingDirection);
+                
+                return (
+                  <div 
+                      key={modelIndex}
+                      style={modelStyle}
+                  >
+                     
+                      {   
+                          groupPages.map((groupPage: GroupFramedPage,index: number) => {
+                              return(
+                                  <ExportingGroupFrame
+                                      key={index}
+                                      style={groupStyle}
+                                      groupPage={groupPage}
+                                      direct={product.pagingDirection}
+                                      onSelect={(frameIndex: number)=>{props.onFrameSelect(modelIndex,frameIndex)}}
+                                      isSelected={(frameIndex: number)=>{return isSelected(modelIndex, frameIndex)}}
+                                  />
+                              )
+                          })
+                      }
+                     
+                  </div>
+              );
+              
+            })}
+          </div>
+        </div>
+      );
     return (
       <div style={style}>
-        <ReactSortable list={sortableFramedPages} setList={setSortableFramedPages}>
-        {
-            sortableFramedPages.map((item) => {
-                let framedPage = item.framedPage;
-                if(framedPage.frameName === '空白頁' ) {
-                    return null
-                }
-                else if (framedPage.frameName === '封面裏' || framedPage.frameName === '封底裏' ) {
-                    let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
-                    let frameHeightInMm = coverFrame.maxHeight;
-                    let frameWidthInMm = coverFrame.maxWidth;
-                    let ratio: number = frameWidthInMm / frameHeightInMm;
-                    let frameHeightInPx = 96;
-                    let frameWidthInPx: number = frameHeightInPx * ratio;
-                    let coverBlankFramePageStyle: CSSProperties;
-                    return (
-                        <span key={item.id}>
-                        <CoverBlankFramePage
-                            frameName={framedPage.frameName}
-                            style={coverBlankFramePageStyle}
-                            frameHeightInPx={frameHeightInPx}
-                            frameWidthInPx={frameWidthInPx}
-                            horizontalPadding={3}
-                        />
-                        </span>
-                    )
-                }
-                else {
-                    return (
-                        <span key={item.id}>
-                            <ExportingFrame
-                                framedPage={framedPage}
-                                onSelect={()=>{props.onFrameSelect(props.selectedModelIndex,framedPage.frameIndexInModel)}}
-                                isSelected={isSelected(props.selectedModelIndex, framedPage.frameIndexInModel)}
+        <ReactSortable 
+            list={sortableFramedPages} 
+            setList={setSortableFramedPages}
+            onStart={onDragStart}
+            onEnd={onDragEnd}
+        >
+            {
+                sortableFramedPages.map((item) => {
+                    let framedPage = item.framedPage;
+                    if(framedPage.frameName === '空白頁' ) {
+                        return null
+                    }
+                    else if (framedPage.frameName === '(封面裏)' || framedPage.frameName === '(封底裏)' ) {
+                        let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
+                        let frameHeightInMm = coverFrame.maxHeight;
+                        let frameWidthInMm = coverFrame.maxWidth;
+                        let ratio: number = frameWidthInMm / frameHeightInMm;
+                        let frameHeightInPx = 96;
+                        let frameWidthInPx: number = frameHeightInPx * ratio;
+                        let coverBlankFramePageStyle: CSSProperties;
+                        return (
+                            <span key={item.id}>
+                            <CoverBlankFramePage
+                                frameName={framedPage.frameName}
+                                style={coverBlankFramePageStyle}
+                                frameHeightInPx={frameHeightInPx}
+                                frameWidthInPx={frameWidthInPx}
                                 horizontalPadding={3}
-                                isDroggable={true}
                             />
-                        </span>
-                    )
-                }
-            })
-        }
+                            </span>
+                        )
+                    }
+                    else {
+                        return (
+                            <span key={item.id}>
+                                <ExportingFrame
+                                    framedPage={framedPage}
+                                    onSelect={()=>{props.onFrameSelect(props.selectedModelIndex,framedPage.frameIndexInModel)}}
+                                    isSelected={isSelected(props.selectedModelIndex, framedPage.frameIndexInModel)}
+                                    horizontalPadding={3}
+                                    isDroggable={true}
+                                />
+                            </span>
+                        )
+                    }
+                })
+            }
             
         </ReactSortable>
             
@@ -164,29 +214,28 @@ export interface SortableExportListProps {
     let style: CSSProperties;
     let pageKeyArray: Array<string>; 
     let pages:JSX.Element[];
-    if (props.direct === 'BOTTOM_TO_TOP') {
-        style = {
-            ...props.style,
-            display:'inline-block'
-        }
-        pageKeyArray = ['上頁','下頁']
-    } else {
+    let [sortableGroupFrame,setFrame] = useState( Object.keys(props.groupPage).map((key,index)=>{
+        return (
+            {
+                id: key,
+                item:props.groupPage[key]
+            }
+        )
+    }))
         style = {
             ...props.style,
             margin: '0px 25px',
             display:'inline-block'
         }
         pageKeyArray = ['左頁','右頁']
-    }
+   
 
-        pages = pageKeyArray.map((pageKey, index) => {
-            
-
-            let framedPage: FramedPage = props.groupPage[pageKey];
+        pages = sortableGroupFrame.map((item, index) => {
+            let framedPage: FramedPage = item.item;
             if(framedPage.frameName === '空白頁' ) {
                 return null
             }
-            else if (framedPage.frameName === '封面裏' || framedPage.frameName === '封底裏' ) {
+            else if (framedPage.frameName === '(封面裏)' || framedPage.frameName === '(封底裏)' ) {
                 let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
                 let frameHeightInMm = coverFrame.maxHeight;
                 let frameWidthInMm = coverFrame.maxWidth;
@@ -196,7 +245,7 @@ export interface SortableExportListProps {
                 let coverBlankFramePageStyle: CSSProperties;
                 return (
                     <span key={index}>
-                    {(framedPage.frameName==='封底裏')?
+                    {(framedPage.frameName==='(封底裏)')?
                             <DrogMiddleLine height={props.height}/>:<></>
                         }
                     <CoverBlankFramePage
@@ -232,12 +281,11 @@ export interface SortableExportListProps {
         });
         
         
-    
    
    
     return (
         <div style={style}>
-            {pages}
+          {pages}
         </div>
     )
   }

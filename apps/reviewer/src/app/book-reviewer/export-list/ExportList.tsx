@@ -124,7 +124,7 @@ export interface ExportListProps {
             if(framedPage.frameName === '空白頁' ) {
                 return null
             }
-            else if (framedPage.frameName === '封面裏' || framedPage.frameName === '封底裏' ) {
+            else if (framedPage.frameName === '(封面裏)' || framedPage.frameName === '(封底裏)' ) {
                 let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
                 let frameHeightInMm = coverFrame.maxHeight;
                 let frameWidthInMm = coverFrame.maxWidth;
@@ -134,7 +134,7 @@ export interface ExportListProps {
                 let coverBlankFramePageStyle: CSSProperties;
                 return (
                     <span key={index}>
-                    {(framedPage.frameName==='封底裏')?
+                    {(framedPage.frameName==='(封底裏)')?
                             <DrogMiddleLine height={props.height}/>:<></>
                         }
                     <CoverBlankFramePage
