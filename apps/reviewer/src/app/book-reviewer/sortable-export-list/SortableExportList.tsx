@@ -110,40 +110,40 @@ export interface SortableExportListProps {
         props.onFrameSelect(props.selectedModelIndex, evt.newIndex);
     }
 
-    return (
-        <div style={style}>
-          <div style={modelsStyle}>
-            {models.map((model: ReviewModel, modelIndex: number) => {
-                let groupPages = groupFramedPage(model.framedPages,product.pagingDirection);
+    // return (
+    //     <div style={style}>
+    //       <div style={modelsStyle}>
+    //         {models.map((model: ReviewModel, modelIndex: number) => {
+    //             let groupPages = groupFramedPage(model.framedPages,product.pagingDirection);
                 
-                return (
-                  <div 
-                      key={modelIndex}
-                      style={modelStyle}
-                  >
+    //             return (
+    //               <div 
+    //                   key={modelIndex}
+    //                   style={modelStyle}
+    //               >
                      
-                      {   
-                          groupPages.map((groupPage: GroupFramedPage,index: number) => {
-                              return(
-                                  <ExportingGroupFrame
-                                      key={index}
-                                      style={groupStyle}
-                                      groupPage={groupPage}
-                                      direct={product.pagingDirection}
-                                      onSelect={(frameIndex: number)=>{props.onFrameSelect(modelIndex,frameIndex)}}
-                                      isSelected={(frameIndex: number)=>{return isSelected(modelIndex, frameIndex)}}
-                                  />
-                              )
-                          })
-                      }
+    //                   {   
+    //                       groupPages.map((groupPage: GroupFramedPage,index: number) => {
+    //                           return(
+    //                               <ExportingGroupFrame
+    //                                   key={index}
+    //                                   style={groupStyle}
+    //                                   groupPage={groupPage}
+    //                                   direct={product.pagingDirection}
+    //                                   onSelect={(frameIndex: number)=>{props.onFrameSelect(modelIndex,frameIndex)}}
+    //                                   isSelected={(frameIndex: number)=>{return isSelected(modelIndex, frameIndex)}}
+    //                               />
+    //                           )
+    //                       })
+    //                   }
                      
-                  </div>
-              );
+    //               </div>
+    //           );
               
-            })}
-          </div>
-        </div>
-      );
+    //         })}
+    //       </div>
+    //     </div>
+    //   );
     return (
       <div style={style}>
         <ReactSortable 

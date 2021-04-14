@@ -6,7 +6,7 @@ import Book from 'libs/data/src/lib/Product/Book';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import Canvas from '../canvans/Canvans';
 import { ExportList } from '../export-list/ExportList';
-import {SortableExportList} from '../sortable-export-list/SortableExportList'
+import {SortableExportList} from '../../sortable-export-list/SortableExportList'
 
 
 
