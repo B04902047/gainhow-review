@@ -30,12 +30,13 @@ export function FramePageComponent(props: FramePageComponentProps) {
   let imageTransformFrameJSX: JSX.Element = null;
   let orangeImageJSX: JSX.Element = null;
   let cropedImageJSX: JSX.Element = null;
+  let imageAddress: string;
   if (frame) {
 
     let sourcePageInfo: UploadFilePageInfo = props.framePage.getSourcePageInfo();
 
     if (sourcePageInfo) {
-      let imageAddress: string = sourcePageInfo.jpegUrl;
+      imageAddress = sourcePageInfo.jpegUrl;
       let imageWidthInPx: string = `calc(${imageScale} * ${sourcePageInfo.widthInMm})`;
       let imageHeightInPx: string = `calc(${imageScale} * ${sourcePageInfo.heightInMm})`;
       let imagePostionXInPx: string = `calc(${imageScale} * calc(${props.framePage.positionX} ))`;
@@ -98,18 +99,18 @@ export function FramePageComponent(props: FramePageComponentProps) {
     }
 
     cropedImageJSX = (
-      <img 
+      <img key={0}
         src={imageAddress} 
         style={clipedImageStyle}
         onClick={(e)=>props.onImageClick(e)}
       />
     );
     orangeImageJSX = (
-      <img src={imageAddress} style={originalImageStyle}></img>
+      <img key={0} src={imageAddress} style={originalImageStyle}></img>
     );
 
     let imageTransformFrameIcons: React.ReactElement = (
-      <>
+      <div key={0}>
         <i // 左上
           style={{
             ...imageTransformFrameIconStyle,
@@ -174,10 +175,10 @@ export function FramePageComponent(props: FramePageComponentProps) {
             cursor: 'ew-resize',
           }}
         />
-      </> 
+      </div> 
     );
     imageTransformFrameJSX = (
-    <div style={imageTransformFrameStyle}>
+    <div style={imageTransformFrameStyle} key={0}>
       {imageTransformFrameIcons}
     </div> 
     )
@@ -222,7 +223,7 @@ export function FramePageComponent(props: FramePageComponentProps) {
 
     return (
       <div onClick={(e)=>{
-          if(props.framePage.sourceFileIndex && props.framePage.sourcePageNumber) {
+          if(imageAddress) {
             props.onImageClick(e)
           }
           
