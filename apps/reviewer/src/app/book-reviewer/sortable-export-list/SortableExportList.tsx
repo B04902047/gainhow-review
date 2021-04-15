@@ -66,22 +66,22 @@ export interface SortableExportListProps {
         display: "inline-block"
     }
 
-    function isSelected(modelIndex: number,frameIndex: number): boolean {
+    function isSelected(props: SortableExportListProps, modelIndex: number,frameIndex: number): boolean {
         if (props.selectedModelIndex === modelIndex && props.selectedFrameIndex ===frameIndex ) {
           return true;
         }
         return false;
     }
-    function onDragStart(evt: Sortable.SortableEvent) {
+    function onDragStart(props: SortableExportListProps, evt: Sortable.SortableEvent) {
         console.log(evt.oldIndex);
         props.onFrameSelect(props.selectedModelIndex, evt.oldIndex);
     }
 
-    function onDragEnd(evt: Sortable.SortableEvent) {
+    function onDragEnd(props: SortableExportListProps, evt: Sortable.SortableEvent) {
         props.onFrameSelect(props.selectedModelIndex, evt.newIndex);
         let newIndex = evt.newIndex;
         let oldIndex = evt.oldIndex;
-        console.log(props);
+        console.log(props.onShiftFramesBetween);
         console.log(`oldIndex=${oldIndex} , newIndex=${newIndex}`);
         props.onShiftFramesBetween(oldIndex, newIndex);
     }
@@ -98,8 +98,8 @@ export interface SortableExportListProps {
         <ReactSortable 
             list={sortableFramedPages} 
             setList={setSortable}
-            onStart={onDragStart}
-            onEnd={onDragEnd}
+            onStart={(event: Sortable.SortableEvent) => onDragStart(props, event)}
+            onEnd={(event: Sortable.SortableEvent) => onDragEnd(props, event)}
         >
             
             {
@@ -112,8 +112,8 @@ export interface SortableExportListProps {
                             style={groupStyle}
                             groupPage={groupPage}
                             direct={product.pagingDirection}
-                            onSelect={(frameIndex: number)=>{props.onFrameSelect(0,frameIndex)}}
-                            isSelected={(frameIndex: number)=>{return isSelected(0, frameIndex)}}
+                            onSelect={(frameIndex: number) => { props.onFrameSelect(0,frameIndex) }}
+                            isSelected={(frameIndex: number) => { return isSelected(props, 0, frameIndex) }}
                         />
                     )
                 }
