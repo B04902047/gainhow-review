@@ -19,7 +19,10 @@ interface ExportOverviewProps {
     onFrameSelect(frameIndex: number): void;
     onFrameEdit(frameIndex: number): void;
     onSwapFrames(frameIndex1: number, frameIndex2: number): void;
+    onShiftFramesBetween(frameIndex1: number, frameIndex2: number): void;
     onFrameReplaceSourceFile(frameIndex: number, sourceFileNumber: number, pageNumberInSourceFile: number): void;
+    onInsertBlankPageAfter(position: number): void;
+    onDeleteFrame(frameIndex: number): void;
 }
 
 export function ExportOverview(props: ExportOverviewProps): JSX.Element {
@@ -35,26 +38,39 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
             name: '封面'
         }
     });
-    pagePairs.push({
-        [(pagingDirection == "RIGHT_TO_LEFT")? "left": "right"]: {
-            name: '（封面裏）',
-            isSelected: false
-        },
-        [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: getNamedFramedPage(1)
-    });
-    for (let i=2; i<=book.numberOfPages; i+=2) {
-        let first: NamedFramedPage = getNamedFramedPage(i)
-        let second: NamedFramedPage = (i+1 <= book.numberOfPages)? getNamedFramedPage(i+1) : {
-            name: '（封底裏）',
-            isSelected: false
-        };
+    if (book.numberOfPages > 0) {
         pagePairs.push({
-            left: (pagingDirection == "RIGHT_TO_LEFT")? first: second,
-            right: (pagingDirection == "RIGHT_TO_LEFT")? second: first
+            [(pagingDirection == "RIGHT_TO_LEFT")? "left": "right"]: {
+                name: '（封面裏）',
+                isSelected: false
+            },
+            [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: getNamedFramedPage(1)
         });
-    }
-    if (book.numberOfPages % 2 !== 0) {
+        for (let i=2; i<=book.numberOfPages; i+=2) {
+            let first: NamedFramedPage = getNamedFramedPage(i)
+            let second: NamedFramedPage = (i+1 <= book.numberOfPages)? getNamedFramedPage(i+1) : {
+                name: '（封底裏）',
+                isSelected: false
+            };
+            pagePairs.push({
+                left: (pagingDirection == "RIGHT_TO_LEFT")? first: second,
+                right: (pagingDirection == "RIGHT_TO_LEFT")? second: first
+            });
+        }
+        if (book.numberOfPages % 2 !== 0) {
+            pagePairs.push({
+                [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
+                    name: '（封底裏）',
+                    isSelected: false
+                }
+            });
+        }
+    } else {
         pagePairs.push({
+            [(pagingDirection == "RIGHT_TO_LEFT")? "left": "right"]: {
+                name: '（封面裏）',
+                isSelected: false
+            },
             [(pagingDirection == "RIGHT_TO_LEFT")? "right": "left"]: {
                 name: '（封底裏）',
                 isSelected: false
@@ -101,15 +117,6 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
         </div>
     );
 
-    function insertFramedPage(frameIndex: number, sourceFileNumber: number, pageNumberInSourceFile: number): void {
-
-    }
-    function deleteFrame(frameIndex: number): void {
-
-    }
-    function insertBlankFramedPage(frameIndex: number): void {
-
-    }
     function getNamedFramedPage(frameIndex: number): NamedFramedPage {
         return {
             name: String(frameIndex),
@@ -118,8 +125,8 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
             isSelected: (frameIndex == props.selectedFrameIndex),
             onSelect: () => props.onFrameSelect(frameIndex),
             onEdit: () => props.onFrameEdit(frameIndex),
-            onInsert: () => {},
-            onDelete: () => {},
+            onInsert: () => props.onInsertBlankPageAfter(frameIndex),
+            onDelete: () => {props.onDeleteFrame(frameIndex)},
             onReplaceSourcePage: () => {},
             onDrop: () => {
                 console.log('dropped');
@@ -429,7 +436,7 @@ function SingleFrameToolBar(props: SingleFrameToolBarProps): JSX.Element {
                     &thinsp;
                     <SingleFrameToolBarButton
                         onClick={props.onInsert}
-                        title="往左新增頁面"
+                        title="往右新增頁面"
                     >
                         <PlusOutlined/>
                     </SingleFrameToolBarButton>

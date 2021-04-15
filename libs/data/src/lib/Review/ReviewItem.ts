@@ -111,16 +111,16 @@ export default class ReviewItem implements ReviewItemInterface {
 
     public static fromJson(text: string): ReviewItem {
         let item: ReviewItem = deserialize(ReviewItem, text);
-        item.models.forEach((model: ReviewModel) => {
-            model.reviewItem = item;
-            model.framedPages.forEach((framedPage: FramedPage) => {
-                framedPage.reviewModel = model;
-            });
-        });
         item.status!.uploadFileStatuses!.forEach((fileStatus: UploadFileStatus) => {
             fileStatus.reviewStatus = item.status!;
             fileStatus.pageInfos?.forEach((pageInfo: UploadFilePageInfo) => {
                 pageInfo.fileStatus = fileStatus;
+            });
+        });
+        item.models.forEach((model: ReviewModel) => {
+            model.reviewItem = item;
+            model.framedPages.forEach((framedPage: FramedPage) => {
+                framedPage.reviewModel = model;
             });
         });
         return item;
@@ -173,4 +173,32 @@ export default class ReviewItem implements ReviewItemInterface {
     public allUploadFilesAreConverted(): boolean {
         return this.status.allUploadFilesAreConverted();
     }
+
+    public shiftFramedPagesBetween(modelIndex: number, startIndex: number, endIndex: number): ReviewItem {
+        let oldModel: ReviewModel | undefined
+            = this.models[modelIndex];
+        if (!oldModel) throw new Error("modelIndex out of index");
+        let newModel: ReviewModel = oldModel.shiftFramedPagesBetween(startIndex, endIndex);
+        return this.setReviewModelImmutably(modelIndex, newModel);
+    }
+
+    public setSourcePageIndexImmutably(modelIndex: number, frameIndex: number, fileIndex: number, pageIndex: number): ReviewItem {
+        let oldFramedPage: FramedPage | undefined
+          = this.getFramedPage(modelIndex, frameIndex);
+        if (!oldFramedPage) throw new Error("debug: selected frame is undefined???");
+        let newFramedPage: FramedPage = new FramedPage(
+          oldFramedPage.frameId,
+          oldFramedPage.frameName,
+          oldFramedPage.reviewModel,
+          frameIndex
+        );
+        newFramedPage.sourceFileIndex = fileIndex;
+        newFramedPage.sourcePageNumber = pageIndex;
+        let newReviewItem: ReviewItem = this.setFramedPageImmutably(
+          modelIndex,
+          frameIndex,
+          newFramedPage
+        );
+        return newReviewItem;
+      }
 }

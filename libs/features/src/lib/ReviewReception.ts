@@ -1,6 +1,6 @@
 
 import { ReviewItem, ReviewModel, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFileStatus } from '@gainhow-review/data'
-import { LoadReviewItemRequestBody, LoadReviewItemResponseBody, LoadReviewStatusRequestBody, LoadReviewStatusResponseBody, RegisterRequestBody, RegisterResponseBody, UpdateReviewModelRequestBody, UpdateReviewModelResponseBody, UploadResponseBody, UploadSuccessResponseBody } from '@gainhow-review/interfaces';
+import { GenerateFinalResultsRequestBody, GenerateFinalResultsResponseBody, LoadReviewItemRequestBody, LoadReviewItemResponseBody, LoadReviewStatusRequestBody, LoadReviewStatusResponseBody, RegisterRequestBody, RegisterResponseBody, UpdateReviewModelRequestBody, UpdateReviewModelResponseBody, UploadResponseBody, UploadSuccessResponseBody } from '@gainhow-review/interfaces';
 import axios from 'axios';
 import { deserialize, serialize } from 'class-transformer';
 import { response } from 'express';
@@ -93,8 +93,18 @@ export class ReviewReception implements ReviewReceptionInterface {
             return deserialize(ReviewItem, responseBody.reviewItemInJson);
         } else throw responseBody.error;
     }
-    generateFinalResults(reviewItem: ReviewItem): Promise<void> {
-        throw new Error('Method not implemented.');
+    async generateFinalResults(reviewItem: ReviewItem): Promise<void> {
+        let requestBody: GenerateFinalResultsRequestBody = {
+            reviewItemInJson: serialize(reviewItem)
+        };
+        let responseBody: GenerateFinalResultsResponseBody = (await axios.post(
+            this.requestUrl + '/generateFinalResults',
+            requestBody
+        )).data;
+        if (responseBody.isSuccess === true) {
+            return;
+        } else throw responseBody.error;
+
     }
 
 }

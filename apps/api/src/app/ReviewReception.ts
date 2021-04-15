@@ -1,12 +1,12 @@
 import { ReviewItem, ReviewModel, ReviewReception as ReviewReceptionInterface, ReviewRegistrationInfo, ReviewStatus, UploadFilePageInfo, UploadFileStatus } from '@gainhow-review/data'
 import { keepTryingTo } from '@gainhow-review/utils'
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { keepTryingTo } from '@gainhow-review/utils'
 import { Connection, Repository } from 'typeorm';
 import * as fs from 'fs'
 import * as FormData from 'form-data';
 import * as os from 'os';
 import { from } from 'form-data';
+import { EditPdfRequestBody, EditPdfResponseBody } from '@gainhow-review/interfaces';
 
 function paramsToFormData(data: {[key: string]: string}): FormData {
     let formData = new FormData();
@@ -310,8 +310,41 @@ export class ReviewReception implements ReviewReceptionInterface {
         if (!repo.findOne(reviewModel.modelId)) throw "attempt to insert new review model calling 'updateReviewModel'";
         await repo.save(reviewModel);
     }
-    generateFinalResults(reviewItem: ReviewItem): Promise<void> {
-        throw new Error('Method not implemented.');
+    async generateFinalResults(reviewItem: ReviewItem): Promise<void> {
+        let timeStamp = new Date();
+        let repo: Repository<FramedPage> = this.connection.getRepository(FramedPage);
+        for (let reviewModel of reviewItem.models) {
+            for (let framedPage of reviewModel.framedPages) {
+                framedPage.lastEditRequestDate = timeStamp;
+                await repo.save(framedPage);
+            }   
+        }
+        await Promise.all(
+            reviewItem.models.map(async (reviewModel) => {
+                let requestBody: EditPdfRequestBody = {
+                    tasks: reviewModel.framedPages.map((framedPage: FramedPage) => {
+                        return {
+                            taskToken: framedPage.frameId,
+                            timeStamp: framedPage.lastEditRequestDate,
+                            maxWidth: framedPage.getFrame().maxWidth,
+                            maxHeight: framedPage.getFrame().maxHeight,
+                            sourceFiles: [{
+                                originalFileUploadToken: framedPage.getSourcePageInfo().fileStatus.uploadToken,
+                                originalPageNumberWhenUpload: framedPage.sourcePageNumber,
+                                transformation: framedPage
+                            }]
+                        }
+                    }),
+                    reportUrl: 'reportEditPdf'
+                };
+                let responseBody: EditPdfResponseBody = (await axios.post(
+                    'editPdf',
+                    requestBody
+                )).data;
+                if (responseBody.hasError) throw responseBody.message;
+                return;
+            })
+        );
     }
 }
 

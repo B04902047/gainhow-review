@@ -73,8 +73,24 @@ export type LoadReviewItemResponseBody
     = LoadReviewItemSuccessResponseBody
     | LoadReviewItemErrorResponseBody;
 
+export interface GenerateFinalResultsRequestBody {
+    reviewItemInJson: string;
+}
 
-/** ======================================================== */
+interface GenerateFinalResultsSuccessResponseBody {
+    isSuccess: true;
+}
+interface GenerateFinalResultsErrorResponseBody {
+    isSuccess: false;
+    error?: any;
+}
+
+export type GenerateFinalResultsResponseBody
+    = GenerateFinalResultsSuccessResponseBody
+    | GenerateFinalResultsErrorResponseBody;
+
+
+/** ⬇️跟轉檔主機之間的API's ======================================================== */
 
 export interface EditPdfRequestBody {
     tasks: Array<{

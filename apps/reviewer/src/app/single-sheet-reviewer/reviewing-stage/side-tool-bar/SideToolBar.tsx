@@ -16,6 +16,8 @@ import { from } from 'form-data';
 export interface SideToolBarProps {
   style: CSSProperties;
   zoom(power: number): void;
+  onUndo(): void;
+  onRedo(): void;
 }
 
 export function SideToolBar(props: SideToolBarProps): JSX.Element {
@@ -32,8 +34,8 @@ export function SideToolBar(props: SideToolBarProps): JSX.Element {
   return (
     <div style={style}>
       <div style={{height: `calc(${props.style.height} - 445px)`}}/>
-      <Icon src={UndoIcon}/>
-      <Icon src={RedoIcon}/>
+      <Icon src={UndoIcon} onClick={props.onUndo}/>
+      <Icon src={RedoIcon} onClick={props.onRedo}/>
       <hr style={hrStyle}/>
       <Icon src={SaveIcon}/>
       <hr style={hrStyle}/>

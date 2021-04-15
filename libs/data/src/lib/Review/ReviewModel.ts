@@ -13,6 +13,13 @@ export default class ReviewModel implements ReviewModelInterface {
     @PrimaryColumn('varchar', { length: 255 })
     public modelId: string;  // 資料庫要用的primary key
 
+    @Exclude()
+    @Column({
+        nullable: true,
+        type: 'datetime'
+    })
+    public lastMergeFilesRequestDate?: Date;
+
     @Column('varchar', { length: 16 })
     public readonly modelName: string;
 
@@ -83,6 +90,41 @@ export default class ReviewModel implements ReviewModelInterface {
             framedPage.reviewModel = newReviewModel;
         })
         newReviewModel.framedPages = newFramedPages;
+        return newReviewModel;
+    }
+
+    public shiftFramedPagesBetween(startIndex: number, endIndex: number): ReviewModel {
+        if (startIndex === endIndex) return this;
+        let direction: "LEFT" | "RIGHT" = (startIndex > endIndex)? "RIGHT" : "LEFT";
+
+        let newReviewModel = new ReviewModel(
+            this.modelId,
+            this.modelName,
+            this.reviewItem
+        );
+        let newFramedPages = [...this.framedPages];
+        newFramedPages[endIndex] = this.framedPages[startIndex].clone();
+        newFramedPages[endIndex].frameId = this.framedPages[endIndex].frameId;
+        newFramedPages[endIndex].frameName = this.framedPages[endIndex].frameName;
+        newFramedPages[endIndex].frameIndexInModel = endIndex;
+        if (direction === "LEFT") {
+            for (let i=startIndex+1; i<=endIndex; i++) {
+                newFramedPages[i-1] = this.framedPages[i].clone();
+                newFramedPages[i-1].frameId = this.framedPages[i-1].frameId;
+                newFramedPages[i-1].frameName = this.framedPages[i-1].frameName;
+                newFramedPages[i-1].frameIndexInModel = i-1;
+            }
+        } else {
+            for (let i=startIndex-1; i>=endIndex; i--) {
+                newFramedPages[i+1] = this.framedPages[i].clone();
+                newFramedPages[i+1].frameId = this.framedPages[i+1].frameId;
+                newFramedPages[i+1].frameName = this.framedPages[i+1].frameName;
+                newFramedPages[i+1].frameIndexInModel = i+1;
+            }
+        }
+        newFramedPages.forEach(framedPage => {
+            framedPage.reviewModel = newReviewModel;
+        });
         return newReviewModel;
     }
 

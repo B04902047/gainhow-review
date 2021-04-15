@@ -2,7 +2,7 @@ import Book from "./Book";
 import { BookPagingDirection, PerfectBoundBook as PerfectBoundBookInterface } from "@gainhow-review/interfaces";
 import Paper from "../Material/Paper";
 import Coat from "../Material/Coat";
-import { serialize, Type } from "class-transformer";
+import { deserialize, Exclude, serialize, Type } from "class-transformer";
 import FrameDictionary from "../FrameDictionary/FrameDictionary";
 import PerfectBoundBookFrameDictionary from "../FrameDictionary/PerfectBoundBookFrameDictionary";
 
@@ -34,11 +34,28 @@ export default class PerfectBoundBook extends Book implements PerfectBoundBookIn
         );
     }
 
+    @Exclude()
     protected _frameDictionary?: FrameDictionary;
     public get frameDictionary(): FrameDictionary {
         if (!this._frameDictionary) {
             this._frameDictionary = new PerfectBoundBookFrameDictionary(this);
         }
         return this._frameDictionary;
+    }
+
+    public clone(): PerfectBoundBook {
+        return new PerfectBoundBook(
+            this.width, 
+            this.height, 
+            this.numberOfPages,
+            this.pagingDirection,
+            this.coverPaper, 
+            this.innerPagesPaper, 
+            this.coverCoating, 
+            this.innerPageCoating,
+            this.hardCovered,
+            this.threadSewn,
+            this.spineStyle
+        );
     }
 }
