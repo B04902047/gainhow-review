@@ -22,6 +22,8 @@ import { from } from 'form-data';
     selectedFrameIndex: number;
     onSelect(modelIndex:number, frameIndex:number):void;
     updateReviewItem(newReviewItem: ReviewItem): void;
+    onShiftFramesBetween(start: number, end: number): void;
+
 }
 
 function DoublePageView(props: DoublePageViewProps): JSX.Element {
@@ -63,6 +65,7 @@ function DoublePageView(props: DoublePageViewProps): JSX.Element {
                 style={exportListStyle}
                 onFrameSelect={props.onSelect}
                 updateReviewItem={(newReviewItem)=>props.updateReviewItem(newReviewItem)}
+                onShiftFramesBetween={props.onShiftFramesBetween}
             />
         </div>
     )

@@ -130,10 +130,10 @@ export function findGroupFramedPageWithFramedPage(groups:Array<GroupFramedPage>,
 }
 
 export function framedPagesToSortableFramedPages(framedPages: FramedPage[]): Array<SortableFramedPage> {
-  return framedPages.map((framedPages) => {
+  return framedPages.map((framedPage: FramedPage) => {
     return {
-        id: framedPages.frameIndexInModel,
-        FramedPage: framedPages}
+        id: framedPage.frameIndexInModel,
+        FramedPage: framedPage}
   })
 }
 

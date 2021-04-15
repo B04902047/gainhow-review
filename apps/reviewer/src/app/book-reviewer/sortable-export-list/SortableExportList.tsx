@@ -20,45 +20,15 @@ export interface SortableExportListProps {
     style: CSSProperties;
     onFrameSelect(modelIndex: number, frameIndex: number): void;
     updateReviewItem(newReviewItem: ReviewItem) :void;
+    onShiftFramesBetween(start: number, end: number): void;
   }
   
   export function SortableExportList(props: SortableExportListProps) {
     let [sortableFramedPages,setSortable] = useState<SortableFramedPage[]>(
         framedPagesToSortableFramedPages(props.reviewItem.models[props.selectedModelIndex].framedPages)
     );
-
     function setSortableFramedPages(sortableFramedPages: SortableFramedPage[]) {
         console.log(sortableFramedPages);
-        let newframedPages: FramedPage[];
-        let framedPage = sortableFramedPages[0].FramedPage
-        let reviewModel: ReviewModel = framedPage.reviewModel;
-        let newReviewItem: ReviewItem;
-        let numberOfPages = reviewModel.framedPages.length;
-        let framedPages = reviewModel.framedPages;
-        newframedPages = Object.keys(sortableFramedPages).map((key,index) => {
-            let item= sortableFramedPages[key];
-            let framedPage = item.FramedPage; 
-            let newFramedPageName: string = framedPages[index].frameName;
-           
-            let newFramedPage = new FramedPage(
-                framedPage.frameId,
-                newFramedPageName,
-                reviewModel,
-                index,
-                framedPage.positionX,
-                framedPage.positionY,
-                framedPage.scaleX,
-                framedPage.scaleY,
-                framedPage.rotationDegree
-            );
-            newFramedPage.sourceFileIndex = framedPage.sourceFileIndex;
-            newFramedPage.sourcePageNumber = framedPage.sourcePageNumber;
-            return newFramedPage
-        });
-        console.log(newframedPages);
-        reviewModel.framedPages = newframedPages;
-        newReviewItem = reviewModel.reviewItem.setReviewModelImmutably(props.selectedModelIndex,reviewModel);
-        props.updateReviewItem(newReviewItem);
         setSortable(sortableFramedPages)
     }
    
@@ -108,9 +78,12 @@ export interface SortableExportListProps {
     }
 
     function onDragEnd(evt: Sortable.SortableEvent) {
-        console.log(evt.newIndex);
         props.onFrameSelect(props.selectedModelIndex, evt.newIndex);
-        
+        let newIndex = evt.newIndex;
+        let oldIndex = evt.oldIndex;
+        console.log(props);
+        console.log(`oldIndex=${oldIndex} , newIndex=${newIndex}`);
+        props.onShiftFramesBetween(oldIndex, newIndex);
     }
 
     
@@ -124,7 +97,7 @@ export interface SortableExportListProps {
             >
         <ReactSortable 
             list={sortableFramedPages} 
-            setList={setSortableFramedPages}
+            setList={setSortable}
             onStart={onDragStart}
             onEnd={onDragEnd}
         >
