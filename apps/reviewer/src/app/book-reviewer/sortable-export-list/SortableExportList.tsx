@@ -7,7 +7,9 @@ import e from 'express';
 import Book from 'libs/data/src/lib/Product/Book';
 import { CoverBlankFramePage, DrogMiddleLine } from '@gainhow-review/ui'
 
-import { GroupFramedPage,groupFramedPage } from '@gainhow-review/utils'
+import { GroupFramedPage, getRightOrLeftPageKeyByframeName, 
+    FORNT_COVER_BLANK_PAGENAME ,BACK_COVER_BLANK_PAGENAME,
+    LEFT_PAGE,RIGHT_PAGE, groupFramedPage, framedPagesToSortableFramedPages, sortableGroupFramedPage, SortableGroupFramedPage, SortableFramedPage } from '@gainhow-review/utils'
 import { ReactSortable, Sortable } from "react-sortablejs";
 import { from } from 'form-data';
 
@@ -21,22 +23,21 @@ export interface SortableExportListProps {
   }
   
   export function SortableExportList(props: SortableExportListProps) {
-    let sortableFramedPages = (
-        props.reviewItem.models[props.selectedModelIndex].framedPages.map((framedPages) => {
-            return {id:framedPages.frameIndexInModel,framedPage:framedPages}
-        })
+    let [sortableFramedPages,setSortable] = useState<SortableFramedPage[]>(
+        framedPagesToSortableFramedPages(props.reviewItem.models[props.selectedModelIndex].framedPages)
     );
 
-    function setSortableFramedPages(sortableFramedPages) {
+    function setSortableFramedPages(sortableFramedPages: SortableFramedPage[]) {
         console.log(sortableFramedPages);
         let newframedPages: FramedPage[];
-        let reviewModel: ReviewModel = sortableFramedPages[0].framedPage.reviewModel;
+        let framedPage = sortableFramedPages[0].FramedPage
+        let reviewModel: ReviewModel = framedPage.reviewModel;
         let newReviewItem: ReviewItem;
         let numberOfPages = reviewModel.framedPages.length;
         let framedPages = reviewModel.framedPages;
         newframedPages = Object.keys(sortableFramedPages).map((key,index) => {
             let item= sortableFramedPages[key];
-            let framedPage = item.framedPage; 
+            let framedPage = item.FramedPage; 
             let newFramedPageName: string = framedPages[index].frameName;
            
             let newFramedPage = new FramedPage(
@@ -58,6 +59,7 @@ export interface SortableExportListProps {
         reviewModel.framedPages = newframedPages;
         newReviewItem = reviewModel.reviewItem.setReviewModelImmutably(props.selectedModelIndex,reviewModel);
         props.updateReviewItem(newReviewItem);
+        setSortable(sortableFramedPages)
     }
    
     function cloneReviewItemByUpdateFramedPages(framedPages: FramedPage[]): ReviewItem {
@@ -108,94 +110,46 @@ export interface SortableExportListProps {
     function onDragEnd(evt: Sortable.SortableEvent) {
         console.log(evt.newIndex);
         props.onFrameSelect(props.selectedModelIndex, evt.newIndex);
+        
     }
 
-    // return (
-    //     <div style={style}>
-    //       <div style={modelsStyle}>
-    //         {models.map((model: ReviewModel, modelIndex: number) => {
-    //             let groupPages = groupFramedPage(model.framedPages,product.pagingDirection);
-                
-    //             return (
-    //               <div 
-    //                   key={modelIndex}
-    //                   style={modelStyle}
-    //               >
-                     
-    //                   {   
-    //                       groupPages.map((groupPage: GroupFramedPage,index: number) => {
-    //                           return(
-    //                               <ExportingGroupFrame
-    //                                   key={index}
-    //                                   style={groupStyle}
-    //                                   groupPage={groupPage}
-    //                                   direct={product.pagingDirection}
-    //                                   onSelect={(frameIndex: number)=>{props.onFrameSelect(modelIndex,frameIndex)}}
-    //                                   isSelected={(frameIndex: number)=>{return isSelected(modelIndex, frameIndex)}}
-    //                               />
-    //                           )
-    //                       })
-    //                   }
-                     
-    //               </div>
-    //           );
-              
-    //         })}
-    //       </div>
-    //     </div>
-    //   );
+    
+
+    let groupPages: SortableGroupFramedPage[] = sortableGroupFramedPage(sortableFramedPages,product.pagingDirection);
+
     return (
-      <div style={style}>
+      <div style={style}> 
+      <div 
+                style={modelsStyle}
+            >
         <ReactSortable 
             list={sortableFramedPages} 
             setList={setSortableFramedPages}
             onStart={onDragStart}
             onEnd={onDragEnd}
         >
+            
             {
-                sortableFramedPages.map((item) => {
-                    let framedPage = item.framedPage;
-                    if(framedPage.frameName === '空白頁' ) {
-                        return null
-                    }
-                    else if (framedPage.frameName === '(封面裏)' || framedPage.frameName === '(封底裏)' ) {
-                        let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
-                        let frameHeightInMm = coverFrame.maxHeight;
-                        let frameWidthInMm = coverFrame.maxWidth;
-                        let ratio: number = frameWidthInMm / frameHeightInMm;
-                        let frameHeightInPx = 96;
-                        let frameWidthInPx: number = frameHeightInPx * ratio;
-                        let coverBlankFramePageStyle: CSSProperties;
-                        return (
-                            <span key={item.id}>
-                            <CoverBlankFramePage
-                                frameName={framedPage.frameName}
-                                style={coverBlankFramePageStyle}
-                                frameHeightInPx={frameHeightInPx}
-                                frameWidthInPx={frameWidthInPx}
-                                horizontalPadding={3}
-                            />
-                            </span>
-                        )
-                    }
-                    else {
-                        return (
-                            <span key={item.id}>
-                                <ExportingFrame
-                                    framedPage={framedPage}
-                                    onSelect={()=>{props.onFrameSelect(props.selectedModelIndex,framedPage.frameIndexInModel)}}
-                                    isSelected={isSelected(props.selectedModelIndex, framedPage.frameIndexInModel)}
-                                    horizontalPadding={3}
-                                    isDroggable={true}
-                                />
-                            </span>
-                        )
-                    }
-                })
+               
+                groupPages.map((groupPage: SortableGroupFramedPage,index: number) => {
+                    
+                    return(
+                        <ExportingSortableGroupFrame
+                            key={index}
+                            style={groupStyle}
+                            groupPage={groupPage}
+                            direct={product.pagingDirection}
+                            onSelect={(frameIndex: number)=>{props.onFrameSelect(0,frameIndex)}}
+                            isSelected={(frameIndex: number)=>{return isSelected(0, frameIndex)}}
+                        />
+                    )
+                }
+               
+                )
             }
             
         </ReactSortable>
-            
+        </div>  
       </div>
     );
   };
@@ -289,6 +243,89 @@ export interface SortableExportListProps {
         </div>
     )
   }
+
+  interface ExportingSortableGGroupFrameProps {
+    groupPage: SortableGroupFramedPage,
+    direct: BookPagingDirection,
+    onSelect(frameIndex: number): void; 
+    isSelected(frameIndex: number): boolean;
+    style?: CSSProperties;
+    height?: number;
+  }
+  function ExportingSortableGroupFrame (props: ExportingSortableGGroupFrameProps) :JSX.Element {
+    let pages:JSX.Element[];
+    let style: CSSProperties = {
+            ...props.style,
+            display:'inline-block',
+            margin: '0px 25px',
+    }
+        
+    
+    
+
+        pages = Object.keys(props.groupPage).map((pageKey, index) => {
+            
+
+            let framedPage: FramedPage = props.groupPage[pageKey].FramedPage;
+            if(framedPage.frameName === '空白頁' ) {
+                return null
+            }
+            else if (framedPage.frameName === '(封面裏)' || framedPage.frameName === '(封底裏)' ) {
+                let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
+                let frameHeightInMm = coverFrame.maxHeight;
+                let frameWidthInMm = coverFrame.maxWidth;
+                let ratio: number = frameWidthInMm / frameHeightInMm;
+                let frameHeightInPx = props.height || 96;
+                let frameWidthInPx: number = frameHeightInPx * ratio;
+                let coverBlankFramePageStyle: CSSProperties;
+                return (
+                    <span key={index}>
+                    {(framedPage.frameName==='(封底裏)')?
+                            <DrogMiddleLine height={props.height}/>:<></>
+                        }
+                    <CoverBlankFramePage
+                        frameName={framedPage.frameName}
+                        style={coverBlankFramePageStyle}
+                        frameHeightInPx={frameHeightInPx}
+                        frameWidthInPx={frameWidthInPx}
+                        horizontalPadding={3}
+                    />
+                    </span>
+                )
+            }
+            else {
+                return (
+                    <span key={index}>
+                        {(framedPage.frameName!=='封底')?
+                            <DrogMiddleLine height={props.height}/>:<></>
+                        }
+                        <ExportingFrame
+                            framedPage={framedPage}
+                            isSelected={props.isSelected(framedPage.frameIndexInModel)}
+                            onSelect={()=>{ props.onSelect(framedPage.frameIndexInModel)}}
+                            height={props.height}
+                            horizontalPadding={3}
+                            isDroggable={true}
+                        />
+                        {(framedPage.frameName==='封底')?
+                            <DrogMiddleLine height={props.height}/>:<></>
+                        }
+                    </span>
+                )
+            }
+        });
+        
+        
+    
+   
+   
+    return (
+        <div style={style}>
+            {pages}
+        </div>
+    )
+  }
+
 
   export default SortableExportList;
   
