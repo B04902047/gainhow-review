@@ -30,18 +30,18 @@ function useReviewItemHistory(
 ): {
     isUndoable: boolean;
     isRedoable: boolean;
-    act: (reviewItem: ReviewItem) => void;
+    record: (reviewItem: ReviewItem) => void;
     redo: () => void;
     undo: () => void
 } {
     let [history, setHistory] = useState<TextHistory>(new TextHistory(capacity));
     useEffect(() => {
-        act(reviewItem);
+        record(reviewItem);
     }, [])
     return {
         isUndoable: history.isUndoable,
         isRedoable: history.isRedoable,
-        act,
+        record,
         redo,
         undo
     }
@@ -73,7 +73,7 @@ function useReviewItemHistory(
             return newHistory;
         })
     }
-    function act(reviewItem: ReviewItem): void {
+    function record(reviewItem: ReviewItem): void {
         // setHistory(history => {
         //     history.act(ReviewItem.toJson(reviewItem));
         //     return history;
@@ -109,7 +109,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
     let {
         isRedoable,
         isUndoable,
-        act,
+        record,
         undo,
         redo
     } = useReviewItemHistory(
@@ -198,7 +198,11 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                 onFrameSelect={(frameIndex: number) => selectFrame(frameIndex)}
                 onFrameEdit={(frameIndex) => onEdit(frameIndex)}
                 onSwapFrames={(frameIndex1, frameIndex2) => {
-                    updateBufferedReviewItem(reviewItem => reviewItem.swapFramedPagesImmutably(0, frameIndex1, frameIndex2))
+                    updateBufferedReviewItem(reviewItem => {
+                        let newReviewItem = reviewItem.swapFramedPagesImmutably(0, frameIndex1, frameIndex2);
+                        record(newReviewItem);
+                        return newReviewItem;
+                    })
                 }}
                 onInsertBlankPageAfter={insertBlankFramedPageAfter}
                 onShiftFramesBetween={shiftFramesBetween}
@@ -258,7 +262,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
     function shiftFramesBetween(frameIndex1: number, frameIndex2: number): void {
         updateBufferedReviewItem(bufferedReviewItem => {
             let newReviewItem = bufferedReviewItem.shiftFramedPagesBetween(0, frameIndex1, frameIndex2);
-            act(newReviewItem);
+            record(newReviewItem);
             return newReviewItem;
         });
     }
@@ -288,7 +292,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                 cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage, newFramedPage);
             }
             newReviewItem.models[0].framedPages = newFramedPages;
-            act(newReviewItem);
+            record(newReviewItem);
             return newReviewItem;
         })
     }
@@ -334,7 +338,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                 cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage, newFramedPage);
             }
             newReviewItem.models[0].framedPages = newFramedPages;
-            act(newReviewItem);
+            record(newReviewItem);
             return newReviewItem;
 
             function cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage: FramedPage, newFramedPage: FramedPage): void {
