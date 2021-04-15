@@ -256,9 +256,11 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
         setViewMode("DOUBLE_PAGE");
     }
     function shiftFramesBetween(frameIndex1: number, frameIndex2: number): void {
-        updateBufferedReviewItem(bufferedReviewItem =>
-            bufferedReviewItem.shiftFramedPagesBetween(0, frameIndex1, frameIndex2)
-        );
+        updateBufferedReviewItem(bufferedReviewItem => {
+            let newReviewItem = bufferedReviewItem.shiftFramedPagesBetween(0, frameIndex1, frameIndex2);
+            act(newReviewItem);
+            return newReviewItem;
+        });
     }
 
     function insertBlankFramedPageAfter(position: number) {
@@ -332,6 +334,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                 cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage, newFramedPage);
             }
             newReviewItem.models[0].framedPages = newFramedPages;
+            act(newReviewItem);
             return newReviewItem;
 
             function cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage: FramedPage, newFramedPage: FramedPage): void {

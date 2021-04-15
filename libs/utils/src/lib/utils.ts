@@ -195,10 +195,10 @@ export class TextHistory {
     this.memoryBound = 0;
   }
   public get isUndoable(): boolean {
-    return (this._size > 0);
+    return (this._size > 1);
   }
   public get isRedoable(): boolean {
-    return (this.memoryBound != this.end);
+    return (this.memoryBound != (this.end) % this.capacity);
   }
   public act(item: string): void {
     this.buffer[this.end] = item;
@@ -207,17 +207,18 @@ export class TextHistory {
     if (this._size < this.capacity) this._size += 1;
   }
   public undo(): string | null {
-    console.log(this);
+
     if (!this.isUndoable) return null;
-    let indexToPop = this.end;
     this.end = (this.end - 1 + this.capacity) % this.capacity;
     this._size -= 1;
-    return this.buffer[indexToPop];
+    return this.buffer[(this.end - 1 + this.capacity) % this.capacity];
   }
   public redo(): string | null {
     if (!this.isRedoable) return null;
+    let currentPosition = this.end;
     this.end = (this.end + 1) % this.capacity;
-    return this.buffer[this.end];
+    this._size += 1;
+    return this.buffer[currentPosition];
   }
   public get size(): number {
     return this._size;
