@@ -48,7 +48,7 @@ export default class UploadFileStatus implements UploadFileStatusInterface {
     })
     public errorStage?: UploadFileProcessingStage;
 
-    @Expose()
+    @Exclude()
     @ManyToOne(() => ReviewStatus, (reviewStatus: ReviewStatus) => reviewStatus.uploadFileStatuses)
     reviewStatus: ReviewStatus;
 

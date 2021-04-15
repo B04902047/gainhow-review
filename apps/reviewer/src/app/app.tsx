@@ -16,7 +16,6 @@ import { SourceImageToolBar } from '@gainhow-review/ui';
 
 export const App = () => {
   // return <ApiTester/>;
-  // return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
   return (
       <BookReviewingStage
         initialReviewItem={bookReviewItem}

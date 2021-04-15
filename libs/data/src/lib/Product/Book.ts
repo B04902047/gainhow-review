@@ -68,4 +68,5 @@ export default abstract class Book extends Product implements BookInterface {
             `${innerPageInfo}`
         ];
     }
+    public abstract clone(): Book;
 }

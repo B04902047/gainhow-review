@@ -80,20 +80,14 @@ export function ReviewingStage(props: ReviewingStageProps): JSX.Element {
           style={importListStyle}
           files={bufferedReviewItem.status.uploadFileStatuses}
           selectPage={(fileIndex: number, pageIndex: number) => {
-            let newFramedPage: FramedPage = new FramedPage(
-              selectedFramedPage.frameId,
-              selectedFramedPage.frameName,
-              selectedFramedPage.reviewModel,
-              selectedFrameIndex
+            updateBufferedReviewItem(bufferedReviewItem =>
+              bufferedReviewItem.setSourcePageIndexImmutably(
+                selectedModelIndex,
+                selectedFrameIndex,
+                fileIndex,
+                pageIndex
+              )
             );
-            newFramedPage.sourceFileIndex = fileIndex;
-            newFramedPage.sourcePageNumber = pageIndex;
-            let newReviewItemForBuffering: ReviewItem = bufferedReviewItem.setFramedPageImmutably(
-              selectedModelIndex,
-              selectedFrameIndex,
-              newFramedPage
-            );
-            updateBufferedReviewItem(newReviewItemForBuffering);
           }}
           isSelected={(fileNumber: number, pageIndex: number) => {
             return (

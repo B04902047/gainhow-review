@@ -13,7 +13,9 @@ import BasicSideToolBar, { Icon } from "../../single-sheet-reviewer/reviewing-st
 import { ExportOverview } from "./export-overview/ExportOverview";
 import DoublePageView from "./double-page-view/DoublePageView";
 import { ReviewReception, useReviewItemBusyChecker } from "@gainhow-review/features";
-
+import Book from "libs/data/src/lib/Product/Book";
+import { TextHistory } from '@gainhow-review/utils';
+import { deserialize, serialize } from "class-transformer";
 
 interface BookReviewingStageProps {
     initialReviewItem: ReviewItem;
@@ -21,11 +23,74 @@ interface BookReviewingStageProps {
     onFinished(bufferedReviewItem: ReviewItem): void;
 }
 
+function useReviewItemHistory(
+    reviewItem: ReviewItem,
+    setReviewItem: (reviewItem: ReviewItem) => void,
+    capacity: number = 20
+): {
+    isUndoable: boolean;
+    isRedoable: boolean;
+    act: (reviewItem: ReviewItem) => void;
+    redo: () => void;
+    undo: () => void
+} {
+    let [history, setHistory] = useState<TextHistory>(new TextHistory(capacity));
+    useEffect(() => {
+        act(reviewItem);
+    }, [])
+    return {
+        isUndoable: history.isUndoable,
+        isRedoable: history.isRedoable,
+        act,
+        redo,
+        undo
+    }
+    function redo(): void {
+        setHistory(history => {
+            let reviewItemJson: string | null = history.redo();
+            if (reviewItemJson === null) throw new Error("redo out of history memory");
+            let reviewItem: ReviewItem = ReviewItem.fromJson(reviewItemJson);
+            setReviewItem(reviewItem);
+            return history;
+        })
+    }
+    function undo(): void {
+        // setHistory(history => {
+        //     let reviewItemJson: string | null = history.undo();
+        //     if (reviewItemJson === null) throw new Error("undo out of history memory");
+        //     let reviewItem: ReviewItem = ReviewItem.fromJson(reviewItemJson);
+        //     console.log(history);
+        //     setReviewItem(reviewItem);
+        //     return history;
+        // })
+        setHistory(history => {
+            let newHistory = history.clone();
+            let reviewItemJson: string | null = newHistory.undo();
+            if (reviewItemJson === null) throw new Error("undo out of history memory");
+            let reviewItem: ReviewItem = ReviewItem.fromJson(reviewItemJson);
+            console.log(newHistory);
+            setReviewItem(reviewItem);
+            return newHistory;
+        })
+    }
+    function act(reviewItem: ReviewItem): void {
+        // setHistory(history => {
+        //     history.act(ReviewItem.toJson(reviewItem));
+        //     return history;
+        // });
+        setHistory(history => {
+            let newHistory = history.clone();
+            newHistory.act(ReviewItem.toJson(reviewItem));
+            return newHistory;
+        });
+    }
+}
+
 export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element {
     let [bufferedReviewItem, updateBufferedReviewItem] = useState<ReviewItem>(props.initialReviewItem);
 
     let [isLoading, setIsLoading] = useState(props.initialReviewItem.allUploadFilesAreConverted());
-    
+
     // busy checking
     useReviewItemBusyChecker(
         bufferedReviewItem.reviewId,
@@ -39,6 +104,17 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
         },
         (reviewItem) => reviewItem.allUploadFilesAreConverted(),
         isLoading
+    );
+
+    let {
+        isRedoable,
+        isUndoable,
+        act,
+        undo,
+        redo
+    } = useReviewItemHistory(
+        props.initialReviewItem,
+        updateBufferedReviewItem
     );
 
     let [selectedFrameIndex, selectFrame] = useState<number>(0);
@@ -89,7 +165,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
         border: "solid 2px #E4E4E4",
         borderBottom: "none",
         userSelect: "none",
-        overflow: 'hidden',
+        overflow: 'auto',
         width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px - 50px)`,
     };
     let [viewMode, setViewMode] = useState<"DOUBLE_PAGE"|"OVERVIEW">("OVERVIEW");
@@ -112,6 +188,8 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                 zoom={() => {}}
                 viewMode={viewMode}
                 setViewMode={setViewMode}
+                onRedo={() => { if (isRedoable) redo(); } }
+                onUndo={() => { if (isUndoable) undo(); } }
             />
             {(viewMode === "OVERVIEW")? <ExportOverview
                 style={workSpaceStyle}
@@ -122,6 +200,9 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                 onSwapFrames={(frameIndex1, frameIndex2) => {
                     updateBufferedReviewItem(reviewItem => reviewItem.swapFramedPagesImmutably(0, frameIndex1, frameIndex2))
                 }}
+                onInsertBlankPageAfter={insertBlankFramedPageAfter}
+                onShiftFramesBetween={shiftFramesBetween}
+                onDeleteFrame={deleteFrame}
             /> : <DoublePageView
                 style={workSpaceStyle}
                 reviewItem={bufferedReviewItem}
@@ -155,10 +236,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                             } catch (error) {
                                 // TODO: 提醒使用者可以再按一次
                                 // setNextStepButtonIsTriggered(false);
-                            } finally {
-                              //  
                             }
-                            
                         }}
                     >
                         {(nextStepButtonIsTriggered)? "預覽列印中..." : "預覽列印"}
@@ -176,6 +254,96 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
     function onEdit(frameIndex: number): void {
         selectFrame(frameIndex);
         setViewMode("DOUBLE_PAGE");
+    }
+    function shiftFramesBetween(frameIndex1: number, frameIndex2: number): void {
+        updateBufferedReviewItem(bufferedReviewItem =>
+            bufferedReviewItem.shiftFramedPagesBetween(0, frameIndex1, frameIndex2)
+        );
+    }
+
+    function insertBlankFramedPageAfter(position: number) {
+
+        updateBufferedReviewItem(bufferedReviewItem => {
+            let newBook = (bufferedReviewItem.product as Book).clone();
+            newBook.numberOfPages += 1;
+
+            let newReviewItem = new ReviewItem(
+                bufferedReviewItem.status,
+                bufferedReviewItem.reviewId,
+                newBook
+            )
+            let oldFramedPages: FramedPage[] = bufferedReviewItem.models[0].framedPages;
+            let newFramedPages: FramedPage[] = newReviewItem.models[0].framedPages;
+            for (let i=0; i<=position; i++) {
+                let oldFramedPage: FramedPage = oldFramedPages[i];
+                let newFramedPage: FramedPage = newFramedPages[i];
+                cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage, newFramedPage);
+            }
+
+            for (let i=position+1; i<oldFramedPages.length; i++) {
+                let oldFramedPage: FramedPage = oldFramedPages[i];
+                let newFramedPage: FramedPage = newFramedPages[i+1];
+                cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage, newFramedPage);
+            }
+            newReviewItem.models[0].framedPages = newFramedPages;
+            act(newReviewItem);
+            return newReviewItem;
+        })
+    }
+    function insertBlankFramedPageBefore(position: number) {
+        
+    }
+
+    function cloneFramedPageExceptForNameAndIdAndIndexInto(
+        oldFramedPage: FramedPage,
+        newFramedPage: FramedPage
+    ): void {
+        newFramedPage.sourceFileIndex = oldFramedPage.sourceFileIndex;
+        newFramedPage.sourcePageNumber = oldFramedPage.sourcePageNumber;
+        newFramedPage.positionX = oldFramedPage.positionX;
+        newFramedPage.positionY = oldFramedPage.positionY;
+        newFramedPage.scaleX = oldFramedPage.scaleX;
+        newFramedPage.scaleY = oldFramedPage.scaleY;
+        newFramedPage.rotationDegree = oldFramedPage.rotationDegree;
+    }
+    function deleteFrame(frameIndex: number): void {
+
+        updateBufferedReviewItem(bufferedReviewItem => {
+            let newBook = (bufferedReviewItem.product as Book).clone();
+            if (newBook.numberOfPages <= 0) return bufferedReviewItem;
+            newBook.numberOfPages -= 1;
+
+            let newReviewItem = new ReviewItem(
+                bufferedReviewItem.status,
+                bufferedReviewItem.reviewId,
+                newBook
+            )
+            let oldFramedPages: FramedPage[] = bufferedReviewItem.models[0].framedPages;
+            let newFramedPages: FramedPage[] = newReviewItem.models[0].framedPages;
+            for (let i=0; i<frameIndex; i++) {
+                let oldFramedPage: FramedPage = oldFramedPages[i];
+                let newFramedPage: FramedPage = newFramedPages[i];
+                cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage, newFramedPage);
+            }
+
+            for (let i=frameIndex+1; i<oldFramedPages.length; i++) {
+                let oldFramedPage: FramedPage = oldFramedPages[i];
+                let newFramedPage: FramedPage = newFramedPages[i-1];
+                cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage, newFramedPage);
+            }
+            newReviewItem.models[0].framedPages = newFramedPages;
+            return newReviewItem;
+
+            function cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage: FramedPage, newFramedPage: FramedPage): void {
+                newFramedPage.sourceFileIndex = oldFramedPage.sourceFileIndex;
+                newFramedPage.sourcePageNumber = oldFramedPage.sourcePageNumber;
+                newFramedPage.positionX = oldFramedPage.positionX;
+                newFramedPage.positionY = oldFramedPage.positionY;
+                newFramedPage.scaleX = oldFramedPage.scaleX;
+                newFramedPage.scaleY = oldFramedPage.scaleY;
+                newFramedPage.rotationDegree = oldFramedPage.rotationDegree;
+            }
+        })
     }
 }
 
@@ -199,6 +367,8 @@ interface SideToolBarProps {
     zoom: (power: number) => void;
     viewMode: "DOUBLE_PAGE"|"OVERVIEW";
     setViewMode(newMode: "DOUBLE_PAGE"|"OVERVIEW"): void;
+    onUndo(): void;
+    onRedo(): void;
 }
 
 function SideToolBar(props: SideToolBarProps): JSX.Element {
@@ -239,6 +409,8 @@ function SideToolBar(props: SideToolBarProps): JSX.Element {
                     height: '100vh',
                 }}
                 zoom={() => {}}
+                onRedo={props.onRedo}
+                onUndo={props.onUndo}
             />
         </div>
     )

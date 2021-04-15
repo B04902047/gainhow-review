@@ -12,6 +12,13 @@ export default class FramedPage implements FramedPageInterface {
     @PrimaryColumn('varchar', { length: 255 })
     public frameId: string;  // 資料庫要用的primary key
 
+    @Exclude()
+    @Column({
+        nullable: true,
+        type: 'datetime'
+    })
+    public lastEditRequestDate?: Date;
+
     @Column('int')
     sourceFileIndex?: number;
 
