@@ -47,37 +47,25 @@ function useReviewItemHistory(
     }
     function redo(): void {
         setHistory(history => {
-            let reviewItemJson: string | null = history.redo();
+            let newHistory = history.clone();
+            let reviewItemJson: string | null = newHistory.redo();
             if (reviewItemJson === null) throw new Error("redo out of history memory");
             let reviewItem: ReviewItem = ReviewItem.fromJson(reviewItemJson);
             setReviewItem(reviewItem);
-            return history;
+            return newHistory;
         })
     }
     function undo(): void {
-        // setHistory(history => {
-        //     let reviewItemJson: string | null = history.undo();
-        //     if (reviewItemJson === null) throw new Error("undo out of history memory");
-        //     let reviewItem: ReviewItem = ReviewItem.fromJson(reviewItemJson);
-        //     console.log(history);
-        //     setReviewItem(reviewItem);
-        //     return history;
-        // })
         setHistory(history => {
             let newHistory = history.clone();
             let reviewItemJson: string | null = newHistory.undo();
             if (reviewItemJson === null) throw new Error("undo out of history memory");
             let reviewItem: ReviewItem = ReviewItem.fromJson(reviewItemJson);
-            console.log(newHistory);
             setReviewItem(reviewItem);
             return newHistory;
         })
     }
     function record(reviewItem: ReviewItem): void {
-        // setHistory(history => {
-        //     history.act(ReviewItem.toJson(reviewItem));
-        //     return history;
-        // });
         setHistory(history => {
             let newHistory = history.clone();
             newHistory.act(ReviewItem.toJson(reviewItem));
@@ -92,19 +80,19 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
     let [isLoading, setIsLoading] = useState(props.initialReviewItem.allUploadFilesAreConverted());
 
     // busy checking
-    useReviewItemBusyChecker(
-        bufferedReviewItem.reviewId,
-        bufferedReviewItem,
-        updateBufferedReviewItem,
-        (reviewItem) => { 
-            setIsLoading(false);
-            let initializedReviewItem = initFramedPagesWithUploadFiles(reviewItem)
-            updateBufferedReviewItem(initializedReviewItem);
-            props.saveReviewItem(initializedReviewItem);
-        },
-        (reviewItem) => reviewItem.allUploadFilesAreConverted(),
-        isLoading
-    );
+    // useReviewItemBusyChecker(
+    //     bufferedReviewItem.reviewId,
+    //     bufferedReviewItem,
+    //     updateBufferedReviewItem,
+    //     (reviewItem) => { 
+    //         setIsLoading(false);
+    //         let initializedReviewItem = initFramedPagesWithUploadFiles(reviewItem)
+    //         updateBufferedReviewItem(initializedReviewItem);
+    //         props.saveReviewItem(initializedReviewItem);
+    //     },
+    //     (reviewItem) => reviewItem.allUploadFilesAreConverted(),
+    //     isLoading
+    // );
 
     let {
         isRedoable,
@@ -234,7 +222,6 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                             try {
                                 await props.saveReviewItem(bufferedReviewItem);
                                 await reviewReception.generateFinalResults(bufferedReviewItem);
-                                console.log(nextStepButtonIsTriggered);
                                 setNextStepButtonIsTriggered(false);
                                 props.onFinished(bufferedReviewItem);
                             } catch (error) {

@@ -100,8 +100,8 @@ export interface ExportListProps {
         style = {
             ...props.style,
             display:'inline-block'
-        }
-        pageKeyArray = ['上頁','下頁']
+        };
+        pageKeyArray = ['上頁','下頁'];
     } else {
         style = {
             ...props.style,
