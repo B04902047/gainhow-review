@@ -5,9 +5,11 @@ import React, { CSSProperties } from 'react';
 import { BookPagingDirection } from 'libs/interfaces/src/lib/product';
 import e from 'express';
 import Book from 'libs/data/src/lib/Product/Book';
-import { CoverBlankFramePage } from '@gainhow-review/ui'
+import { CoverBlankFramePage, DrogMiddleLine } from '@gainhow-review/ui'
 
 import { GroupFramedPage,groupFramedPage } from '@gainhow-review/utils'
+import { ReactSortable } from "react-sortablejs";
+
 export interface ExportListProps {
     selectedModelIndex: number;
     selectedFrameIndex: number;
@@ -17,6 +19,7 @@ export interface ExportListProps {
   }
   
   export function ExportList(props: ExportListProps) {
+
     let product: Book = props.reviewItem.product as Book;
     
     let style: CSSProperties = {
@@ -54,11 +57,13 @@ export interface ExportListProps {
         <div style={modelsStyle}>
           {models.map((model: ReviewModel, modelIndex: number) => {
               let groupPages = groupFramedPage(model.framedPages,product.pagingDirection);
+              
               return (
                 <div 
                     key={modelIndex}
                     style={modelStyle}
                 >
+                   
                     {   
                         groupPages.map((groupPage: GroupFramedPage,index: number) => {
                             return(
@@ -73,6 +78,7 @@ export interface ExportListProps {
                             )
                         })
                     }
+                   
                 </div>
             );
             
@@ -84,7 +90,7 @@ export interface ExportListProps {
 
 
 
-  interface ExportingFrameProps {
+  interface ExportingGroupFrameProps {
     groupPage: GroupFramedPage,
     direct: BookPagingDirection,
     onSelect(frameIndex: number): void; 
@@ -92,7 +98,7 @@ export interface ExportListProps {
     style?: CSSProperties;
     height?: number;
   }
-  function ExportingGroupFrame (props: ExportingFrameProps) :JSX.Element {
+  function ExportingGroupFrame (props: ExportingGroupFrameProps) :JSX.Element {
     let style: CSSProperties;
     let pageKeyArray: Array<string>; 
     let pages:JSX.Element[];
@@ -111,12 +117,14 @@ export interface ExportListProps {
         pageKeyArray = ['左頁','右頁']
     }
 
-        pages = pageKeyArray.map((pageKey, index)=>{
+        pages = pageKeyArray.map((pageKey, index) => {
+            
+
             let framedPage: FramedPage = props.groupPage[pageKey];
             if(framedPage.frameName === '空白頁' ) {
                 return null
             }
-            else if (framedPage.frameName === '封面裏' || framedPage.frameName === '封底裏' ) {
+            else if (framedPage.frameName === '(封面裏)' || framedPage.frameName === '(封底裏)' ) {
                 let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
                 let frameHeightInMm = coverFrame.maxHeight;
                 let frameWidthInMm = coverFrame.maxWidth;
@@ -125,26 +133,39 @@ export interface ExportListProps {
                 let frameWidthInPx: number = frameHeightInPx * ratio;
                 let coverBlankFramePageStyle: CSSProperties;
                 return (
+                    <span key={index}>
+                    {(framedPage.frameName==='(封底裏)')?
+                            <DrogMiddleLine height={props.height}/>:<></>
+                        }
                     <CoverBlankFramePage
-                        key={index}
                         frameName={framedPage.frameName}
                         style={coverBlankFramePageStyle}
                         frameHeightInPx={frameHeightInPx}
                         frameWidthInPx={frameWidthInPx}
                         horizontalPadding={3}
                     />
+                    </span>
                 )
             }
             else {
                 return (
-                    <ExportingFrame
-                    key={index}
-                    framedPage={framedPage}
-                    isSelected={props.isSelected(framedPage.frameIndexInModel)}
-                    onSelect={()=>{ props.onSelect(framedPage.frameIndexInModel)}}
-                    height={props.height}
-                    horizontalPadding={3}
-                />)
+                    <span key={index}>
+                        {(framedPage.frameName!=='封底')?
+                            <DrogMiddleLine height={props.height}/>:<></>
+                        }
+                        <ExportingFrame
+                            framedPage={framedPage}
+                            isSelected={props.isSelected(framedPage.frameIndexInModel)}
+                            onSelect={()=>{ props.onSelect(framedPage.frameIndexInModel)}}
+                            height={props.height}
+                            horizontalPadding={3}
+                            isDroggable={true}
+                        />
+                        {(framedPage.frameName==='封底')?
+                            <DrogMiddleLine height={props.height}/>:<></>
+                        }
+                    </span>
+                )
             }
         });
         

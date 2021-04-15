@@ -213,6 +213,8 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                 selectedModelIndex={0}
                 selectedFrameIndex={selectedFrameIndex}
                 onSelect={(modelIndex, frameIndex) => selectFrame(frameIndex)}
+                updateReviewItem={updateBufferedReviewItem}
+                onShiftFramesBetween={(start, end) => shiftFramesBetween(start, end)}
             />}
             <div style={rightAreaStyle}>
                 <ModelInfo

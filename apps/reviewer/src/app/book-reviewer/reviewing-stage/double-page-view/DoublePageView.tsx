@@ -6,12 +6,13 @@ import Book from 'libs/data/src/lib/Product/Book';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import Canvas from '../canvans/Canvans';
 import { ExportList } from '../export-list/ExportList';
-
+import {SortableExportList} from '../../sortable-export-list/SortableExportList'
 
 
 
 
   import './DoublePageView.module.css';
+import { from } from 'form-data';
   
 
   interface DoublePageViewProps {
@@ -20,6 +21,9 @@ import { ExportList } from '../export-list/ExportList';
     selectedModelIndex: number;
     selectedFrameIndex: number;
     onSelect(modelIndex:number, frameIndex:number):void;
+    updateReviewItem(newReviewItem: ReviewItem): void;
+    onShiftFramesBetween(start: number, end: number): void;
+
 }
 
 function DoublePageView(props: DoublePageViewProps): JSX.Element {
@@ -54,12 +58,14 @@ function DoublePageView(props: DoublePageViewProps): JSX.Element {
                 changeEditingPage={changeEditingPage}
                 selectedFrameIndex={props.selectedFrameIndex}
             />
-            <ExportList
+            <SortableExportList
                 selectedModelIndex={props.selectedModelIndex}
                 selectedFrameIndex={props.selectedFrameIndex}
                 reviewItem={props.reviewItem}
                 style={exportListStyle}
                 onFrameSelect={props.onSelect}
+                updateReviewItem={(newReviewItem)=>props.updateReviewItem(newReviewItem)}
+                onShiftFramesBetween={props.onShiftFramesBetween}
             />
         </div>
     )

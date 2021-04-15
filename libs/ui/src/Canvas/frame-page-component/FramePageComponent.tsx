@@ -27,72 +27,163 @@ export function FramePageComponent(props: FramePageComponentProps) {
   const bleedingAreaZIndex: number = 10;
   const marksZIndex: number = 30;
   const imageTransformFrameZIndex: number = 40;
-  let imageTransformFrame: JSX.Element = null;
+  let imageTransformFrameJSX: JSX.Element = null;
+  let orangeImageJSX: JSX.Element = null;
+  let cropedImageJSX: JSX.Element = null;
   if (frame) {
 
     let sourcePageInfo: UploadFilePageInfo = props.framePage.getSourcePageInfo();
-    let imageAddress: string = sourcePageInfo.jpegUrl;
-    let imageWidthInPx: string = `calc(${imageScale} * ${sourcePageInfo.widthInMm})`;
-    let imageHeightInPx: string = `calc(${imageScale} * ${sourcePageInfo.heightInMm})`;
-    let imagePostionXInPx: string = `calc(${imageScale} * calc(${props.framePage.positionX} ))`;
-    let imagePostionYInPx: string = `calc(${imageScale} * calc(${props.framePage.positionY}))`;
-  
-    const imageStyle: CSSProperties = {
 
-      width: `calc(${imageWidthInPx})`,
-      height: `calc(${imageHeightInPx})`,
-      top: `${imagePostionYInPx}`,
-      left: `${imagePostionXInPx}`,
-      transform: `
-        scale(${props.framePage.scaleX}, ${props.framePage.scaleY})  
-        translate(50%, 50%)
-        rotate(${props.framePage.rotationDegree}deg) 
-        translate(-50%, -50%)
-        `,
-        //先依據左上角作為原點放大
-        //移動圖片中央到transformOrigin
-        //旋轉
-        //移動回原位
-      transformOrigin: '0 0',  
-      position: 'absolute'
+    if (sourcePageInfo) {
+      let imageAddress: string = sourcePageInfo.jpegUrl;
+      let imageWidthInPx: string = `calc(${imageScale} * ${sourcePageInfo.widthInMm})`;
+      let imageHeightInPx: string = `calc(${imageScale} * ${sourcePageInfo.heightInMm})`;
+      let imagePostionXInPx: string = `calc(${imageScale} * calc(${props.framePage.positionX} ))`;
+      let imagePostionYInPx: string = `calc(${imageScale} * calc(${props.framePage.positionY}))`;
+    
+      const imageStyle: CSSProperties = {
+  
+        width: `calc(${imageWidthInPx})`,
+        height: `calc(${imageHeightInPx})`,
+        top: `${imagePostionYInPx}`,
+        left: `${imagePostionXInPx}`,
+        transform: `
+          scale(${props.framePage.scaleX}, ${props.framePage.scaleY})  
+          translate(50%, 50%)
+          rotate(${props.framePage.rotationDegree}deg) 
+          translate(-50%, -50%)
+          `,
+          //先依據左上角作為原點放大
+          //移動圖片中央到transformOrigin
+          //旋轉
+          //移動回原位
+        transformOrigin: '0 0',  
+        position: 'absolute'
+      }
+  
+    const originalImageStyle: CSSProperties = {
+      ...imageStyle,
+      opacity: 0.3
+      
+    };
+    const clipedImageStyle: CSSProperties = {
+      ...imageStyle,
+      top: `calc(${imagePostionYInPx} - ${bleedingAreaBorderWidth}px)`,
+      left: `calc(${imagePostionXInPx}  - ${bleedingAreaBorderWidth}px)`,
+      opacity: 1
+    }
+    const imageTransformFrameLineWidth: number = 6;
+    const imageTransformFrameStyle: CSSProperties = {
+      width: `calc(${imageWidthInPx} * ${props.framePage.scaleX} )`,
+      height: `calc(${imageHeightInPx}  * ${props.framePage.scaleY} )`,
+      top: `calc(${imagePostionYInPx}  - ${imageTransformFrameLineWidth}px + ${bleedingAreaBorderWidth}px )`,
+      left: `calc(${imagePostionXInPx} - ${imageTransformFrameLineWidth}px + ${bleedingAreaBorderWidth}px )`,
+      transform: `rotate(${props.framePage.rotationDegree}deg) `,
+      transformOrigin: '50% 50%',
+      border: `${imageTransformFrameLineWidth}px solid #1581FF`,
+      position: 'absolute',
+      zIndex: imageTransformFrameZIndex,
+      cursor: 'move'
+    }
+  
+    const imageTransformFrameIconOffset: number = -imageTransformFrameLineWidth * 2;
+    const imageTransformFrameIconMiddle: string = `calc(50% + calc(${imageTransformFrameIconOffset}px))`;
+    
+    const imageTransformFrameIconStyle: CSSProperties = {
+      width: `18px`,
+      height: '18px',
+      border: '1px soild #1581FF',
+      background: '#1581FF',
+      position: 'absolute'  ,
     }
 
-  const originalImageStyle: CSSProperties = {
-    ...imageStyle,
-    opacity: 0.3
+    cropedImageJSX = (
+      <img 
+        src={imageAddress} 
+        style={clipedImageStyle}
+        onClick={(e)=>props.onImageClick(e)}
+      />
+    );
+    orangeImageJSX = (
+      <img src={imageAddress} style={originalImageStyle}></img>
+    );
+
+    let imageTransformFrameIcons: React.ReactElement = (
+      <>
+        <i // 左上
+          style={{
+            ...imageTransformFrameIconStyle,
+            top: imageTransformFrameIconOffset,
+            left: imageTransformFrameIconOffset,
+            cursor: 'nwse-resize',
+          }}
+        />
+        <i // 右上
+          style={{
+            ...imageTransformFrameIconStyle,
+            top: imageTransformFrameIconOffset,
+            right: imageTransformFrameIconOffset,
+            cursor: 'nesw-resize',
+          }}
+        />
+         <i // 右下
+          style={{
+            ...imageTransformFrameIconStyle,
+            bottom: imageTransformFrameIconOffset,
+            right: imageTransformFrameIconOffset,
+            cursor: 'nwse-resize',
+          }}
+        />
+        <i // 左下
+          style={{
+            ...imageTransformFrameIconStyle,
+            bottom: imageTransformFrameIconOffset,
+            left: imageTransformFrameIconOffset,
+            cursor: 'nesw-resize',
+          }}
+        />
+        <i // 上
+          style={{
+            ...imageTransformFrameIconStyle,
+            top: imageTransformFrameIconOffset,
+            left: imageTransformFrameIconMiddle,
+            cursor: 'ns-resize',
+          }}
+        />
+        <i // 下
+          style={{
+            ...imageTransformFrameIconStyle,
+            bottom: imageTransformFrameIconOffset,
+            left: imageTransformFrameIconMiddle,
+            cursor: 'ns-resize',
+          }}
+        />
+        <i // 右
+          style={{
+            ...imageTransformFrameIconStyle,
+            top: imageTransformFrameIconMiddle,
+            left: imageTransformFrameIconOffset,
+            cursor: 'ew-resize',
+          }}
+        />
+        <i // 右
+          style={{
+            ...imageTransformFrameIconStyle,
+            top: imageTransformFrameIconMiddle,
+            right: imageTransformFrameIconOffset,
+            cursor: 'ew-resize',
+          }}
+        />
+      </> 
+    );
+    imageTransformFrameJSX = (
+    <div style={imageTransformFrameStyle}>
+      {imageTransformFrameIcons}
+    </div> 
+    )
     
-  };
-  const clipedImageStyle: CSSProperties = {
-    ...imageStyle,
-    top: `calc(${imagePostionYInPx} - ${bleedingAreaBorderWidth}px)`,
-    left: `calc(${imagePostionXInPx}  - ${bleedingAreaBorderWidth}px)`,
-    opacity: 1
-  }
-  const imageTransformFrameLineWidth: number = 6;
-  const imageTransformFrameStyle: CSSProperties = {
-    width: `calc(${imageWidthInPx} * ${props.framePage.scaleX} )`,
-    height: `calc(${imageHeightInPx}  * ${props.framePage.scaleY} )`,
-    top: `calc(${imagePostionYInPx}  - ${imageTransformFrameLineWidth}px + ${bleedingAreaBorderWidth}px )`,
-    left: `calc(${imagePostionXInPx} - ${imageTransformFrameLineWidth}px + ${bleedingAreaBorderWidth}px )`,
-    transform: `rotate(${props.framePage.rotationDegree}deg) `,
-    transformOrigin: '50% 50%',
-    border: `${imageTransformFrameLineWidth}px solid #1581FF`,
-    position: 'absolute',
-    zIndex: imageTransformFrameZIndex,
-    cursor: 'move'
-  }
-
-  const imageTransformFrameIconOffset: number = -imageTransformFrameLineWidth * 2;
-  const imageTransformFrameIconMiddle: string = `calc(50% + calc(${imageTransformFrameIconOffset}px))`;
-  
-  const imageTransformFrameIconStyle: CSSProperties = {
-    width: `18px`,
-    height: '18px',
-    border: '1px soild #1581FF',
-    background: '#1581FF',
-    position: 'absolute'  ,
-  }
-
+    }
+    
 
   let shapeArea:string = frame.shape;
   let bleedingArea:string = frame.bleedingArea;
@@ -126,85 +217,20 @@ export function FramePageComponent(props: FramePageComponentProps) {
 
 
   });
-  let imageTransformFrameIcons: React.ReactElement = (
-    <>
-      <i // 左上
-        style={{
-          ...imageTransformFrameIconStyle,
-          top: imageTransformFrameIconOffset,
-          left: imageTransformFrameIconOffset,
-          cursor: 'nwse-resize',
-        }}
-      />
-      <i // 右上
-        style={{
-          ...imageTransformFrameIconStyle,
-          top: imageTransformFrameIconOffset,
-          right: imageTransformFrameIconOffset,
-          cursor: 'nesw-resize',
-        }}
-      />
-       <i // 右下
-        style={{
-          ...imageTransformFrameIconStyle,
-          bottom: imageTransformFrameIconOffset,
-          right: imageTransformFrameIconOffset,
-          cursor: 'nwse-resize',
-        }}
-      />
-      <i // 左下
-        style={{
-          ...imageTransformFrameIconStyle,
-          bottom: imageTransformFrameIconOffset,
-          left: imageTransformFrameIconOffset,
-          cursor: 'nesw-resize',
-        }}
-      />
-      <i // 上
-        style={{
-          ...imageTransformFrameIconStyle,
-          top: imageTransformFrameIconOffset,
-          left: imageTransformFrameIconMiddle,
-          cursor: 'ns-resize',
-        }}
-      />
-      <i // 下
-        style={{
-          ...imageTransformFrameIconStyle,
-          bottom: imageTransformFrameIconOffset,
-          left: imageTransformFrameIconMiddle,
-          cursor: 'ns-resize',
-        }}
-      />
-      <i // 右
-        style={{
-          ...imageTransformFrameIconStyle,
-          top: imageTransformFrameIconMiddle,
-          left: imageTransformFrameIconOffset,
-          cursor: 'ew-resize',
-        }}
-      />
-      <i // 右
-        style={{
-          ...imageTransformFrameIconStyle,
-          top: imageTransformFrameIconMiddle,
-          right: imageTransformFrameIconOffset,
-          cursor: 'ew-resize',
-        }}
-      />
-    </> 
-  );
+  
 
 
     return (
       <div onClick={(e)=>{
-          props.onImageClick(e)}
+          if(props.framePage.sourceFileIndex && props.framePage.sourcePageNumber) {
+            props.onImageClick(e)
+          }
+          
+        }
       }>
         {
           (props.isEditing) ? 
-            <div style={imageTransformFrameStyle}>
-              {imageTransformFrameIcons}
-            </div> 
+            [imageTransformFrameJSX]
               :
             <></>
         }
@@ -215,19 +241,16 @@ export function FramePageComponent(props: FramePageComponentProps) {
         borderColor={'#E2007F'}
         zIndex={cutLineZIndex}
       >
-          <img 
-            src={imageAddress} 
-            style={clipedImageStyle}
-            onClick={(e)=>props.onImageClick(e)}
-          />
+        {[cropedImageJSX]}
       </FrameLine>
+      
       <FrameLine
         borderWidth={bleedingAreaBorderWidth}
         clipPath={(props.isEditing) ? '' : bleedingArea} 
         borderColor={'#333333'}
         zIndex={bleedingAreaZIndex}
       >
-          <img src={imageAddress} style={originalImageStyle}></img>
+          {[orangeImageJSX]}
       </FrameLine>
       {marks}
       </div>
