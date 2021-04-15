@@ -125,6 +125,7 @@ export default class ReviewModel implements ReviewModelInterface {
         newFramedPages.forEach(framedPage => {
             framedPage.reviewModel = newReviewModel;
         });
+        newReviewModel.framedPages = newFramedPages;
         return newReviewModel;
     }
 

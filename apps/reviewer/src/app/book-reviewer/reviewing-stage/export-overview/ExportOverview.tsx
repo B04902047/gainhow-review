@@ -129,7 +129,6 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
             onDelete: () => {props.onDeleteFrame(frameIndex)},
             onReplaceSourcePage: () => {},
             onDrop: () => {
-                console.log('dropped');
                 props.onSwapFrames(frameIndex, props.selectedFrameIndex);
             }
         }

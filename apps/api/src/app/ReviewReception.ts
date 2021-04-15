@@ -124,22 +124,17 @@ export class ReviewReception implements ReviewReceptionInterface {
      * @param uploadFileStatus 
      */
     async busyCheckFileConversion(uploadFileStatus: UploadFileStatus): Promise<void> {
-        console.log("1");
         uploadFileStatus.pageInfos = await keepTryingTo(this.checkFileConversion, uploadFileStatus);
         // save pageInfos into uploadFileStatus
-        console.log("10");
         await Promise.all(
             uploadFileStatus.pageInfos.map(async (pageInfo: UploadFilePageInfo): Promise<void> => {
                 await this.connection.manager.save(UploadFilePageInfo, pageInfo);
             })
         );
-        console.log("100");
         uploadFileStatus.currentStage = "FINISHED";
         this.connection.manager.save(UploadFileStatus, uploadFileStatus);
-        console.log('Finsh!');
     }
     async checkFileConversion(uploadFileStatus: UploadFileStatus): Promise<Array<UploadFilePageInfo> | "NOT_FINISHED_YET"> {
-        console.log(2);
         let uploadToken: string | undefined = uploadFileStatus.uploadToken;
         if (uploadToken === undefined) throw "checkFileConversion() should be called after uploadtoken is set, but before."
         let requestBody = {
