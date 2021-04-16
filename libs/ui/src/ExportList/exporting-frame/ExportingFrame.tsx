@@ -89,6 +89,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
 
   return (
     <div
+      className={'xdragable'}
       style={style}
       onClick={props.onSelect}
       draggable={props.isDroggable}
