@@ -1,12 +1,18 @@
 import React, { CSSProperties } from "react";
+import { HoverableButton } from "../lib/buttons";
+import Redo from './icons/Redo.svg'
+import RedoBlue from './icons/RedoBlue.svg'
+import Close from './icons/Close.svg'
+import CloseBlue from './icons/CloseBlue.svg'
 
 
 interface UploadFileStatusRowProps {
     status: "REGISTERED" | "UPLOADING" | "FINISHED" | "CANCELED" | "FAILED";
     progress: number;
     fileName: string;
-    onDelete(): void;
-    onCancel(): void;
+    onDelete?(): void;
+    onCancel?(): void;
+    onResume?(): void;
     width: string;
 }
 
@@ -22,7 +28,7 @@ export function UploadFileStatusRow(props: UploadFileStatusRowProps): JSX.Elemen
             <div style={{
                 fontSize: 16,
                 color: '#333333',
-                width: `calc(${props.width} - 408px)`,
+                width: `calc(${props.width} - 400px)`,
                 display: 'inline-block',
                 whiteSpace: 'nowrap'
             }}>
@@ -34,12 +40,13 @@ export function UploadFileStatusRow(props: UploadFileStatusRowProps): JSX.Elemen
                 style={{
                     display: 'inline-block',
                     marginLeft: 83,
-                    marginBottom: 2
+                    marginBottom: 2,
                 }}
             />
             <div style={{
                 fontSize: 16,
                 marginLeft: 25,
+                width: 66,
                 textAlign: 'center',
                 color: (props.status === "CANCELED" || props.status === "FAILED")? '#D34242' : '#666666',
                 display: 'inline-block',
@@ -51,6 +58,31 @@ export function UploadFileStatusRow(props: UploadFileStatusRowProps): JSX.Elemen
                     : ""
                 }
             </div>
+            {(props.status === "CANCELED")?
+                <HoverableButton
+                    src={Redo}
+                    srcOnHover={RedoBlue}
+                    style={{
+                        marginBottom: -6,
+                        marginLeft: 18
+                    }}
+                    onClick={props.onResume}
+                />
+                :
+                <div style={{
+                    display: 'inline-block',
+                    width: 42
+                }}/>
+            }
+            <HoverableButton
+                src={Close}
+                srcOnHover={CloseBlue}
+                style={{
+                    marginBottom: -6,
+                    marginLeft: 7
+                }}
+                onClick={props.onCancel}
+            />
         </div>
     )
 }
@@ -67,7 +99,7 @@ function ProgressionBar(props: ProgressionBarProps): JSX.Element {
             <div style={{
                 width: props.width,
                 height: 6,
-                backgroundColor: '#F8F8F8',
+                backgroundColor: (props.progress)? '#F8F8F8' : 'inherit',
                 borderRadius: 4
             }}>
                 <div style={{

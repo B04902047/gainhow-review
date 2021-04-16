@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'reflect-metadata';
 import ApiTester from './api-tester/ApiTester';
 
 import { reviewItem as singleSheetReviewItem } from './testObjects1';
 import { reviewItem as bookReviewItem } from './testObjects2';
 import { BookReviewingStage } from './book-reviewer/reviewing-stage/BookReviewingStage';
-import { SourceImageToolBar } from '@gainhow-review/ui';
+
 
 // import * as webpack from 'webpack';
 // const plugins = []
@@ -28,4 +28,5 @@ export const App = () => {
 };
 
 export default App;
+
 

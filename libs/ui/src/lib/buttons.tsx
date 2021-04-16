@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { CSSProperties } from "react";
 
 interface ButtonProps {
@@ -12,7 +12,7 @@ interface ButtonProps {
 export function Button(props: ButtonProps): JSX.Element {
     const blue: string = '#1581ff';
     let style: CSSProperties = {
-        backgroundColor: (props.disabled)? 'gray' : (props.isPrimary)? blue: 'none',
+        backgroundColor: (props.disabled)? 'gray' : (props.isPrimary)? blue: 'inherit',
         border: `solid 2px ${(props.disabled)? 'gray' : blue}`,
         width: 184,
         height: 40,
@@ -31,5 +31,31 @@ export function Button(props: ButtonProps): JSX.Element {
     >
         {props.children}
     </button>
+    )
+}
+
+interface HoverableButtonProps {
+    src: string;
+    srcOnHover: string;
+    style: CSSProperties;
+    title?: string;
+    onClick?(): void;
+}
+
+export function HoverableButton(props: HoverableButtonProps): JSX.Element {
+    let [isHovered, setIsHovered] = useState(false);
+    let style: CSSProperties = {
+        cursor: (isHovered)? 'pointer': 'inherit',
+        ...props.style
+    }
+    return (
+        <img
+            src={(isHovered)? props.srcOnHover: props.src}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            style={style}
+            title={props.title}
+            onClick={props.onClick}
+        />
     )
 }

@@ -22,6 +22,7 @@ import { useDrag } from '../hooks';
 import ZoomInIcon from './icons/ZoomInIcon.svg';
 import ZoomOutIcon from './icons/ZoomOutIcon.svg';
 import ResetSizeIcon from './icons/ResetSizeIcon.svg';
+import { HoverableButton } from '../lib/buttons';
 
 interface SourceImageToolBarProps {
     
@@ -159,31 +160,6 @@ function VerticalLine(props: { style?: CSSProperties }): JSX.Element {
             ...props.style
         }}/>
     );
-}
-
-interface HoverableButtonProps {
-    src: string;
-    srcOnHover: string;
-    style: CSSProperties;
-    title?: string;
-    onClick?(): void;
-}
-
-function HoverableButton(props: HoverableButtonProps): JSX.Element {
-    let [isHovered, setIsHovered] = useState(false);
-    return (
-        <img
-            src={(isHovered)? props.srcOnHover: props.src}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            style={{
-                cursor: (isHovered)? 'pointer': 'inherit',
-                ...props.style
-            }}
-            title={props.title}
-            onClick={props.onClick}
-        />
-    )
 }
 
 interface SwitchableButtonProps {
