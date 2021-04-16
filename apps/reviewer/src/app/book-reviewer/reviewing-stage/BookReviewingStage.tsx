@@ -8,14 +8,12 @@ import DoublePageViewModeBlue from '../../../assets/icons/DoublePageViewModeBlue
 import OverviewMode from '../../../assets/icons/OverviewMode.svg';
 import OverviewModeBlue from '../../../assets/icons/OverviewModeBlue.svg';
 
-
 import BasicSideToolBar, { Icon } from "../../single-sheet-reviewer/reviewing-stage/side-tool-bar/SideToolBar";
 import { ExportOverview } from "./export-overview/ExportOverview";
 import DoublePageView from "./double-page-view/DoublePageView";
 import { ReviewReception, useReviewItemBusyChecker } from "@gainhow-review/features";
 import Book from "libs/data/src/lib/Product/Book";
 import { TextHistory } from '@gainhow-review/utils';
-import { deserialize, serialize } from "class-transformer";
 
 interface BookReviewingStageProps {
     initialReviewItem: ReviewItem;
@@ -232,7 +230,8 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                             }
                         }}
                     >
-                        {(nextStepButtonIsTriggered)? "預覽列印中..." : "預覽列印"}
+                        {(nextStepButtonIsTriggered)? "印刷檔生成中..." : "生成印刷檔"}
+                        
                     </Button>
                     <Button
                         style={previousStepButtonStyle}

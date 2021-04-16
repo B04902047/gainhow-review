@@ -2,7 +2,7 @@ import React from "react";
 import { CSSProperties } from "react";
 
 interface ButtonProps {
-    children: string;
+    children: React.ReactNode;
     isPrimary?: boolean;
     style?: CSSProperties;
     onClick(): void;
@@ -18,6 +18,7 @@ export function Button(props: ButtonProps): JSX.Element {
         height: 40,
         borderRadius: 20,
         fontSize: 18,
+        outline: 'none',
         color: (props.isPrimary)? 'white': blue,
         cursor: 'pointer',
         ...props.style,

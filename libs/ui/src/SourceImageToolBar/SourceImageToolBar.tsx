@@ -292,20 +292,20 @@ function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
                         });
                     }}
                 />
-                <div style={leftZoomBarStyle}/>
+                <div style={leftZoomBarStyle} />
                 <div
                     style={zoomPadStyle}
                     draggable
                     onDragStart={(event) => {
                         event.dataTransfer.setDragImage(dragImage, 0, 0);
                         event.dataTransfer.clearData();
-                        setPositions(([oldMousePosition, oldZoomPadPosition]) => {
                         let newMousePosition: number = event.pageX;
-                        return [newMousePosition, oldZoomPadPosition];
+                        setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+                            return [newMousePosition, oldZoomPadPosition];
                         });
                     }}
                 />
-                <div style={rightZoomBarStyle}/>
+                <div style={rightZoomBarStyle} />
                 <HoverableButton
                     src={ZoomOutIcon}
                     srcOnHover={ZoomOutIcon}
