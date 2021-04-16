@@ -39,9 +39,11 @@ interface NoneFileUploadProps {
     register(file: FileList):void
 }
 
-function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
+export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
     const inputRef = useRef(null);
+    
     let style: CSSProperties = {
+        position: 'relative',
         width:'calc(100% - 40px)',
         height:'calc(100% - 40px)',
     }
@@ -53,17 +55,14 @@ function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
         margin: '20px',
         alignItems:'center',
         justifyContent:'center',
-        flexDirection: 'column'
-
+        flexDirection: 'column',
     }
 
     let borderSVGStyle: CSSProperties = {
         width:'calc(100% - 40px)',
         height:'calc(100% - 40px)',
-
         margin: '20px',
         position:'absolute',
-        zIndex:-1
     }
     let rectBorderStyle: CSSProperties = {
         fill:'none',
@@ -75,21 +74,16 @@ function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
         height:'100%'
     }
     let textStyle: CSSProperties = {
-        fontSize:'18px',
+        fontSize: '18px',
         color: '#333333',
-        margin:'18px'
+        margin: '18px',
+        zIndex: 20
     }
 
     let inputStyle: CSSProperties = {
-        display:'none'
+        display:'none',
     }
-    function onAddFilesClick(){
-        inputRef.current.click();
-    }
-    function onAddFiles(event: React.ChangeEvent<HTMLInputElement>): void {
-        props.register(event.target.files);
-    }
-        return(
+    return (
         <div style={style}>
              <svg style={borderSVGStyle} xmlns='http://www.w3.org/2000/svg' >
                 <rect style={rectBorderStyle}  rx='6'>
@@ -98,12 +92,21 @@ function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
             <div style={iconStyle}>
                 <img src={UploadFileCloudIcon} style={{display:'block'}}/>
                 <div style={textStyle}>
-                    將檔案拖曳至此處，或<a href={''} onClick={()=>{onAddFilesClick()}}>點擊上傳</a>
+                    將檔案拖曳至此處，或
+                    <a
+                        href={''}
+                        onClick={(event) => {
+                            event.preventDefault();
+                            inputRef.current.click();
+                        }}
+                    >
+                        點擊上傳
+                    </a>
                 </div>
                 <input 
                     style={inputStyle}
                     ref={inputRef} 
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>)=>{onAddFiles(event)}}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.register(event.target.files) }
                     type="file"
                 />
                 
