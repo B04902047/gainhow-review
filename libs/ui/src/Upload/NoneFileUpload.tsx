@@ -1,39 +1,6 @@
-import { ReviewStatus, UploadFileStatus } from "@gainhow-review/data";
 import React,{ CSSProperties, useRef, useState } from "react";
 import UploadFileCloudIcon from '../Upload/icons/UploadToCloud.svg'
 
-interface UploadAreaProps {
-    style?: CSSProperties,
-    reviewStatus: ReviewStatus;
-    uploadFile(file: FileList):void
-    delectFile(uploadToken: string):void;
-    cencelFile(uploadToken: string):void;
-}
-export function UploadArea(props: UploadAreaProps): JSX.Element {
-    let [registerFile, setRrgisterFile] = useState<FileList>();
-    let uploadFileStatuses: UploadFileStatus[] = props.reviewStatus.uploadFileStatuses;
-    let numberOfFiles = (uploadFileStatuses)? uploadFileStatuses.length : 0;
-    let style: CSSProperties = {
-        position:'relative',
-        width:  '500px',
-        height:  '400px',
-        margin: '30px',
-        boxShadow: '0px 2px 3px #00000029',
-        borderRadius: '10px',
-        ...props.style
-    }
-        
-      
-    
-    return (
-        <div style={style}>
-           
-            <NoneFileUpload
-                register={setRrgisterFile}
-            />
-        </div>
-    )
-}
 
 interface NoneFileUploadProps {
     register(file: FileList):void
@@ -46,21 +13,21 @@ export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
         position: 'relative',
         width:'calc(100% - 40px)',
         height:'calc(100% - 40px)',
+        userSelect: 'none'
     }
     let iconStyle: CSSProperties = {
         display:'flex',
         width: '100%',
         height: '100%',
         textAlign: 'center',
-        margin: '20px',
         alignItems:'center',
         justifyContent:'center',
         flexDirection: 'column',
     }
 
     let borderSVGStyle: CSSProperties = {
-        width:'calc(100% - 40px)',
-        height:'calc(100% - 40px)',
+        width:'calc(100%)',
+        height:'calc(100%)',
         margin: '20px',
         position:'absolute',
     }
@@ -73,6 +40,12 @@ export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
         width:'100%',
         height:'100%'
     }
+    let uploadFileCloudIconStyle: CSSProperties = {
+        display:'block',
+        zIndex:4,
+        cursor: 'pointer'
+    }
+
     let textStyle: CSSProperties = {
         fontSize: '18px',
         color: '#333333',
@@ -83,6 +56,11 @@ export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
     let inputStyle: CSSProperties = {
         display:'none',
     }
+    function onFileAdd(event: React.MouseEvent) {
+        event.preventDefault();
+        inputRef.current.click();
+    }
+
     return (
         <div style={style}>
              <svg style={borderSVGStyle} xmlns='http://www.w3.org/2000/svg' >
@@ -90,15 +68,12 @@ export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
                  </rect>
             </svg>
             <div style={iconStyle}>
-                <img src={UploadFileCloudIcon} style={{display:'block'}}/>
+                <img src={UploadFileCloudIcon} style={uploadFileCloudIconStyle} onClick={onFileAdd}/>
                 <div style={textStyle}>
                     將檔案拖曳至此處，或
                     <a
                         href={''}
-                        onClick={(event) => {
-                            event.preventDefault();
-                            inputRef.current.click();
-                        }}
+                        onClick={onFileAdd}
                     >
                         點擊上傳
                     </a>
@@ -108,6 +83,7 @@ export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
                     ref={inputRef} 
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.register(event.target.files) }
                     type="file"
+                    multiple={true}
                 />
                 
             </div>
