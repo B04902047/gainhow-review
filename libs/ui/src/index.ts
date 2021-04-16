@@ -13,3 +13,4 @@ export * from './ExportList/exporting-model/ExportingModel';
 export * from './lib/buttons';
 export * from './Canvas/drog-middle-line/DrogMiddleLine'
 export * from './SourceImageToolBar/SourceImageToolBar';
+export * from './Upload/UploadFileStatusRow'
