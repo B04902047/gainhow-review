@@ -156,7 +156,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
         overflow: 'auto',
         width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px - 50px)`,
     };
-    let [viewMode, setViewMode] = useState<"DOUBLE_PAGE"|"OVERVIEW">("OVERVIEW");
+    let [viewMode, setViewMode] = useState<"DOUBLE_PAGE"|"OVERVIEW">("DOUBLE_PAGE");
     return (
         <div>
             {isLoading && <UploadFileConvertingModal reviewItem={bufferedReviewItem}/>}
