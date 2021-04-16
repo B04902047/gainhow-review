@@ -1,12 +1,13 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import PlusBlue from './icons/PlusBlue.svg';
 
 interface UploadNewFileButtonProps {
-    onClick?(): void;
+    onFilesSelected(files: FileList): void;
 }
 
 export function UploadNewFileButton(props: UploadNewFileButtonProps): JSX.Element {
+    let hiddenInputRef = useRef(null);
     return (
         <div style={{
             width: 134,
@@ -14,7 +15,9 @@ export function UploadNewFileButton(props: UploadNewFileButtonProps): JSX.Elemen
             borderRadius: 20,
             backgroundColor: '#D0E6FF',
             cursor: 'pointer'
-        }}>
+        }}
+            onClick={() => hiddenInputRef.current.click()}
+        >
             <div style={{
                 margin: 8,
                 backgroundColor: 'white',
@@ -39,6 +42,13 @@ export function UploadNewFileButton(props: UploadNewFileButtonProps): JSX.Elemen
             }}>
                 新增檔案
             </div>
+            <input
+                type="file"
+                multiple
+                style={{ display: 'none' }}    
+                ref={hiddenInputRef}
+                onChange={(event) => props.onFilesSelected(event.target.files)}
+            />
         </div>
     )
 }

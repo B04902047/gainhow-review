@@ -2,16 +2,6 @@ import React, { CSSProperties, useState } from 'react';
 import { Button, UploadFileRegistration, UploadFileStatusRow } from '@gainhow-review/ui';
 export function App() {
   return <Uploader/>;
-  let [status, setStatus] = useState<"FAILED" | "REGISTERED" | "UPLOADING" | "FINISHED" | "CANCELED">("UPLOADING")
-  return <UploadFileStatusRow
-    status={status}
-    fileName="檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名"
-    progress={66}
-    onDelete={() => {}}
-    onCancel={() => setStatus("CANCELED")}
-    onResume={() => setStatus("UPLOADING")}
-    width="1058px"
-  />
 }
 
 export default App;
@@ -27,7 +17,7 @@ function Uploader(): JSX.Element {
       <div style={{padding: 30}}>
         <UploadFileRegistration
           width='1090px'
-          height="726"
+          height="500px"
         />
       </div>
       <UploadReminder
@@ -88,7 +78,7 @@ function UploadReminder(props: UploadReminderProps): JSX.Element {
       </div>
       <ol style={contentsStyle}>
         {props.contents.map((content) => 
-          <li>{content}</li>
+          <li key={content}>{content}</li>
         )}
       </ol>
     </div>

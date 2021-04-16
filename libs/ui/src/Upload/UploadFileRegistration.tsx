@@ -9,38 +9,43 @@ interface UploadFileRegistrationProps {
 }
 
 export function UploadFileRegistration(props: UploadFileRegistrationProps): JSX.Element {
-    //let [filesToUpload, setFilesToUpload] = useState<File[]>([]);
-    let filesToUpload = [{name: '檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名'}, {name: '檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名'}, {name: '檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名'}, {name: '檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名'}, {name: '檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名'}, {name: '檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名'}, {name: '檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名檔名'}]
+    let [filesToUpload, setFilesToUpload] = useState<File[]>([]);
     return (
         <div style={{
             backgroundColor: 'white',
             width: props.width,
             height: props.height,
             borderRadius: 10,
-            boxShadow: '0px 2px 3px #00000029',
-            overflow: 'auto'
+            boxShadow: '0px 2px 3px #00000029'
         }}>
             <div style={{
                 paddingLeft: 28,
                 paddingTop: 19,
             }}>
-                <UploadNewFileButton/>
-                {filesToUpload.map((file) => {
-                    return <UploadFileStatusRow
-                        status="REGISTERED"
-                        progress={0}
-                        fileName={file.name}
-                        width='1058px'
-                    />
-                })}
+                <UploadNewFileButton
+                    onFilesSelected={(files: FileList) => {
+                        setFilesToUpload(currentFiles => {
+                            let newFiles = [ ...currentFiles ];
+                            for (let i=0; i<files.length; i++) {
+                                newFiles.push(files[i]);
+                            }
+                            return newFiles;
+                        });
+                    }}
+                />
+                <div style={{ height: 400, overflow: 'auto' }}>
+                    {filesToUpload.map((file) => {
+                        return <UploadFileStatusRow
+                            key={file.name}
+                            status="REGISTERED"
+                            progress={0}
+                            fileName={file.name}
+                            width='1058px'
+                        />
+                    })}
+                </div>
             </div>
         </div>
     );
 
-    // function addFile(file: File): void {
-    //     setFilesToUpload(files => [
-    //         ...files,
-    //         file
-    //     ]);
-    // }
 }
