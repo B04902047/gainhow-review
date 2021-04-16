@@ -32,13 +32,14 @@ export function UploadFileRegistration(props: UploadFileRegistrationProps): JSX.
                         onFilesSelected={addFile}
                     />
                     <div style={{ height: 400, overflow: 'auto' }}>
-                        {filesToUpload.map((file) => {
+                        {filesToUpload.map((file, index) => {
                             return <UploadFileStatusRow
                                 key={file.name}
                                 status="REGISTERED"
                                 progress={0}
                                 fileName={file.name}
                                 width='1058px'
+                                onCancel={() => deleteFile(index)}
                             />
                         })}
                     </div>
@@ -48,12 +49,22 @@ export function UploadFileRegistration(props: UploadFileRegistrationProps): JSX.
     );
 
     function addFile(files: FileList): void {
-        console.log('addFile');
         setFilesToUpload(currentFiles => {
             let newFiles = [ ...currentFiles ];
             for (let i=0; i<files.length; i++) {
                 newFiles.push(files[i]);
             }
+            return newFiles;
+        });
+    }
+
+    function deleteFile(indexToDelete: number): void {
+        setFilesToUpload(currentFiles => {
+
+            let newFiles = [];
+            currentFiles.forEach((file, index) => {
+                if(index !== indexToDelete) newFiles.push(file);
+            })
             return newFiles;
         });
     }
