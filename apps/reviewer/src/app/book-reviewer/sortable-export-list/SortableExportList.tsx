@@ -9,8 +9,9 @@ import { CoverBlankFramePage, DrogMiddleLine } from '@gainhow-review/ui'
 
 import { GroupFramedPage, getRightOrLeftPageKeyByframeName, 
     FORNT_COVER_BLANK_PAGENAME ,BACK_COVER_BLANK_PAGENAME,
-    LEFT_PAGE,RIGHT_PAGE, groupFramedPage, framedPagesToSortableFramedPages, sortableGroupFramedPage, SortableGroupFramedPage, SortableFramedPage } from '@gainhow-review/utils'
+    LEFT_PAGE,RIGHT_PAGE, groupFramedPage, framedPagesToSortableFramedPages, sortableGroupFramedPage, SortableGroupFramedPage, SortableFramedPage, sortableFramedPagesWithFramedPages, sortableFramedPagesToFramedPages, findGroupFramedPageWithFramedPage } from '@gainhow-review/utils'
 import { ReactSortable, Sortable } from "react-sortablejs";
+import { ids } from 'konva/types/Node';
 
 export interface SortableExportListProps {
     selectedModelIndex: number;
@@ -23,11 +24,26 @@ export interface SortableExportListProps {
   }
   
   export function SortableExportList(props: SortableExportListProps) {
+    let product: Book = props.reviewItem.product as Book;
     let [sortableFramedPages,setSortable] = useState<SortableFramedPage[]>(
-        framedPagesToSortableFramedPages(props.reviewItem.models[props.selectedModelIndex].framedPages)
+        sortableFramedPagesWithFramedPages(props.reviewItem.models[props.selectedModelIndex].framedPages,product.pagingDirection)
     );
 
-    let product: Book = props.reviewItem.product as Book;
+    function onSetSortable(sortableFramedPages:SortableFramedPage[]) {
+        //TODO: 忽略額外加上的頁  sortableFramedPagesToFramedPages的話要注意框名 不然sortableFramedPagesWithFramedPages 會錯
+        let newSortableFramedPages:SortableFramedPage[]= [] 
+        let newFramedPages: FramedPage[] = sortableFramedPagesToFramedPages(sortableFramedPages);
+
+        console.log('newFramedPages');
+        console.log(newFramedPages);
+        newSortableFramedPages =sortableFramedPagesWithFramedPages(newFramedPages,product.pagingDirection);
+
+        console.log('sortableFramedPages');
+        console.log(sortableFramedPages);
+        console.log('newSortableFramedPages');
+        console.log(newSortableFramedPages);
+        setSortable(newSortableFramedPages); 
+    }
     let style: CSSProperties = {
       backgroundColor: "#f7f7f7",
       border: '2px solid #E4E4E4',
@@ -54,18 +70,22 @@ export interface SortableExportListProps {
         }
         return false;
     }
-    function onDragStart(props: SortableExportListProps, evt: Sortable.SortableEvent) {
-        console.log(evt.oldIndex);
-        props.onFrameSelect(props.selectedModelIndex, evt.oldIndex);
+    function onDragStart(props: SortableExportListProps,sortableFramedPages:SortableFramedPage[], evt: Sortable.SortableEvent) {
+        let frameNames =  props.reviewItem.models[0].frameNames;
+        let oldIndex = frameNames.indexOf((evt.clone.innerText).toString())
+        if(oldIndex === -1) return;
+        props.onFrameSelect(props.selectedModelIndex, oldIndex);
     }
 
     function onDragEnd(props: SortableExportListProps, evt: Sortable.SortableEvent) {
-        props.onFrameSelect(props.selectedModelIndex, evt.newIndex);
-        let newIndex = evt.newIndex;
-        let oldIndex = evt.oldIndex;
-        console.log(props.onShiftFramesBetween);
-        console.log(`oldIndex=${oldIndex} , newIndex=${newIndex}`);
-        props.onShiftFramesBetween(oldIndex, newIndex);
+        let sortableFramedPage = sortableFramedPagesWithFramedPages(props.reviewItem.models[0].framedPages,product.pagingDirection);
+        let newIndex = sortableFramedPage[evt.newIndex].FramedPage.frameIndexInModel;
+        let oldIndex = sortableFramedPage[evt.oldIndex].FramedPage.frameIndexInModel;
+        if(newIndex!= -1 && oldIndex!= -1) {
+            props.onFrameSelect(props.selectedModelIndex, newIndex);
+            console.log(`oldIndex=${oldIndex} , newIndex=${newIndex}`);
+            props.onShiftFramesBetween(oldIndex, newIndex);
+        }
     }
 
     
@@ -78,23 +98,32 @@ export interface SortableExportListProps {
         <ReactSortable 
             list={sortableFramedPages} 
             setList={setSortable}
-            onStart={(event: Sortable.SortableEvent) => onDragStart(props, event)}
+            onStart={(event: Sortable.SortableEvent) => onDragStart(props,sortableFramedPages, event)}
             onEnd={(event: Sortable.SortableEvent) => onDragEnd(props, event)}
         >
             
             {
-                groupPages.map((groupPage: SortableGroupFramedPage,index: number) => {
-                    
-                    return(
-                        <ExportingSortableGroupFrame
-                            key={index}
-                            style={groupStyle}
-                            groupPage={groupPage}
-                            direct={product.pagingDirection}
-                            onSelect={(frameIndex: number) => { props.onFrameSelect(0,frameIndex) }}
-                            isSelected={(frameIndex: number) => { return isSelected(props, 0, frameIndex) }}
-                        />
-                    )
+                sortableFramedPages.map((sortableFramedPage,index)=>{
+                    let page = (
+                    <ShingleSortableFrame
+                        key={index}
+                        sortableFramedPage={sortableFramedPage}
+                        onSelect={(frameIndex: number) => { props.onFrameSelect(0,frameIndex) }}
+                        isSelected={(frameIndex: number) => { return isSelected(props, 0, frameIndex) }}
+                    />
+                    );
+                    let marginDiv: JSX.Element = null;
+                    if (index%2 === 1) {
+                        marginDiv = (
+                            <div style={{width: 25,height:'100%',display:'inline-block'}}/>
+                        )
+                    }
+                    return (
+                        <>
+                        {page}
+                        {marginDiv}
+                        </>
+                        )
                 })
             }
             
@@ -104,25 +133,16 @@ export interface SortableExportListProps {
     );
   };
 
-
-
-  interface ExportingSortableGroupFrameProps {
-    groupPage: SortableGroupFramedPage,
-    direct: BookPagingDirection,
+interface ShingleSortableFrame {
+    sortableFramedPage:SortableFramedPage;
     onSelect(frameIndex: number): void; 
     isSelected(frameIndex: number): boolean;
-    style?: CSSProperties;
     height?: number;
-  }
-  function ExportingSortableGroupFrame (props: ExportingSortableGroupFrameProps) :JSX.Element {
-    let pages:JSX.Element[];
-    let style: CSSProperties = {
-            ...props.style,
-            display:'inline-block',
-            margin: '0px 25px',
-    }
-    pages = Object.keys(props.groupPage).map((pageKey, index) => {
-        let framedPage: FramedPage = props.groupPage[pageKey].FramedPage;
+}
+  
+  function ShingleSortableFrame(props: ShingleSortableFrame): JSX.Element {
+    
+        let framedPage: FramedPage = props.sortableFramedPage.FramedPage;
         if(framedPage.frameName === '空白頁' ) {
             return null
         }
@@ -135,7 +155,7 @@ export interface SortableExportListProps {
             let frameWidthInPx: number = frameHeightInPx * ratio;
             let coverBlankFramePageStyle: CSSProperties;
             return (
-                <span key={index}>
+                <div style={{display:'inline-block'}}>
                 {(framedPage.frameName===BACK_COVER_BLANK_PAGENAME)?
                         <DrogMiddleLine height={props.height}/>:<></>
                     }
@@ -146,12 +166,12 @@ export interface SortableExportListProps {
                     frameWidthInPx={frameWidthInPx}
                     horizontalPadding={3}
                 />
-                </span>
+                </div>
             )
         }
         else {
             return (
-                <span key={index}>
+                <span>
                     {(framedPage.frameName!=='封底')?
                         <DrogMiddleLine height={props.height}/>:<></>
                     }
@@ -169,18 +189,10 @@ export interface SortableExportListProps {
                 </span>
             )
         }
-    });
-        
-        
-    
    
-   
-    return (
-        <div style={style}>
-            {pages}
-        </div>
-    )
   }
+
+
 
 
   export default SortableExportList;

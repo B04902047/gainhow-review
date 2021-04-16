@@ -12,10 +12,12 @@ export type GroupFramedPage  =  HorizontalGroupFramedPage  ;
     [RIGHT_PAGE] : FramedPage,
   }
 export type SortableFramedPage ={
-  id: number;
+  id: string;
   FramedPage: FramedPage;
-  disable?: boolean;
-  sortable?: boolean;
+  chosen?: boolean;
+  selected?: boolean;
+  filtered?: boolean;
+
 }
 
 export type SortableGroupFramedPage = {
@@ -132,9 +134,119 @@ export function findGroupFramedPageWithFramedPage(groups:Array<GroupFramedPage>,
 export function framedPagesToSortableFramedPages(framedPages: FramedPage[]): Array<SortableFramedPage> {
   return framedPages.map((framedPage: FramedPage) => {
     return {
-        id: framedPage.frameIndexInModel,
-        FramedPage: framedPage}
+        id: framedPage.frameName,
+        FramedPage: framedPage,
+        draggable:(framedPage.frameName==BACK_COVER_BLANK_PAGENAME || framedPage.frameName==FORNT_COVER_BLANK_PAGENAME)? false : true,
+        
+      
+      }
   })
+}
+export function sortableFramedPagesToFramedPages(sortableFramedPages:Array<SortableFramedPage>): FramedPage[] {
+  let result :FramedPage[] = [];
+  for(let i=0 ; i<sortableFramedPages.length ; i++) {
+    let page = sortableFramedPages[i].FramedPage;
+    if(page.frameIndexInModel!=-1) {result.push(page);}
+  }
+  return  result;
+}
+
+export function sortableFramedPagesWithFramedPages(framedPages: FramedPage[], direct: BookPagingDirection): Array<SortableFramedPage>{
+  let sortableFramedPages: Array<SortableFramedPage>= [];
+  if ( direct === 'RIGHT_TO_LEFT' ) {
+    sortableFramedPages = rightToLeftSortableFramedPage(framedPages);
+}
+else if ( direct === 'LEFT_TO_RIGHT' ) {
+  sortableFramedPages = leftToRightSortableFramedPage(framedPages);
+}
+return sortableFramedPages;
+
+}
+function rightToLeftSortableFramedPage(framedPages: Array<FramedPage>): Array<SortableFramedPage> {
+  let sortableArray: Array<SortableFramedPage> = [];
+  let reviewModel = framedPages[0].reviewModel;
+  let blankSortableFramePage: SortableFramedPage= {
+    id: '空白頁',
+    FramedPage: new FramedPage(
+      '空白頁',
+      '空白頁',
+      reviewModel,
+      -1
+    ),
+  };
+  let frontCoverBlankPage: SortableFramedPage = {
+    id: FORNT_COVER_BLANK_PAGENAME,
+    FramedPage: new FramedPage(
+      FORNT_COVER_BLANK_PAGENAME,
+      FORNT_COVER_BLANK_PAGENAME,
+      reviewModel,
+      -1
+    ),
+  };
+  let backCoverBlankSortablePage: SortableFramedPage = {
+    id: BACK_COVER_BLANK_PAGENAME,
+    FramedPage: new FramedPage(
+      BACK_COVER_BLANK_PAGENAME,
+      BACK_COVER_BLANK_PAGENAME,
+      reviewModel,
+      -1,
+    ),
+};
+  let lastFramedPageName: string =(framedPages.length-2).toString();
+  // let coverFrame: FramedPage;
+  // let backFrame: FramedPage;
+  // for(let i=0;i<framedPages.length;i++) {
+  //   if(framedPages[i].frameName === '封面') {
+  //     coverFrame=framedPages[i];
+  //   }
+  //   else if (framedPages[i].frameName === '封底') {
+  //     backFrame = framedPages[i];
+  //   }
+  // }
+  for(let i=0; i<framedPages.length; i++) {
+    let framedPage = framedPages[i];
+    let frameName = framedPage.frameName;
+    let sortableFramedPage: SortableFramedPage = {
+      id: frameName,
+      FramedPage: framedPage,
+    }
+    switch (frameName) {
+      case '封面':
+        sortableArray.push(blankSortableFramePage); //先插入空白頁
+        sortableArray.push(sortableFramedPage); //插入自己
+        break;
+      case '1':
+        sortableArray.push(frontCoverBlankPage); //先插入封面裏
+        sortableArray.push(sortableFramedPage); //插入自己
+        break;
+      case lastFramedPageName :
+        sortableArray.push(sortableFramedPage); //插入自己
+        sortableArray.push(backCoverBlankSortablePage); //插入封面裏
+        break;
+      case '封底':
+        sortableArray.push(sortableFramedPage); //插入自己
+        sortableArray.push(blankSortableFramePage); //插入空白頁
+        break;
+      default:
+        sortableArray.push(sortableFramedPage); //插入自己
+    }
+  }
+  return sortableArray;
+}
+
+function leftToRightSortableFramedPage(framedPages: Array<FramedPage>): Array<SortableFramedPage> {
+  let rightToLeftArray = rightToLeftSortableFramedPage(framedPages);
+  let result = [];
+  for(let i=0; i<rightToLeftArray.length; i++) {
+    let rightPage: SortableFramedPage = rightToLeftArray[i];
+    result.push(rightPage);
+    if ((i+1)<rightToLeftArray.length) {
+      i=i+1;
+      let leftPage: SortableFramedPage = rightToLeftArray[i];
+      result.push(leftPage);
+    }
+  }
+  return result;
 }
 
 export function sortableGroupFramedPage(sortableFramedPage: Array<SortableFramedPage>, direct: BookPagingDirection) : Array<SortableGroupFramedPage> {
@@ -165,7 +277,7 @@ function rightToLeftSortableGroupFramedPage (sortableFramedPages: Array<Sortable
   let groupArray: Array<SortableGroupFramedPage> = [];
   let framedPages = sortableFramedPages[0].FramedPage
   let blankSortableFramePage: SortableFramedPage= {
-    id: -1,
+    id: '空白頁',
     FramedPage: new FramedPage(
       '空白頁',
       '空白頁',
@@ -191,7 +303,7 @@ function rightToLeftSortableGroupFramedPage (sortableFramedPages: Array<Sortable
       } else if (framedPage.frameName === '封底') {
           // TODO: 加上封底裏
           let backCoverBlankSortablePage: SortableFramedPage = {
-            id: -1,
+            id: BACK_COVER_BLANK_PAGENAME,
             FramedPage: new FramedPage(
               BACK_COVER_BLANK_PAGENAME,
               BACK_COVER_BLANK_PAGENAME,
@@ -210,7 +322,7 @@ function rightToLeftSortableGroupFramedPage (sortableFramedPages: Array<Sortable
           inputGroup[LEFT_PAGE] =  sortableFramedPage
       } else if (framedPage.frameName === '1' ) {
           let frontCoverBlankPage: SortableFramedPage = {
-            id: -1,
+            id: FORNT_COVER_BLANK_PAGENAME,
             FramedPage: new FramedPage(
               FORNT_COVER_BLANK_PAGENAME,
               FORNT_COVER_BLANK_PAGENAME,
