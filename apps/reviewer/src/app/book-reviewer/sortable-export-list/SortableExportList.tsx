@@ -7,6 +7,7 @@ import { FORNT_COVER_BLANK_PAGENAME ,BACK_COVER_BLANK_PAGENAME} from '@gainhow-r
 import { ReactSortable, Sortable } from "react-sortablejs";
 
 
+
 type SortableFramedPage ={
     id: string;
     FramedPage: FramedPage;
@@ -39,7 +40,7 @@ export interface SortableExportListProps {
         //TODO: 忽略額外加上的頁  sortableFramedPagesToFramedPages的話要注意框名 不然sortableFramedPagesWithFramedPages 會錯
         let newSortableFramedPages:SortableFramedPage[]= [] 
         let newFramedPages: FramedPage[] = sortableFramedPagesToFramedPages(sortableFramedPages);
-        newSortableFramedPages =sortableFramedPagesWithFramedPages(newFramedPages,product.pagingDirection);
+        newSortableFramedPages = sortableFramedPagesWithFramedPages(newFramedPages,product.pagingDirection);
         setSortable(newSortableFramedPages); 
     }
     let style: CSSProperties = {
@@ -75,6 +76,7 @@ export interface SortableExportListProps {
         let sortableFramedPage = sortableFramedPagesWithFramedPages(props.reviewItem.models[0].framedPages,product.pagingDirection);
         let newIndex = sortableFramedPage[evt.newIndex].FramedPage.frameIndexInModel;
         let oldIndex = sortableFramedPage[evt.oldIndex].FramedPage.frameIndexInModel;
+        console.log(newIndex);
         if(newIndex!= -1 && oldIndex!= -1) {
             props.onFrameSelect(props.selectedModelIndex, newIndex);
             props.onShiftFramesBetween(oldIndex, newIndex);
@@ -233,7 +235,7 @@ interface ShingleSortableFrame {
   function ShingleSortableFrame(props: ShingleSortableFrame): JSX.Element {    
         let framedPage: FramedPage = props.sortableFramedPage.FramedPage;
         if(framedPage.frameName === '空白頁' ) {
-            return <div className={'notSortable'}/>
+            return <div className='notSortable'/>
         }
         else if (framedPage.frameName === FORNT_COVER_BLANK_PAGENAME || framedPage.frameName === BACK_COVER_BLANK_PAGENAME ) {
             let coverFrame: Frame = framedPage.reviewModel.getFrame('封面');
