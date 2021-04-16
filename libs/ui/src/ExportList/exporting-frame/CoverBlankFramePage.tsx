@@ -18,6 +18,7 @@ export function CoverBlankFramePage (props: CoverBlankFramePageProps) {
     let style: CSSProperties = {
         ...props.style,
         display: 'inline-block',
+ 
         padding: (props.horizontalPadding)? props.horizontalPadding: 3
     };
     
@@ -39,6 +40,7 @@ export function CoverBlankFramePage (props: CoverBlankFramePageProps) {
     return (
         <div
           style={style}
+          className='notSortable'
         >
           <div style={cropStyle}>
           </div>
