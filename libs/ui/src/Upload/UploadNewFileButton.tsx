@@ -1,9 +1,10 @@
 
 import React, { useRef } from 'react';
+import { HiddenMultipleFileInput } from './HiddenMultipleFileInput';
 import PlusBlue from './icons/PlusBlue.svg';
 
 interface UploadNewFileButtonProps {
-    onFilesSelected(files: FileList): void;
+    onFilesSelected(files: File[]): void;
 }
 
 export function UploadNewFileButton(props: UploadNewFileButtonProps): JSX.Element {
@@ -42,12 +43,9 @@ export function UploadNewFileButton(props: UploadNewFileButtonProps): JSX.Elemen
             }}>
                 新增檔案
             </div>
-            <input
-                type="file"
-                multiple
-                style={{ display: 'none' }}    
-                ref={hiddenInputRef}
-                onChange={(event) => props.onFilesSelected(event.target.files)}
+            <HiddenMultipleFileInput
+                inputRef={hiddenInputRef}
+                onChange={props.onFilesSelected}
             />
         </div>
     )

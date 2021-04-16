@@ -1,9 +1,10 @@
 import React,{ CSSProperties, useRef, useState } from "react";
 import UploadFileCloudIcon from '../Upload/icons/UploadToCloud.svg'
+import { HiddenMultipleFileInput } from "./HiddenMultipleFileInput";
 
 
 interface NoneFileUploadProps {
-    register(file: FileList):void
+    register(file: File[]):void
 }
 
 export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
@@ -52,10 +53,6 @@ export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
         margin: '18px',
         zIndex: 20
     }
-
-    let inputStyle: CSSProperties = {
-        display:'none',
-    }
     function onFileAdd(event: React.MouseEvent) {
         event.preventDefault();
         inputRef.current.click();
@@ -78,12 +75,9 @@ export function NoneFileUpload(props: NoneFileUploadProps): JSX.Element {
                         點擊上傳
                     </a>
                 </div>
-                <input 
-                    style={inputStyle}
-                    ref={inputRef} 
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => props.register(event.target.files) }
-                    type="file"
-                    multiple={true}
+                <HiddenMultipleFileInput
+                    inputRef={inputRef}
+                    onChange={props.register}
                 />
                 
             </div>

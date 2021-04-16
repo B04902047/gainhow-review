@@ -21,7 +21,7 @@ export function UploadFileRegistration(props: UploadFileRegistrationProps): JSX.
         }}>
             {(filesToUpload.length === 0)?
                 <NoneFileUpload
-                    register={(files) => addFile(files)}
+                    register={addFile}
                 />
             :
                 <div style={{
@@ -48,14 +48,11 @@ export function UploadFileRegistration(props: UploadFileRegistrationProps): JSX.
         </div>
     );
 
-    function addFile(files: FileList): void {
-        setFilesToUpload(currentFiles => {
-            let newFiles = [ ...currentFiles ];
-            for (let i=0; i<files.length; i++) {
-                newFiles.push(files[i]);
-            }
-            return newFiles;
-        });
+    function addFile(newFiles: File[]): void {
+        setFilesToUpload(currentFiles => [
+            ...currentFiles,
+            ...newFiles
+        ]);
     }
 
     function deleteFile(indexToDelete: number): void {
