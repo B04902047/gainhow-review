@@ -15,3 +15,6 @@ export * from './Canvas/drog-middle-line/DrogMiddleLine'
 export * from './SourceImageToolBar/SourceImageToolBar';
 export * from './Upload/UploadFileStatusRow'
 export * from './Upload/UploadArea'
+export * from './Upload/UploadFileStatusRow';
+export * from './Upload/UploadNewFileButton';
+export * from './Upload/UploadFileRegistration';
