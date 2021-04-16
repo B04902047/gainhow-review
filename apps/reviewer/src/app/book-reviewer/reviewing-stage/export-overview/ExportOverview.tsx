@@ -86,8 +86,8 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
     });
     
     let pagePairStyle: CSSProperties = {
-        paddingLeft: 10,
-        paddingRight: 10,
+        // paddingLeft: 10,
+        // paddingRight: 10,
         paddingTop: 20,
         height: 200
     };
@@ -126,11 +126,10 @@ export function ExportOverview(props: ExportOverviewProps): JSX.Element {
             onSelect: () => props.onFrameSelect(frameIndex),
             onEdit: () => props.onFrameEdit(frameIndex),
             onInsert: () => props.onInsertBlankPageAfter(frameIndex),
-            onDelete: () => {props.onDeleteFrame(frameIndex)},
+            onDelete: () => props.onDeleteFrame(frameIndex),
+            onShift: () => props.onShiftFramesBetween(props.selectedFrameIndex, frameIndex),
             onReplaceSourcePage: () => {},
-            onDrop: () => {
-                props.onSwapFrames(frameIndex, props.selectedFrameIndex);
-            }
+            onDrop: () => props.onSwapFrames(frameIndex, props.selectedFrameIndex)
         }
     }
 }
@@ -149,6 +148,7 @@ interface NamedFramedPage {
     onDelete?(): void;
     onReplaceSourcePage?(): void;
     onDrop?(): void;
+    onShift?(): void;
 }
 
 export interface NamedFramedPagePair {
@@ -173,13 +173,14 @@ export function PagePair(props: PagePairProps): JSX.Element {
     let height: number = 160;
     return (
         <div style={style}>
+            <MiddleLine onDrop={props.pair.left?.onShift} width={25}/>
             <SingleFrame
                 namedFramePage={props.pair.left}
                 widthInMm={props.pageWidthInMm}
                 heightInMm={props.pageHeightInMm}
                 height={height}
             />
-            <MiddleLine onDrop={props.pair.left?.onInsert || (() => {})}/>
+            <MiddleLine onDrop={props.pair.right?.onShift}/>
             <SingleFrame
                 namedFramePage={props.pair.right}
                 widthInMm={props.pageWidthInMm}
@@ -190,29 +191,52 @@ export function PagePair(props: PagePairProps): JSX.Element {
     )
 }
 
-function MiddleLine(props: { onDrop(): void }): JSX.Element {
+function MiddleLine(props: { onDrop?(): void; width?: number }): JSX.Element {
     let [isDraggedOver, setIsDraggedOver] = useState(false);
 
     return (
-        <div
-            style={{
+            <div style={{
                 display: "inline-block",
-                width: 5,
+                position: 'relative',
+                width: props.width || 5,
                 margin: 1,
                 marginTop: 20,
                 height: 187,
-                backgroundColor: (isDraggedOver)? '#4ba3ff77' : 'inherit',
-                borderRadius: '1px',
-                boxShadow: (isDraggedOver)? '0 0 1px 1px #4ba3ff77' : 'none'
             }}
-            onDragEnter={() => setIsDraggedOver(true)}
-            onDragLeave={() => setIsDraggedOver(false)}
-            onDragOver={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-            }}
-            onDrop={props.onDrop}
-        />
+            >
+                <div style={{
+                        display: "inline-block",
+                        width: props.width || 5,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        height: 187,
+                        zIndex: 2
+                    }}
+                    onDragEnter={() => setIsDraggedOver(true)}
+                    onDragLeave={() => setIsDraggedOver(false)}
+                    onDragOver={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }}
+                    onDrop={() => {
+                        setIsDraggedOver(false);
+                        props.onDrop();
+                    }}
+                />
+                <div
+                    style={{
+                        width: 5,
+                        height: 187,
+                        position: 'relative',
+                        left: ((props.width || 5) - 5) / 2,
+                        backgroundColor: (isDraggedOver && props.onDrop)? '#4ba3ff77' : 'inherit',
+                        borderRadius: '1px',
+                        boxShadow: (isDraggedOver && props.onDrop)? '0 0 1px 1px #4ba3ff77' : 'none',
+                        zIndex: 1
+                    }}
+                />
+            </div>
     );
 }
 
@@ -299,13 +323,17 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                 {isDroppable && <div 
                     style={{
                         position: "absolute",
-                        top: (props.namedFramePage.isSelected)? -1: 1,
-                        left: (props.namedFramePage.isSelected)? 3: 1
+                        top: (props.namedFramePage.isSelected)? -4: 0,
+                        left: 0,
+                        border: `solid ${(props.namedFramePage.isSelected)? 3 : 1}px #ffffff00`
                     }}
-                    onDragLeave={() => setIsDroppable(false)}
                     onDragOver={(event) => {
-                        event.stopPropagation();
+                        //event.stopPropagation();
                         event.preventDefault();
+                    }}
+                    onDragLeave={(event) => {    
+                        event.preventDefault();
+                        setIsDroppable(false);
                     }}
                     onDrop={(event) => {
                         setIsDroppable(false);

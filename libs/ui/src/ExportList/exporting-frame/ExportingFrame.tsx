@@ -31,6 +31,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
   let style: CSSProperties = {
     paddingLeft: horizontalPadding,
     paddingRight: horizontalPadding,
+    marginRight: (props.isSelected)? -4 : 0,
     paddingTop: (props.isSelected)? 5: 9,
     paddingBottom: 0,
     display: "inline-block",

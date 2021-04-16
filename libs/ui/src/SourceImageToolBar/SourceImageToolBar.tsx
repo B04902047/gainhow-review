@@ -19,6 +19,10 @@ import Delete from './icons/Delete.svg';
 import DeleteBlue from './icons/DeleteBlue.svg';
 import { useDrag } from '../hooks';
 
+import ZoomInIcon from './icons/ZoomInIcon.svg';
+import ZoomOutIcon from './icons/ZoomOutIcon.svg';
+import ResetSizeIcon from './icons/ResetSizeIcon.svg';
+
 interface SourceImageToolBarProps {
     
 }
@@ -63,6 +67,7 @@ export function SourceImageToolBar(props: SourceImageToolBarProps): JSX.Element 
                     style={{ position: 'absolute', top: 8, left: 152 }}
                 />
                 <VerticalLine style={{ position: 'absolute', top: 6, left: 179 }} />
+                <ZoomingToolBar zoom={() => {}} style={{ position: 'absolute', top: 3, left: 190}}/>
                 <HoverableButton
                     src={ResetSize}
                     srcOnHover={ResetSizeBlue}
@@ -161,6 +166,7 @@ interface HoverableButtonProps {
     srcOnHover: string;
     style: CSSProperties;
     title?: string;
+    onClick?(): void;
 }
 
 function HoverableButton(props: HoverableButtonProps): JSX.Element {
@@ -175,6 +181,7 @@ function HoverableButton(props: HoverableButtonProps): JSX.Element {
                 ...props.style
             }}
             title={props.title}
+            onClick={props.onClick}
         />
     )
 }
@@ -200,3 +207,227 @@ function SwitchableButton(props: SwitchableButtonProps): JSX.Element {
         />
     )
 }
+
+
+interface ZoomingToolBarProps {
+    zoom(percentage: number): void;
+    style?: CSSProperties;
+}
+
+function useTransparentImage(): HTMLImageElement {
+    const transparentImageSource = 
+      'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    let transparentImage = new Image(0, 0);
+    transparentImage.src = transparentImageSource;
+    let [dragImage, _] = useState<HTMLImageElement>(transparentImage);
+    return dragImage;
+}
+
+function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
+    const zoomPadMovementPerClickOnIcons: number = 5;
+    const zoomBarLength: number = 110;
+    let [[mousePosition, zoomPadPosition], setPositions]
+        = useState<[number, number]>([0, zoomBarLength / 2]);
+    let leftZoomBarStyle: CSSProperties = {
+        position: 'absolute',
+        left: 30,
+        top: 19,
+        height: 0,
+        width: zoomBarLength - zoomPadPosition,
+        border: 'solid 2px #666666',
+        borderRadius: 2,
+        zIndex: 1
+    };
+    let zoomPadStyle: CSSProperties = {
+        position: 'absolute',
+        top: 13,
+        left: 27 + zoomBarLength - zoomPadPosition,
+        width: 14,
+        height: 14,
+        backgroundColor: '#666666',
+        border: "solid 1px #d9d9d9",
+        borderRadius: '50%',
+        cursor: 'grab',
+        zIndex: 3
+    };
+    let rightZoomBarStyle: CSSProperties = {
+        height: 0,
+        width: zoomPadPosition,
+        position: 'absolute',
+        top: 19,
+        left: 35 + zoomBarLength - zoomPadPosition,
+        border: 'solid 2px #d9d9d9',
+        borderRadius: 2,
+        zIndex: 1
+    };
+
+    let dragImage: HTMLImageElement = useTransparentImage();
+
+    useEffect(() => {
+        props.zoom(zoomPadPosition / (zoomBarLength / 2));
+    }, [zoomPadPosition]);
+
+    return (
+        <div style={{...props.style}}>
+            <div
+                style={{ position: 'relative' }}
+                onDragOver={(event) => setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+                    let newMousePosition: number = event.pageX;
+                    let offset: number = oldMousePosition - newMousePosition;
+                    let newZoomPadPosition: number = oldZoomPadPosition + offset;
+                    if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
+                    if (newZoomPadPosition < 0) newZoomPadPosition = 0;
+                    return [newMousePosition, newZoomPadPosition];
+                })}
+            >
+                <HoverableButton
+                    src={ZoomInIcon}
+                    srcOnHover={ZoomInIcon}
+                    style={{ position: 'absolute', left: 0, top: 9}}
+                    onClick={() => {
+                        setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+                        let newZoomPadPosition: number = oldZoomPadPosition + zoomPadMovementPerClickOnIcons;
+                        if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
+                        return [oldMousePosition, newZoomPadPosition];
+                        });
+                    }}
+                />
+                <div style={leftZoomBarStyle}/>
+                <div
+                    style={zoomPadStyle}
+                    draggable
+                    onDragStart={(event) => {
+                        event.dataTransfer.setDragImage(dragImage, 0, 0);
+                        event.dataTransfer.clearData();
+                        setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+                        let newMousePosition: number = event.pageX;
+                        return [newMousePosition, oldZoomPadPosition];
+                        });
+                    }}
+                />
+                <div style={rightZoomBarStyle}/>
+                <HoverableButton
+                    src={ZoomOutIcon}
+                    srcOnHover={ZoomOutIcon}
+                    style={{ position: 'absolute', left: 155, top: 9}}
+                    onClick={() => {
+                        setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+                            let newZoomPadPosition: number = oldZoomPadPosition - zoomPadMovementPerClickOnIcons;
+                            if (newZoomPadPosition < 0) newZoomPadPosition = 0;
+                            return [oldMousePosition, newZoomPadPosition];
+                        });
+                    }}
+                />
+            </div>
+        </div>
+    )
+}
+  
+//   function ZoomingToolBar(props: ZoomingToolBarProps): JSX.Element {
+//     let style: CSSProperties = {
+//       ...props.style
+//     }
+//     let zoomIconStyle: CSSProperties = {
+//       paddingTop: 5,
+//       paddingBottom: 5,
+//     };
+//     const zoomPadMovementPerClickOnIcons: number = 5;
+//     const zoomBarLength: number = 120;
+//     let [[mousePosition, zoomPadPosition], setPositions]
+//       = useState<[number, number]>([0, zoomBarLength / 2]);
+//     let upperZoomBarStyle: CSSProperties = {
+//       width: 0,
+//       height: zoomBarLength - zoomPadPosition,
+//       marginLeft: 24,
+//       border: 'solid 2px #d9d9d9',
+//       borderRadius: 2
+//     };
+//     let zoomPadStyle: CSSProperties = {
+//       position: 'absolute',
+//       left: 18,
+//       top: 35 + zoomBarLength - zoomPadPosition,
+//       width: 14,
+//       height: 14,
+//       backgroundColor: '#666666',
+//       border: "solid 1px #d9d9d9",
+//       borderRadius: '50%',
+//       cursor: 'grab'
+//     };
+//     let lowerZoomBarStyle: CSSProperties = {
+//       width: 0,
+//       height: zoomPadPosition,
+//       marginLeft: 24,
+//       border: 'solid 2px #666666',
+//       borderRadius: 2
+//     };
+  
+//     const transparentImageSource = 
+//       'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+//     let transparentImage = new Image(0, 0);
+//     transparentImage.src = transparentImageSource;
+//     let [dragImage, _] = useState<HTMLImageElement>(transparentImage);
+  
+//     useEffect(() => {
+//       props.zoom(zoomPadPosition / (zoomBarLength / 2));
+//     }, [zoomPadPosition]);
+  
+//     return (
+//       <div
+//         style={style}
+//         onDragOver={(event) => setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+//           let newMousePosition: number = event.pageY;
+//           let offset: number = oldMousePosition - newMousePosition;
+//           let newZoomPadPosition: number = oldZoomPadPosition + offset;
+//           if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
+//           if (newZoomPadPosition < 0) newZoomPadPosition = 0;
+//           return [newMousePosition, newZoomPadPosition];
+//         })}
+//       >
+//         <Icon
+//           style={zoomIconStyle}
+//           src={ZoomOutIcon}
+//           onClick={() => {
+//             setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+//               let newZoomPadPosition: number = oldZoomPadPosition + zoomPadMovementPerClickOnIcons;
+//               if (newZoomPadPosition > zoomBarLength) newZoomPadPosition = zoomBarLength;
+//               return [oldMousePosition, newZoomPadPosition];
+//             });
+//           }}
+//         />
+//         <div style={upperZoomBarStyle}/>
+//         <div
+//           style={zoomPadStyle}
+//           draggable
+//           onDragStart={(event) => {
+//             event.dataTransfer.setDragImage(dragImage, 0, 0);
+//             event.dataTransfer.clearData();
+//             setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+//               let newMousePosition: number = event.pageY;
+//               return [newMousePosition, oldZoomPadPosition];
+//             });
+//           }}
+//         />
+//         <div style={lowerZoomBarStyle}/>
+//         <Icon
+//           style={zoomIconStyle}
+//           src={ZoomInIcon}
+//           onClick={() => {
+//             setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+//               let newZoomPadPosition: number = oldZoomPadPosition - zoomPadMovementPerClickOnIcons;
+//               if (newZoomPadPosition < 0) newZoomPadPosition = 0;
+//               return [oldMousePosition, newZoomPadPosition];
+//             });
+//           }}
+//         />
+//         <Icon
+//           src={ResetSizeIcon}
+//           onClick={() => {
+//             setPositions(([oldMousePosition, oldZoomPadPosition]) => {
+//               let newZoomPadPosition: number = zoomBarLength / 2;
+//               return [oldMousePosition, newZoomPadPosition];
+//             });
+//           }}
+//         />
+//       </div>
+//     );
+//   }
