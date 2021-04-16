@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NoneFileUpload } from "./UploadArea";
+import { NoneFileUpload } from "./NoneFileUpload";
 import { UploadFileStatusRow } from "./UploadFileStatusRow";
 import { UploadNewFileButton } from "./UploadNewFileButton";
 
