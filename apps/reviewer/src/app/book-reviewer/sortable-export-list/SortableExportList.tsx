@@ -5,6 +5,7 @@ import Book from 'libs/data/src/lib/Product/Book';
 import { CoverBlankFramePage, DrogMiddleLine } from '@gainhow-review/ui'
 import { FORNT_COVER_BLANK_PAGENAME ,BACK_COVER_BLANK_PAGENAME} from '@gainhow-review/utils'
 import { ReactSortable, Sortable } from "react-sortablejs";
+import { BookPagingDirection } from 'libs/interfaces/src/lib/product';
 
 
 
@@ -36,13 +37,7 @@ export interface SortableExportListProps {
         )
     },[props.reviewItem])
 
-    function onSetSortable(sortableFramedPages:SortableFramedPage[]) {
-        //TODO: 忽略額外加上的頁  sortableFramedPagesToFramedPages的話要注意框名 不然sortableFramedPagesWithFramedPages 會錯
-        let newSortableFramedPages:SortableFramedPage[]= [] 
-        let newFramedPages: FramedPage[] = sortableFramedPagesToFramedPages(sortableFramedPages);
-        newSortableFramedPages = sortableFramedPagesWithFramedPages(newFramedPages,product.pagingDirection);
-        setSortable(newSortableFramedPages); 
-    }
+    
     let style: CSSProperties = {
       backgroundColor: "#f7f7f7",
       border: '2px solid #E4E4E4',
@@ -82,15 +77,13 @@ export interface SortableExportListProps {
             props.onShiftFramesBetween(oldIndex, newIndex);
         }
     }
-
-function sortableFramedPagesToFramedPages(sortableFramedPages:Array<SortableFramedPage>): FramedPage[] {
-    let result :FramedPage[] = [];
-    for(let i=0 ; i<sortableFramedPages.length ; i++) {
-      let page = sortableFramedPages[i].FramedPage;
-      if(page.frameIndexInModel!=-1) {result.push(page);}
+    function onchange(props: SortableExportListProps, evt: Sortable.SortableEvent) {
+      let sortableFramedPage = sortableFramedPagesWithFramedPages(props.reviewItem.models[0].framedPages,product.pagingDirection);
+      let newIndex = sortableFramedPage[evt.newIndex].FramedPage.frameIndexInModel;
+      if (newIndex === -1) {
+        console.log('-1~~');
+      }
     }
-    return  result;
-  }
   
 function sortableFramedPagesWithFramedPages(framedPages: FramedPage[], direct: BookPagingDirection): Array<SortableFramedPage>{
     let sortableFramedPages: Array<SortableFramedPage>= [];
@@ -190,10 +183,12 @@ function sortableFramedPagesWithFramedPages(framedPages: FramedPage[], direct: B
       <div style={modelsStyle} >
         <ReactSortable 
             list={sortableFramedPages} 
-            setList={onSetSortable}
+            setList={()=>{}}
             onStart={(event: Sortable.SortableEvent) => onDragStart(props,event)}
             onEnd={(event: Sortable.SortableEvent) => onDragEnd(props, event)}
             filter={'.notSortable'}
+            onChange={(event: Sortable.SortableEvent) => onchange(props, event)
+            }
         >            
             {
                 sortableFramedPages.map((sortableFramedPage,index)=>{
