@@ -142,7 +142,9 @@ const twoPageAreaStyle: CSSProperties = {
 
  
   return (
-    <div style={style} ref={myRef} >
+    <div style={style} ref={myRef} 
+      onClick={()=>{props.setIsLeftPageEditing(false);props.setIsRightPageEditing(false);}}
+    >
         <div 
           style={CanvansStyle} 
           onClick={()=>{

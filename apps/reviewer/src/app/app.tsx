@@ -6,6 +6,7 @@ import { reviewItem as singleSheetReviewItem } from './testObjects1';
 import { reviewItem as bookReviewItem } from './testObjects2';
 import { BookReviewingStage } from './book-reviewer/reviewing-stage/BookReviewingStage';
 import { SourceImageToolBar } from '@gainhow-review/ui';
+import {SingleSheetReviewer} from 'apps/reviewer/src/app/single-sheet-reviewer/SingleSheetReviewer'
 // import * as webpack from 'webpack';
 // const plugins = []
 // plugins.push(new webpack.IgnorePlugin(/log4js/))
@@ -15,7 +16,7 @@ import { SourceImageToolBar } from '@gainhow-review/ui';
 
 export const App = () => {
   // return <ApiTester/>;
-  //return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
+  // return <SingleSheetReviewer reviewItem={singleSheetReviewItem} saveReviewItem={()=>{}}/>
   
   return (
       <BookReviewingStage
