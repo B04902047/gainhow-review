@@ -263,9 +263,10 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
     let [showToolBar, setShowToolBar] = useState<boolean>(false);
     let [isDroppable, setIsDroppable] = useState<boolean>(false);
 
-    let dragImage = useImage(
-        (props.namedFramePage?.framedPage?.getSourcePageInfo()?.jpegUrl) || ""
-    );
+    // let dragImage = useImage(
+    //     (props.namedFramePage?.framedPage?.getSourcePageInfo()?.jpegUrl) || ""
+    // );
+    // let dragImage = useImage("");
 
     return (
         <div style={{
@@ -305,11 +306,12 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
             <div style={{ position: 'relative', cursor: 'move' }}
                 onClick={() => props.namedFramePage.onSelect()}
                 onDoubleClick={() => props.namedFramePage.onEdit()}
-                draggable
-                onDragStart={(event) => {
-                    event.dataTransfer.setDragImage(dragImage, 0, 0);
-                    props.namedFramePage.onSelect();
-                }}
+                // draggable
+                // onDragStart={(event) => {
+                //     console.log(event);
+                //     event.dataTransfer.setDragImage(dragImage, 0, 0);
+                //     props.namedFramePage.onSelect();
+                // }}
             >
                 <ExportingFrame
                     shadowed
@@ -319,6 +321,11 @@ function SingleFrame(props: SingleFrameProps): JSX.Element {
                     horizontalPadding={0}
                     height={props.height}
                     onDragEnter={() => setIsDroppable(true)}
+                    onDragStart={(event) => {
+                        console.log(event);
+                        // event.dataTransfer.setDragImage(dragImage, 0, 0);
+                        props.namedFramePage.onSelect();
+                    }}
                 />
                 {isDroppable && <div 
                     style={{
