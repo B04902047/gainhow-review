@@ -3,6 +3,8 @@ import React, { createRef, CSSProperties, useEffect, useRef, useState } from 're
 import './Canvans.module.css';
 import { FramedPage, Frame, UploadFilePageInfo } from '@gainhow-review/data'  
 import { FramePageComponent } from '@gainhow-review/ui';
+import LineDiscription from '../../../../assets/icons/LineDiscription.svg'
+
 /* eslint-disable-next-line */
 export interface CanvansProps {
   framePage: FramedPage;
@@ -130,6 +132,14 @@ export function Canvas(props: CanvansProps) {
             />
           </div>
           <div style={editingFrameNameStyle}>{props.framePage.frameName}</div>
+          <img 
+            src={LineDiscription}
+            style={{
+              position: 'absolute',
+              right:'10px',
+              top: '10px'
+            }}
+          />
         </div>
     </div>
   );

@@ -202,7 +202,8 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
             <SideToolBar
                 style={{
                     height: '100vh',
-                    display: 'inline-block'
+                    display: 'inline-block',
+                    userSelect: 'none'
                 }}
                 zoom={(ratio) => setViewPercentage(Math.pow(initialViewPercentage, ratio))}
                 viewMode={viewMode}

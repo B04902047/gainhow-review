@@ -3,6 +3,7 @@ import React, { createRef, CSSProperties, useEffect, useRef, useState } from 're
 import './Canvans.module.css';
 import { FramedPage, Frame, UploadFilePageInfo } from '@gainhow-review/data'  
 import { FramePageComponent } from '@gainhow-review/ui';
+import LineDiscription from '../../../../assets/icons/LineDiscription.svg'
 /* eslint-disable-next-line */
 export interface CanvansProps {
   leftFramePage: FramedPage;
@@ -115,7 +116,7 @@ const twoPageAreaStyle: CSSProperties = {
   width:twoPageWidth,
   height:twoPageHeight,
   top: `calc(calc(100% - ${twoPageHeight}) / 2)`,
-  left: `calc(calc(100% - ${twoPageWidth}) / 2)`
+  left: `min(calc(calc(100% - ${twoPageWidth}) / 2),calc(100% - ${twoPageWidth} - 60px - 205px))`
 }
 
   const leftPageStyle: CSSProperties = {
@@ -185,6 +186,14 @@ const twoPageAreaStyle: CSSProperties = {
                 }
             </div>
           </div>
+          <img 
+            src={LineDiscription}
+            style={{
+              position: 'absolute',
+              right:'3px',
+              top: '10px'
+            }}
+          />
         </div>
     </div>
   );
