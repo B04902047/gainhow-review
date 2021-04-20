@@ -303,6 +303,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
     function deleteFrame(frameIndex: number): void {
 
         updateBufferedReviewItem(bufferedReviewItem => {
+
             let newBook = (bufferedReviewItem.product as Book).clone();
             if (newBook.numberOfPages <= 0) return bufferedReviewItem;
             newBook.numberOfPages -= 1;
@@ -327,6 +328,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
             }
             newReviewItem.models[0].framedPages = newFramedPages;
             record(newReviewItem);
+            /** 刪頁的時候 如果當前選擇的frameIndex是最後一個，要把它往前 */
             return newReviewItem;
 
             function cloneFramedPageExceptForNameAndIdAndIndexInto(oldFramedPage: FramedPage, newFramedPage: FramedPage): void {

@@ -12,6 +12,7 @@ export interface ExportingPageProps {
   isSelected: boolean;
   onSelect(): void;
   onDragEnter?(): void;
+  onDragStart?(event: React.DragEvent<HTMLDivElement>): void;
   horizontalPadding?: number;
   height?: number;
   shadowed?: boolean;
@@ -65,6 +66,8 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
       <img
           src={sourcePage.jpegUrl}
           style={imageStyle}
+          draggable
+          onDragStart={props.onDragStart}
       />
     );
   } else {
@@ -74,7 +77,9 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
       backgroundColor: 'white'
     }
     imageJSX = (
-      <div style={imageStyle}/>
+      <div
+        style={imageStyle}
+      />
     );
   }
   
