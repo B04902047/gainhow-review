@@ -178,13 +178,16 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
               style={importListStyle}
               files={bufferedReviewItem.status.uploadFileStatuses}
               selectPage={(fileIndex: number, pageIndex: number) => {
-                updateBufferedReviewItem(bufferedReviewItem =>
-                  bufferedReviewItem.setSourcePageIndexImmutably(
+                updateBufferedReviewItem((bufferedReviewItem) =>{
+                  let newBufferedReviewItem = bufferedReviewItem.setSourcePageIndexImmutably(
                     0,
                     selectedFrameIndex,
                     fileIndex,
                     pageIndex
                   )
+                  record(newBufferedReviewItem);
+                  return (newBufferedReviewItem);
+                }
                 );
               }}
               isSelected={(fileNumber: number, pageIndex: number) => {
