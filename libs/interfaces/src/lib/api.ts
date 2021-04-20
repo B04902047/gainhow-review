@@ -146,7 +146,14 @@ export interface ReportEditPdfRequestBody {
     reports: Array<EditPdfReport>;
 }
 
-
+export interface ReportEditPdfResponseBody {
+    responses:Array<{
+        taskToken: string
+        timeStamp: Date;
+        hasError: boolean
+        error?: any
+    }>
+}
 
 export interface MergeFilesRequestBody {
     sourceFilePdfTokens: Array<string>;

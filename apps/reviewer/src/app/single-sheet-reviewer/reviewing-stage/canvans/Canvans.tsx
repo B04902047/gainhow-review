@@ -115,7 +115,7 @@ export function Canvas(props: CanvansProps) {
 
  
   return (
-    <div style={style} ref={myRef} >
+    <div style={style} ref={myRef}  onClick={()=>props.setIsEditing(false)} >
         <div 
           style={CanvansStyle} 
           onClick={()=>{if(props.isEditing) props.setIsEditing(false)}}>
