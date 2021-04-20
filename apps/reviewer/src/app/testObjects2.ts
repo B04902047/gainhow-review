@@ -107,9 +107,9 @@ const reviewModel: ReviewModel = reviewItem.models[0];
 const frontCover: FramedPage = reviewModel.framedPages[0];
 frontCover.sourceFileIndex = 0;
 frontCover.sourcePageNumber = 0;
-frontCover.positionX = -20;
+frontCover.positionX = -90;
 frontCover.positionY = 10;
-frontCover.rotationDegree = 30;
+frontCover.rotationDegree = 0;
 for (let i=1; i<=book.numberOfPages; i++) {
     reviewModel.framedPages[i].sourceFileIndex = 1;
     reviewModel.framedPages[i].sourcePageNumber = (i+5) % 6;
