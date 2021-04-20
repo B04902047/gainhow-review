@@ -17,15 +17,15 @@ import {UploadArea} from '@gainhow-review/ui'
 export const App = () => {
   // return <ApiTester/>;
   //return <WorkingStage initialReviewItem={singleSheetReviewItem}/>
-  return( 
-    <UploadArea
-      reviewStatus={bookReviewItem.status}
-      uploadFile={()=>{}}
-      delectFile={()=>{}}
-      cencelFile={()=>{}}
-    />
+  // return( 
+  //   <UploadArea
+  //     reviewStatus={bookReviewItem.status}
+  //     uploadFile={()=>{}}
+  //     delectFile={()=>{}}
+  //     cencelFile={()=>{}}
+  //   />
 
-  )
+  // )
   return (
       <BookReviewingStage
         initialReviewItem={bookReviewItem}
