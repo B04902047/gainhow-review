@@ -66,8 +66,7 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
       <img
           src={sourcePage.jpegUrl}
           style={imageStyle}
-          draggable
-          onDragStart={props.onDragStart}
+          
       />
     );
   } else {
@@ -98,9 +97,12 @@ export function ExportingFrame(props: ExportingPageProps): JSX.Element {
       style={style}
       onClick={props.onSelect}
       draggable={props.isDroggable}
+      
     >
       <div style={cropStyle}
         onDragEnter={props.onDragEnter}
+        draggable
+        onDragStart={props.onDragStart}
       >
         {imageJSX}
       </div>
