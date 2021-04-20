@@ -73,6 +73,18 @@ export function ReviewingStage(props: ReviewingStageProps): JSX.Element {
   let previousStepButtonStyle: CSSProperties = {
     marginLeft: 58
   };
+
+  function onDeleteSorceFileImage() {
+    updateBufferedReviewItem((bufferedReviewItem)=>{
+      let newBufferedReviewItem = bufferedReviewItem.setSourcePageIndexImmutably(
+        selectedModelIndex,
+        selectedFrameIndex,
+        undefined,
+        undefined
+      );
+      return newBufferedReviewItem
+    })
+  }
   return (
     <div>
       <div style={{whiteSpace: 'nowrap'}}>
@@ -101,6 +113,7 @@ export function ReviewingStage(props: ReviewingStageProps): JSX.Element {
         <WorkSpace
           style={workSpaceStyle}
           framedPage={bufferedReviewItem.getFramedPage(selectedModelIndex, selectedFrameIndex)}
+          onDeleteSorceFileImage={onDeleteSorceFileImage}
         />
         <ModelInfo
           product={bufferedReviewItem.product}

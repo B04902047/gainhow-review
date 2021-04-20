@@ -5,12 +5,14 @@ import React, { CSSProperties, useState } from 'react';
 import SideToolBar from '../side-tool-bar/SideToolBar';
 
   import './WorkSpace.module.css';
+import { SourceImageToolBar } from '@gainhow-review/ui';
   
 
 /* eslint-disable-next-line */
 export interface WorkSpaceProps {
   style: CSSProperties;
   framedPage: FramedPage;
+  onDeleteSorceFileImage(): void;
 }
 
 export function WorkSpace(props: WorkSpaceProps) {
@@ -42,6 +44,8 @@ export function WorkSpace(props: WorkSpaceProps) {
       <SideToolBar
         style={leftToolBarStyle}
         zoom={(ratio) => setViewPercentage(Math.pow(initialViewPercentage, ratio))}
+        onRedo={()=>{}}
+        onUndo={()=>{}}
       />
       <Canvas
         style={canvasStyle}
@@ -50,6 +54,13 @@ export function WorkSpace(props: WorkSpaceProps) {
         isEditing={isEditing}
         setIsEditing={(isEditing: boolean)=>setIsEditing(isEditing)}
       />
+      {(isEditing) && 
+                <SourceImageToolBar 
+                    onDelete={()=>{
+                        props.onDeleteSorceFileImage();
+                        setIsEditing(false);
+                    }}
+                />}
     </div>
   );
 };

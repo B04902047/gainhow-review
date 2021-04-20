@@ -25,6 +25,7 @@ import ResetSizeIcon from './icons/ResetSizeIcon.svg';
 import { HoverableButton } from '../lib/buttons';
 
 interface SourceImageToolBarProps {
+    onDelete():void;
     
 }
 
@@ -113,6 +114,7 @@ export function SourceImageToolBar(props: SourceImageToolBarProps): JSX.Element 
                     srcOnHover={DeleteBlue}
                     style={{ position: 'absolute', top: 13, left: 656 }}
                     title="留白"
+                    onClick={props.onDelete}
                 />
             </div>
         </div>
