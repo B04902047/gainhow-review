@@ -64,7 +64,7 @@ export function FramePageComponent(props: FramePageComponentProps) {
   
     const originalImageStyle: CSSProperties = {
       ...imageStyle,
-      opacity: 0.3
+      opacity: 0.5
       
     };
     const clipedImageStyle: CSSProperties = {
