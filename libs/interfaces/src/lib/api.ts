@@ -130,6 +130,7 @@ interface EditPdfSuccessfulReport {
     taskToken: string;
     timeStamp: Date;
     resultingFileToken: string;
+    resultingImageUrl: string;
     hasError: false;
 }
 
@@ -198,6 +199,12 @@ export type ReportMergeFilesRequestBody
     = ReportMergeFilesSuccessRequestBody
     | ReportMergeFilesErrorRequestBody;
 
+export interface ReportMergeFilesResponseBody {
+    taskToken: string
+    timeStamp: Date
+    hasError: boolean
+	error?: any
+}
 
 export interface MoveFileRequestBody {
     taskToken: string;

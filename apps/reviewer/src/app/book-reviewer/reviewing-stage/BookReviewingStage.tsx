@@ -74,7 +74,8 @@ function useReviewItemHistory(
 
 export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element {
     let [bufferedReviewItem, updateBufferedReviewItem] = useState<ReviewItem>(props.initialReviewItem);
-
+    const initialViewPercentage: number = 100;
+    const [viewPercentage, setViewPercentage] = useState<number>(initialViewPercentage);
     let [isLoading, setIsLoading] = useState(props.initialReviewItem.allUploadFilesAreConverted());
 
     // busy checking
@@ -155,14 +156,43 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
         width: `calc(100vw - ${importListStyle.width}px - ${modelInfoStyle.width}px - 14px - 50px)`,
     };
     let [viewMode, setViewMode] = useState<"DOUBLE_PAGE"|"OVERVIEW">("OVERVIEW");
+
+    function delectFrame () {
+        updateBufferedReviewItem((bufferedReviewItem) =>{
+            let newReviewItem = bufferedReviewItem.setSourcePageIndexImmutably(
+              0,
+              selectedFrameIndex,
+              undefined,
+              undefined
+            )
+            record(newReviewItem);
+            return newReviewItem;
+        }
+          );
+
+    }
     return (
         <div>
             {isLoading && <UploadFileConvertingModal reviewItem={bufferedReviewItem}/>}
             <ImportList
               style={importListStyle}
               files={bufferedReviewItem.status.uploadFileStatuses}
-              selectPage={() => {}}
-              isSelected={() => false}
+              selectPage={(fileIndex: number, pageIndex: number) => {
+                updateBufferedReviewItem(bufferedReviewItem =>
+                  bufferedReviewItem.setSourcePageIndexImmutably(
+                    0,
+                    selectedFrameIndex,
+                    fileIndex,
+                    pageIndex
+                  )
+                );
+              }}
+              isSelected={(fileNumber: number, pageIndex: number) => {
+                return (
+                  fileNumber === selectedFramedPage.sourceFileIndex
+                  && pageIndex === selectedFramedPage.sourcePageNumber
+                )
+              }}
               isHidden={importListIsHidden}
               onToggle={() => setImportListIsHidden(!importListIsHidden)}
             />
@@ -171,7 +201,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                     height: '100vh',
                     display: 'inline-block'
                 }}
-                zoom={() => {}}
+                zoom={(ratio) => setViewPercentage(Math.pow(initialViewPercentage, ratio))}
                 viewMode={viewMode}
                 setViewMode={setViewMode}
                 onRedo={() => { if (isRedoable) redo(); } }
@@ -199,7 +229,9 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                 selectedModelIndex={0}
                 selectedFrameIndex={selectedFrameIndex}
                 onSelect={(modelIndex, frameIndex) => selectFrame(frameIndex)}
+                onDeleteSorceFileImage={()=>{delectFrame()}}
                 updateReviewItem={updateBufferedReviewItem}
+                viewPercentage={viewPercentage}
                 onShiftFramesBetween={shiftFramesBetween}
             />}
             <div style={rightAreaStyle}>
@@ -403,7 +435,7 @@ function SideToolBar(props: SideToolBarProps): JSX.Element {
                 style={{
                     height: '100vh',
                 }}
-                zoom={() => {}}
+                zoom={props.zoom}
                 onRedo={props.onRedo}
                 onUndo={props.onUndo}
             />

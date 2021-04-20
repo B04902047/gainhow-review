@@ -18,7 +18,9 @@ interface DoublePageViewProps {
     reviewItem: ReviewItem;
     selectedModelIndex: number;
     selectedFrameIndex: number;
+    viewPercentage: number
     onSelect(modelIndex:number, frameIndex:number):void;
+    onDeleteSorceFileImage(): void;
     updateReviewItem(newReviewItem: ReviewItem): void;
     onShiftFramesBetween(start: number, end: number): void;
 }
@@ -157,7 +159,9 @@ function DoublePageView(props: DoublePageViewProps): JSX.Element {
                 leftFramePage={pages.leftPage}
                 rightFramePage={pages.rightPage}
                 changeEditingPage={changeEditingPage}
+                viewPercentage={props.viewPercentage}
                 selectedFrameIndex={props.selectedFrameIndex}
+                onDeleteSorceFileImage={props.onDeleteSorceFileImage}
             />
             <SortableExportList
                 selectedModelIndex={props.selectedModelIndex}
@@ -177,12 +181,12 @@ interface DoublePageWorkSpaceProps {
     leftFramePage: FramedPage
     rightFramePage: FramedPage
     selectedFrameIndex: number;
+    viewPercentage: number
     changeEditingPage(framePage: FramedPage): void;
+    onDeleteSorceFileImage(): void;
 }
 
 function DoublePageWorkSpace(props: DoublePageWorkSpaceProps): JSX.Element {
-    const initialViewPercentage: number = 100;
-    const [viewPercentage, setViewPercentage] = useState<number>(initialViewPercentage);
     const [isLeftPageEditing, setIsLeftPageEditing] = useState<boolean>(false);
     const [isRightPageEditing, setIsRightPageEditing] = useState<boolean>(false);
     function setRightIsEditing (){
@@ -217,7 +221,7 @@ function DoublePageWorkSpace(props: DoublePageWorkSpaceProps): JSX.Element {
                 style={canvasStyle}
                 leftFramePage={props.leftFramePage}
                 rightFramePage={props.rightFramePage}
-                viewPercentage={viewPercentage}
+                viewPercentage={props.viewPercentage}
                 isLeftPageEditing={isLeftPageEditing}
                 isRightPageEditing={isRightPageEditing}
                 setIsLeftPageEditing={(isEditing: boolean)=> {
@@ -235,7 +239,14 @@ function DoublePageWorkSpace(props: DoublePageWorkSpaceProps): JSX.Element {
                     }
                 }}
             />
-            {(isLeftPageEditing || isRightPageEditing) && <SourceImageToolBar/>}
+            {(isLeftPageEditing || isRightPageEditing) && 
+                <SourceImageToolBar 
+                    onDelete={()=>{
+                        props.onDeleteSorceFileImage();
+                        setIsLeftPageEditing(false);
+                        setIsRightPageEditing(false);
+                    }}
+                />}
         </div>
     )
 }
