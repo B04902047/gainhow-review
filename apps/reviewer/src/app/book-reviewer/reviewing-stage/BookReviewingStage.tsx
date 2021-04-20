@@ -265,7 +265,7 @@ export function BookReviewingStage(props: BookReviewingStageProps): JSX.Element 
                             }
                         }}
                     >
-                        {(nextStepButtonIsTriggered)? "印刷檔生成中..." : "生成印刷檔"}
+                        {(nextStepButtonIsTriggered)? "印刷檔生成中..." : "預覽列印"}
                         
                     </Button>
                     <Button
