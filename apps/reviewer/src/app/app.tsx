@@ -17,15 +17,15 @@ export const App = () => {
   // return <ApiTester/>;
   // return <SingleSheetReviewer reviewItem={singleSheetReviewItem} saveReviewItem={()=>{}}/>
   
-
-
-
   return (
+    <div>
+      <SingleSheetReviewer reviewItem={singleSheetReviewItem} saveReviewItem={()=>{}}/>
       <BookReviewingStage
         initialReviewItem={bookReviewItem}
         saveReviewItem={(async () => {})}
         onFinished={() => {}}
       />
+    </div>
   );
 
 };
